@@ -51,7 +51,10 @@ export default function AboutPage() {
   ];
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+    <section
+      id="tentang"
+      className="max-w-6xl mx-auto px-4 sm:px-6 py-14 scroll-mt-24"
+    >
       <section className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center mb-12">
         <div>
           <p className="section-label mb-3">Tentang Folio</p>
@@ -156,6 +159,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </main>
+    </section>
   );
 }

@@ -1,8 +1,11 @@
+import { useState } from "react";
 import BookCard from "../components/BookCard";
+import BookModal from "../components/BookModal";
 import SearchFilter from "../components/SearchFilter";
 import Icon from "../components/Icon";
 
 export default function HomePage({ books = [] }) {
+  const [selectedBook, setSelectedBook] = useState(null);
   const collectionBooks = books;
   const featuredBooks = collectionBooks.slice(0, 5);
   const heroBook = featuredBooks[0];
@@ -198,7 +201,12 @@ export default function HomePage({ books = [] }) {
             {/* ── Grid responsif — Tailwind CSS Grid ── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {collectionBooks.map((book, i) => (
-                <BookCard key={book.key || book.id || i} book={book} index={i} />
+                <BookCard
+                  key={book.key || book.id || i}
+                  book={book}
+                  index={i}
+                  onSelect={setSelectedBook}
+                />
               ))}
             </div>
           </div>
@@ -236,12 +244,18 @@ export default function HomePage({ books = [] }) {
                 key={book.key || book.id || i}
                 className="snap-start flex-shrink-0 w-40 sm:w-48"
               >
-                <BookCard book={book} index={i} />
+                <BookCard book={book} index={i} onSelect={setSelectedBook} />
               </div>
             ))}
           </div>
         </div>
       </section>
+
+      <BookModal
+        key={selectedBook?.key || selectedBook?.id || "home-book-modal"}
+        book={selectedBook}
+        onClose={() => setSelectedBook(null)}
+      />
     </>
   );
 }
