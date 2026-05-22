@@ -8,17 +8,11 @@ import axios from "axios";
 import BookCard from "./BookCard";
 
 export default function App() {
-  return (
-    <div className="min-h-screen flex flex-col bg-parchment-50 font-crimson">
-      <Header />
-
-
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
+   const [isLoading, setIsLoading] = useState(true);
   const [dataStore, setDataStore] = useState([]);
   const [error, setError] = useState(null);
 
-  async function fetchData() {
+    async function fetchData() {
     setIsLoading(true);
     try {
       const response = await axios.get(
@@ -34,11 +28,7 @@ function App() {
     }
   }
 
-      <main id="main-content" className="flex-1" role="main">
-        <HomePage />
-
-        <LibraryPage />
-  if (isLoading)
+    if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-row gap-2">
@@ -48,12 +38,20 @@ function App() {
         </div>
       </div>
     );
+    }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-parchment-50 font-crimson">
+      <Header />
+      <main id="main-content" className="flex-1" role="main">
+        <HomePage />
+
+        <LibraryPage />
+
 
         <AboutPage />
       </main>
 
-      <Footer />
-  return (
     <div className="min-h-screen bg-gray-50 p-8">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Books</h1>
       {/* fix: grid = row layout */}
@@ -63,5 +61,8 @@ function App() {
         ))}
       </div>
     </div>
-  );
+
+      <Footer />
+    
+        )
 }
