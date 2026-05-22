@@ -36,6 +36,7 @@ export default function App() {
 
   async function fetchData() {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await axios.get(
         "https://openlibrary.org/search.json?q=programming&limit=10&language=eng",
@@ -86,7 +87,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-parchment-50 font-crimson">
       <Header />
       <main id="main-content" className="flex-1" role="main">
-        <HomePage />
+        <HomePage books={dataStore} />
 
         <LibraryPage books={dataStore} />
 

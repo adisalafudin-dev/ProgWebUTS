@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
@@ -17,14 +17,28 @@ const TOPICS = [
 // ✅ Terima prop books dari App
 export default function LibraryPage({ books = [] }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("fiction");
   const [selectedBook, setSelectedBook] = useState(null);
 
   const selectedTopicLabel =
     TOPICS.find((topic) => topic.value === selectedTopic)?.label || "Fiction";
+  const activeKeyword = debouncedSearchTerm.trim().toLowerCase();
+  const hasSearch = activeKeyword !== "";
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timerId);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setSelectedBook(null);
+  }, [debouncedSearchTerm, selectedTopic]);
 
   const filteredBooks = books.filter((book) => {
-    const keyword = searchTerm.trim().toLowerCase();
     const searchableText = [
       book.title,
       book.author,
@@ -34,13 +48,15 @@ export default function LibraryPage({ books = [] }) {
       .join(" ")
       .toLowerCase();
 
-    const matchesSearch = keyword === "" || searchableText.includes(keyword);
+    const matchesSearch =
+      activeKeyword === "" || searchableText.includes(activeKeyword);
     const matchesTopic =
       selectedTopic === "fiction" ||
       searchableText.includes(selectedTopic.toLowerCase());
 
     return matchesSearch && matchesTopic;
   });
+  const hasFilteredBooks = filteredBooks.length > 0;
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -155,6 +171,15 @@ export default function LibraryPage({ books = [] }) {
               <Icon name="search" className="w-4 h-4" strokeWidth={2} />
               Cari
             </button>
+            {searchTerm && (
+              <button
+                type="button"
+                className="btn-secondary whitespace-nowrap"
+                onClick={() => setSearchTerm("")}
+              >
+                Reset
+              </button>
+            )}
           </form>
         </div>
       </section>
@@ -175,6 +200,11 @@ export default function LibraryPage({ books = [] }) {
                 · Halaman 1
               </span>
             </h2>
+            {hasSearch && (
+              <p className="font-crimson text-sm text-slate-500 mt-1">
+                Hasil pencarian untuk "{debouncedSearchTerm}"
+              </p>
+            )}
           </div>
           <div
             className="flex items-center gap-2 text-sm font-crimson text-slate-500
@@ -187,7 +217,7 @@ export default function LibraryPage({ books = [] }) {
         </div>
 
         {/* ✅ render dari prop books, bukan PLACEHOLDER_BOOKS */}
-        {filteredBooks.length > 0 ? (
+        {hasFilteredBooks ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-10">
             {filteredBooks.map((book, i) => (
               <BookCard
@@ -243,6 +273,7 @@ export default function LibraryPage({ books = [] }) {
           </section>
         )}
 
+        {hasFilteredBooks && (
         <nav
           aria-label="Paginasi hasil buku"
           className="flex items-center justify-center gap-3 mt-10"
@@ -264,6 +295,7 @@ export default function LibraryPage({ books = [] }) {
             Berikutnya →
           </button>
         </nav>
+        )}
       </section>
 
       <BookModal

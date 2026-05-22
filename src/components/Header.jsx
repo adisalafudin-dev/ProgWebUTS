@@ -11,14 +11,6 @@ export default function Header() {
 
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-sm shadow-sm">
 
-      <div className="hidden sm:block border-b border-slate-100 bg-parchment-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5
-                        flex items-center justify-between text-xs text-slate-400 font-crimson">
-          <span>📚 Selamat datang di Folio Book Library</span>
-          <span>Koleksi lebih dari 10.000 judul buku</span>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
 

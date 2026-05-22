@@ -1,13 +1,33 @@
 import BookCard from "../components/BookCard";
 import SearchFilter from "../components/SearchFilter";
 import Icon from "../components/Icon";
-import { LOCAL_BOOKS } from "../data/books";
 
-/* Buku unggulan untuk hero */
-const FEATURED = LOCAL_BOOKS.filter((b) => b.featured);
-const HERO = FEATURED[0];
+export default function HomePage({ books = [] }) {
+  const collectionBooks = books;
+  const featuredBooks = collectionBooks.slice(0, 5);
+  const heroBook = featuredBooks[0];
+  const totalAuthors = new Set(collectionBooks.map((book) => book.author)).size;
+  const totalGenres = new Set(collectionBooks.map((book) => book.genre)).size;
 
-export default function HomePage() {
+  if (!heroBook) {
+    return (
+      <section
+        id="beranda"
+        className="min-h-[60vh] flex items-center justify-center bg-parchment-50 px-4"
+      >
+        <div className="max-w-md rounded-lg border border-slate-200 bg-white p-6 text-center shadow-book">
+          <p className="section-label mb-2">Koleksi Buku</p>
+          <h1 className="font-playfair text-2xl font-bold text-ink mb-2">
+            Data buku belum tersedia
+          </h1>
+          <p className="font-crimson text-slate-500">
+            Tunggu sebentar sampai data dari API selesai dimuat.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <>
       {/* ══════════════════════════════════════════════
@@ -22,7 +42,9 @@ export default function HomePage() {
         {/* Background blur cover */}
         <div
           className="absolute inset-0 scale-110 bg-cover bg-center opacity-30 blur-2xl"
-          style={{ backgroundImage: `url(${HERO.cover})` }}
+          style={{
+            backgroundImage: heroBook.cover ? `url(${heroBook.cover})` : "none",
+          }}
           aria-hidden="true"
         />
         <div
@@ -43,15 +65,15 @@ export default function HomePage() {
                 className="font-playfair font-extrabold text-4xl lg:text-6xl
                            text-white leading-tight mb-4 max-w-2xl"
               >
-                {HERO.title}
+                {heroBook.title}
               </h1>
               <p className="text-slate-200 text-lg mb-8">
                 oleh{" "}
                 <span className="text-amber-200 font-semibold">
-                  {HERO.author}
+                  {heroBook.author}
                 </span>
                 <span className="mx-2 text-white/30">·</span>
-                <span>{HERO.year}</span>
+                <span>{heroBook.year}</span>
               </p>
               <div className="flex flex-wrap gap-3">
                 <a href="#koleksi" className="btn-primary">
@@ -68,19 +90,31 @@ export default function HomePage() {
             {/* Gambar cover hero */}
             <div className="hidden lg:flex justify-center">
               <figure className="relative w-52">
-                <img
-                  src={HERO.cover}
-                  alt={`Sampul buku ${HERO.title}`}
-                  className="w-full rounded-lg shadow-2xl border border-white/10
-                             hover:scale-105 transition-transform duration-500"
-                />
+                {heroBook.cover ? (
+                  <img
+                    src={heroBook.cover}
+                    alt={`Sampul buku ${heroBook.title}`}
+                    className="w-full rounded-lg shadow-2xl border border-white/10
+                               hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div
+                    className="aspect-[2/3] w-full rounded-lg shadow-2xl border border-white/10
+                               bg-gradient-to-br from-amber-800 to-stone-700 p-5
+                               flex items-center justify-center"
+                  >
+                    <p className="font-playfair text-white/80 text-center text-sm">
+                      {heroBook.title}
+                    </p>
+                  </div>
+                )}
                 <figcaption
                   className="absolute -bottom-4 -right-4 bg-white text-ink
                              px-3 py-1.5 rounded-lg shadow-book flex items-center gap-2"
                 >
                   <Icon name="star" className="w-4 h-4 text-amber-500" />
                   <span className="font-playfair font-bold text-lg">
-                    {HERO.rating}
+                    {heroBook.rating}
                   </span>
                 </figcaption>
               </figure>
@@ -93,9 +127,13 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-3 divide-x divide-white/10">
               {[
-                { icon: "collection", label: "Total Koleksi", value: "12+" },
-                { icon: "users", label: "Penulis", value: "12" },
-                { icon: "tag", label: "Genre", value: "8" },
+                {
+                  icon: "collection",
+                  label: "Total Koleksi",
+                  value: collectionBooks.length,
+                },
+                { icon: "users", label: "Penulis", value: totalAuthors },
+                { icon: "tag", label: "Genre", value: totalGenres },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -151,7 +189,7 @@ export default function HomePage() {
               <p className="font-crimson text-sm text-slate-500">
                 Menampilkan{" "}
                 <span className="font-semibold text-amber-600">
-                  {LOCAL_BOOKS.length}
+                  {collectionBooks.length}
                 </span>{" "}
                 buku
               </p>
@@ -159,8 +197,8 @@ export default function HomePage() {
 
             {/* ── Grid responsif — Tailwind CSS Grid ── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {LOCAL_BOOKS.map((book, i) => (
-                <BookCard key={book.id} book={book} index={i} />
+              {collectionBooks.map((book, i) => (
+                <BookCard key={book.key || book.id || i} book={book} index={i} />
               ))}
             </div>
           </div>
@@ -193,9 +231,9 @@ export default function HomePage() {
             className="flex gap-5 overflow-x-auto pb-3
                           snap-x snap-mandatory scroll-smooth"
           >
-            {FEATURED.map((book, i) => (
+            {featuredBooks.map((book, i) => (
               <div
-                key={book.id}
+                key={book.key || book.id || i}
                 className="snap-start flex-shrink-0 w-40 sm:w-48"
               >
                 <BookCard book={book} index={i} />
