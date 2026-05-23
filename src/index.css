@@ -142,6 +142,12 @@ h6,
   will-change: opacity, transform;
 }
 
+.hero-bg-clear {
+  animation: hero-bg-clear-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
 .hero-copy-motion {
   animation: hero-copy-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity, transform;
@@ -158,8 +164,19 @@ h6,
     transform: scale(1.14);
   }
   to {
-    opacity: 0.45;
+    opacity: 0.85;
     transform: scale(1.06);
+  }
+}
+
+@keyframes hero-bg-clear-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 0.35;
+    transform: scale(1);
   }
 }
 

@@ -88,18 +88,26 @@ export default function HomePage({ books = [], error, fetchData }) {
       <section
         id="beranda"
         aria-labelledby="hero-heading"
-        className="relative min-h-[calc(100vh-76px)] overflow-hidden border-b border-accent/60 bg-primary text-white"
+        className="relative min-h-[calc(100vh-76px)] overflow-hidden border-b border-accent/60 bg-transparent text-white"
       >
         <div
           key={`hero-bg-${heroBook.key || heroBook.id || activeHeroIndex}`}
-          className="hero-bg-motion absolute inset-0 bg-cover bg-center opacity-45 blur-2xl"
+          className="hero-bg-motion absolute inset-0 bg-cover bg-center opacity-85 blur-xl"
           style={{
             backgroundImage: heroBook.cover ? `url(${heroBook.cover})` : "none",
           }}
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(184,137,45,0.22),transparent_28%),linear-gradient(90deg,rgba(24,51,47,0.98),rgba(24,51,47,0.86),rgba(122,46,46,0.5))]"
+          key={`hero-bg-clear-${heroBook.key || heroBook.id || activeHeroIndex}`}
+          className="hero-bg-clear absolute inset-0 bg-cover bg-center opacity-35"
+          style={{
+            backgroundImage: heroBook.cover ? `url(${heroBook.cover})` : "none",
+          }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(255,255,255,0.16),transparent_30%),linear-gradient(90deg,rgba(10,26,24,0.78),rgba(10,26,24,0.52),rgba(20,18,16,0.28))]"
           aria-hidden="true"
         />
         <div className="absolute inset-x-0 bottom-0 h-px bg-white/20" />
