@@ -4,11 +4,16 @@
 
 @layer base {
   body {
-    @apply font-crimson bg-parchment-50 text-ink antialiased;
+    @apply font-crimson antialiased;
+    background:
+      linear-gradient(180deg, rgba(246, 241, 232, 0.96), rgba(239, 231, 218, 0.96)),
+      repeating-linear-gradient(90deg, rgba(28, 27, 25, 0.025) 0 1px, transparent 1px 72px);
+    color: #1C1B19;
     font-size: 1rem;
+    letter-spacing: 0;
   }
   h1, h2, h3, h4, h5 {
-    @apply font-playfair tracking-tight;
+    @apply font-playfair;
   }
 }
 
@@ -16,50 +21,194 @@
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-amber-500 text-white font-semibold font-crimson
+           text-white font-semibold font-crimson
            px-5 py-2.5 rounded-lg cursor-pointer
-           transition-all duration-200 ease-out
-           hover:bg-amber-600 hover:shadow-book-hover hover:-translate-y-0.5
+           transition-all duration-300 ease-out
+           hover:-translate-y-0.5
            active:translate-y-0 active:shadow-none
-           focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2;
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+    background-color: #B8892D;
+    --tw-ring-color: #B8892D;
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           border border-slate-200 bg-white text-ink font-semibold font-crimson
+           border bg-white font-semibold font-crimson
            px-5 py-2.5 rounded-lg cursor-pointer
-           transition-all duration-200 ease-out
-           hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700
-           focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2;
+           transition-all duration-300 ease-out
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+    border-color: #D8CFC0;
+    color: #18332F;
+    --tw-ring-color: #B8892D;
   }
 
   .input-field {
-    @apply w-full bg-white border border-slate-200 text-ink font-crimson
+    @apply w-full bg-white border font-crimson
            px-4 py-2.5 rounded-lg outline-none
            transition-all duration-200
-           focus:border-amber-500 focus:ring-4 focus:ring-amber-100
-           placeholder:text-slate-400;
+           focus:ring-4;
+    border-color: #D8CFC0;
+    color: #1C1B19;
+    --tw-ring-color: rgb(184 137 45 / 0.22);
   }
 
   .select-field {
-    @apply w-full bg-white border border-slate-200 text-ink font-crimson
+    @apply w-full bg-white border font-crimson
            px-4 py-2.5 rounded-lg outline-none cursor-pointer appearance-none
            transition-all duration-200
-           focus:border-amber-500 focus:ring-4 focus:ring-amber-100;
+           focus:ring-4;
+    border-color: #D8CFC0;
+    color: #1C1B19;
+    --tw-ring-color: rgb(184 137 45 / 0.22);
   }
 
   .book-card {
-    @apply bg-white rounded-lg overflow-hidden border border-slate-200
-           shadow-book cursor-pointer
-           transition-all duration-300 ease-out
-           hover:border-amber-200 hover:shadow-book-hover hover:-translate-y-1;
+    @apply bg-white rounded-lg overflow-hidden border
+           cursor-pointer
+           transition-all duration-500 ease-out
+           hover:-translate-y-1;
+    border-color: #D8CFC0;
+    background-color: #FFFDF8;
+    box-shadow: 0 2px 10px -2px rgba(28, 27, 25, 0.14),
+      0 1px 4px -1px rgba(28, 27, 25, 0.08);
   }
 
   .section-label {
-    @apply text-xs font-semibold font-crimson tracking-[0.14em] uppercase text-amber-600;
+    @apply text-xs font-semibold font-crimson tracking-[0.14em] uppercase;
+    color: #7A2E2E;
   }
 }
 
+.btn-primary:hover {
+  background-color: #7A2E2E;
+  box-shadow: 0 18px 34px -8px rgba(28, 27, 25, 0.24),
+    0 8px 14px -5px rgba(28, 27, 25, 0.14);
+}
+
+.btn-secondary:hover {
+  background-color: #F6F1E8;
+  border-color: #B8892D;
+  color: #7A2E2E;
+}
+
+.input-field:focus,
+.select-field:focus {
+  border-color: #B8892D;
+}
+
+.input-field::placeholder {
+  color: #6F6A61;
+}
+
+.book-card:hover {
+  border-color: #B8892D;
+  box-shadow: 0 18px 34px -8px rgba(28, 27, 25, 0.24),
+    0 8px 14px -5px rgba(28, 27, 25, 0.14);
+}
+
+.book-card img {
+  will-change: transform;
+}
+
 ::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: #faf3e4; }
-::-webkit-scrollbar-thumb  { background: #f59e0b; border-radius: 3px; }
+::-webkit-scrollbar-track  { background: #F6F1E8; }
+::-webkit-scrollbar-thumb  { background: #B8892D; border-radius: 3px; }
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-playfair {
+  font-family: "Poppins", "Inter", system-ui, sans-serif !important;
+}
+
+.font-crimson {
+  font-family: "Inter", system-ui, sans-serif !important;
+}
+
+.hero-bg-motion {
+  animation: hero-bg-drift 4.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+.hero-bg-clear {
+  animation: hero-bg-clear-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+.hero-copy-motion {
+  animation: hero-copy-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+.hero-cover-motion {
+  animation: hero-cover-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+@keyframes hero-bg-drift {
+  from {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+  to {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes hero-bg-clear-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes hero-cover-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}

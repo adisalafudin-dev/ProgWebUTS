@@ -1,5 +1,4 @@
 export default function BookCard({ book }) {
-  console.log("Book", book);
   const coverId = book.cover_i;
   const coverUrl = coverId
     ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
@@ -10,8 +9,8 @@ export default function BookCard({ book }) {
   const year = book.first_publish_year || "—";
   const subjects = book.subject?.slice(0, 3).join(", ") || "—";
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col">
-      <div className="bg-gray-100 h-52 flex items-center justify-center overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-borderSoft overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col">
+      <div className="bg-cream h-52 flex items-center justify-center overflow-hidden">
         {coverUrl ? (
           <img
             src={coverUrl}
@@ -19,7 +18,7 @@ export default function BookCard({ book }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex flex-col items-center text-gray-300">
+          <div className="flex flex-col items-center text-textSecondary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-12 h-12 mb-2"
@@ -40,13 +39,13 @@ export default function BookCard({ book }) {
       </div>
 
       <div className="p-4 flex flex-col gap-1 flex-1">
-        <h2 className="font-semibold text-gray-800 text-sm leading-snug line-clamp-2">
+        <h2 className="font-semibold text-textMain text-sm leading-snug line-clamp-2">
           {title}
         </h2>
-        <p className="text-xs text-blue-600 font-medium truncate">{authors}</p>
-        <p className="text-xs text-gray-400 mt-auto pt-2">📅 {year}</p>
+        <p className="text-xs text-accentHover font-medium truncate">{authors}</p>
+        <p className="text-xs text-textSecondary mt-auto pt-2">📅 {year}</p>
         {subjects !== "—" && (
-          <p className="text-xs text-gray-400 line-clamp-1">🏷️ {subjects}</p>
+          <p className="text-xs text-textSecondary line-clamp-1">🏷️ {subjects}</p>
         )}
       </div>
     </div>
