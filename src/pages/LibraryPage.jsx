@@ -96,12 +96,12 @@ export default function LibraryPage({ books = [], isLoading = false }) {
               <p className="section-label text-accent mb-2">
                 Data Langsung dari API
               </p>
-              <h1
+              <h2
                 id="library-heading"
                 className="font-playfair font-bold text-3xl lg:text-4xl leading-tight"
               >
                 Perpustakaan Digital
-              </h1>
+              </h2>
               <p className="font-crimson text-white/60 mt-2 text-lg">
                 Sumber: <span className="text-accent">Open Library API</span>
               </p>

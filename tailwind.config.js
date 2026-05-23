@@ -8,9 +8,9 @@ export default {
     extend: {
       fontFamily: {
         playfair: ['"Poppins"', 'Inter', 'system-ui', 'sans-serif'],
-        crimson: ['"Inter"', 'system-ui', 'sans-serif'],
-        display: ['"Poppins"', 'Inter', 'system-ui', 'sans-serif'],
-        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        crimson:  ['"Inter"',   'system-ui', 'sans-serif'],
+        display:  ['"Poppins"', 'Inter', 'system-ui', 'sans-serif'],
+        sans:     ['"Inter"',   'system-ui', 'sans-serif'],
       },
       colors: {
         cream: '#F6F1E8',
@@ -35,7 +35,7 @@ export default {
         },
       },
       boxShadow: {
-        book:       '0 2px 10px -2px rgba(28,27,25,0.14), 0 1px 4px -1px rgba(28,27,25,0.08)',
+        book:         '0 2px 10px -2px rgba(28,27,25,0.14), 0 1px 4px -1px rgba(28,27,25,0.08)',
         'book-hover': '0 18px 34px -8px rgba(28,27,25,0.24), 0 8px 14px -5px rgba(28,27,25,0.14)',
       },
     },

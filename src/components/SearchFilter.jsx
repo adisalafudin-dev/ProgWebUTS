@@ -75,6 +75,7 @@ export default function SearchFilter({ onFilter }) {
             <input
               id="search-query"
               type="search"
+              name="q"
               placeholder="Cari judul buku..."
               autoComplete="off"
               className="input-field pl-9"

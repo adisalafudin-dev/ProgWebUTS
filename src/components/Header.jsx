@@ -1,11 +1,16 @@
+import { useState } from 'react'
 import Icon from './Icon'
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   const navLinks = [
     { href: '#beranda',    label: 'Beranda',         icon: 'home' },
     { href: '#katalog',    label: 'Katalog API',      icon: 'cloud' },
     { href: '#tentang',    label: 'Tentang',          icon: 'info' },
   ]
+
+  const handleNavClick = () => setMenuOpen(false)
 
   return (
 
@@ -58,32 +63,48 @@ export default function Header() {
               Cari Buku
             </a>
 
-            <div className="md:hidden relative group">
-              <button
-                type="button"
-                aria-label="Buka menu navigasi"
-                className="p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
-              >
-                <div className="w-5 flex flex-col gap-1.5 pointer-events-none">
-                  <span className="block h-0.5 bg-white rounded" />
-                  <span className="block h-0.5 bg-white rounded" />
-                  <span className="block h-0.5 bg-white rounded" />
-                </div>
-              </button>
-            </div>
+            {/* Hamburger — md:hidden, toggle menuOpen */}
+            <button
+              type="button"
+              aria-label={menuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMenuOpen(prev => !prev)}
+              className="md:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
+            >
+              <div className="w-5 flex flex-col gap-1.5">
+                <span
+                  className={`block h-0.5 bg-white rounded transition-all duration-300
+                    ${menuOpen ? 'rotate-45 translate-y-2' : ''}`}
+                />
+                <span
+                  className={`block h-0.5 bg-white rounded transition-all duration-300
+                    ${menuOpen ? 'opacity-0' : ''}`}
+                />
+                <span
+                  className={`block h-0.5 bg-white rounded transition-all duration-300
+                    ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`}
+                />
+              </div>
+            </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile nav — hanya tampil saat menuOpen = true */}
       <nav
+        id="mobile-nav"
         aria-label="Navigasi mobile"
-        className="md:hidden border-t border-white/10 bg-primary"
+        className={`md:hidden border-t border-white/10 bg-primary
+                    transition-all duration-300 overflow-hidden
+                    ${menuOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
       >
         <div className="max-w-7xl mx-auto px-4 py-2 flex gap-1">
           {navLinks.map(link => (
             <a
               key={link.href}
               href={link.href}
+              onClick={handleNavClick}
               className="flex-1 flex flex-col items-center gap-1 py-2 text-xs font-semibold
                          font-crimson text-white/70 rounded-lg
                          hover:bg-white/10 hover:text-accent transition-colors duration-200"

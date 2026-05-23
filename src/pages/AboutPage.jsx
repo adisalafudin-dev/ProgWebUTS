@@ -63,10 +63,10 @@ export default function AboutPage() {
     >
       <div className="mb-10 max-w-3xl">
         <p className="section-label mb-3">Tentang Folio</p>
-        <h1 className="font-extrabold text-4xl lg:text-5xl text-textMain mb-5 leading-tight">
+        <h2 className="font-extrabold text-4xl lg:text-5xl text-textMain mb-5 leading-tight">
           Perpustakaan digital untuk mencari, menyaring, dan mengenal koleksi
           buku dengan cepat.
-        </h1>
+        </h2>
         <p className="text-lg text-secondary leading-relaxed">
           Folio Book Library dibuat sebagai aplikasi katalog buku berbasis React
           yang memadukan data Open Library dengan koleksi cadangan lokal. Fokus
