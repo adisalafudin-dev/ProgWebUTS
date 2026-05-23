@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
 import SearchFilter from "../components/SearchFilter";
@@ -20,7 +20,10 @@ export default function HomePage({ books = [], error, fetchData }) {
             !b.author.toLowerCase().includes(filters.author.toLowerCase())
           )
             return false;
-          if (filters.genre !== "Semua" && b.genre !== filters.genre)
+          if (
+            filters.genre !== "Semua" &&
+            ![b.genre, ...(b.genres || [])].includes(filters.genre)
+          )
             return false;
           if (b.year !== "-" && b.year < filters.yearMin) return false;
           if (b.rating < filters.minRating) return false;
@@ -37,11 +40,34 @@ export default function HomePage({ books = [], error, fetchData }) {
         })
     : books;
   const [selectedBook, setSelectedBook] = useState(null);
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const collectionBooks = books;
-  const featuredBooks = collectionBooks.slice(0, 5);
-  const heroBook = featuredBooks[0];
+  const markedFeaturedBooks = collectionBooks
+    .filter((book) => book.featured)
+    .slice(0, 5);
+  const featuredBooks =
+    markedFeaturedBooks.length > 0
+      ? markedFeaturedBooks
+      : collectionBooks.slice(0, 5);
+  const heroBook = featuredBooks[activeHeroIndex] || featuredBooks[0];
   const totalAuthors = new Set(collectionBooks.map((book) => book.author)).size;
-  const totalGenres = new Set(collectionBooks.map((book) => book.genre)).size;
+  const totalGenres = new Set(
+    collectionBooks.flatMap((book) => book.genres || [book.genre]),
+  ).size;
+
+  useEffect(() => {
+    setActiveHeroIndex(0);
+  }, [featuredBooks.length]);
+
+  useEffect(() => {
+    if (featuredBooks.length <= 1) return undefined;
+
+    const timerId = setInterval(() => {
+      setActiveHeroIndex((current) => (current + 1) % featuredBooks.length);
+    }, 4500);
+
+    return () => clearInterval(timerId);
+  }, [featuredBooks.length]);
 
   if (!heroBook) {
     return (
@@ -73,16 +99,16 @@ export default function HomePage({ books = [], error, fetchData }) {
         aria-labelledby="hero-heading"
         className="relative overflow-hidden border-b-4 border-accent bg-primary text-white"
       >
-        {/* Background blur cover */}
         <div
-          className="absolute inset-0 scale-110 bg-cover bg-center opacity-30 blur-2xl"
+          key={`hero-bg-${heroBook.key || heroBook.id || activeHeroIndex}`}
+          className="hero-bg-motion absolute inset-0 scale-110 bg-cover bg-center opacity-45 blur-2xl"
           style={{
             backgroundImage: heroBook.cover ? `url(${heroBook.cover})` : "none",
           }}
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-accentHover/65"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_72%_38%,rgba(184,137,45,0.22),transparent_28%),linear-gradient(90deg,rgba(24,51,47,0.98),rgba(24,51,47,0.86),rgba(122,46,46,0.5))]"
           aria-hidden="true"
         />
         <div
@@ -94,7 +120,10 @@ export default function HomePage({ books = [], error, fetchData }) {
           {/* Flexbox / Grid dua kolom */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
             {/* Teks hero */}
-            <div>
+            <div
+              key={`hero-copy-${heroBook.key || heroBook.id || activeHeroIndex}`}
+              className="hero-copy-motion"
+            >
               <p className="section-label mb-3 text-accent">
                 Buku Pilihan Minggu Ini
               </p>
@@ -113,6 +142,19 @@ export default function HomePage({ books = [], error, fetchData }) {
                 <span className="mx-2 text-white/30">·</span>
                 <span>{heroBook.year}</span>
               </p>
+              <div className="flex flex-wrap gap-2 mb-8">
+                {(heroBook.genres || heroBook.tags || [heroBook.genre])
+                  .filter(Boolean)
+                  .slice(0, 4)
+                  .map((genre) => (
+                    <span
+                      key={genre}
+                      className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs font-semibold text-white/75"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+              </div>
               <div className="flex flex-wrap gap-3">
                 <a href="#koleksi" className="btn-primary">
                   <Icon name="eye" className="w-4 h-4" strokeWidth={2} />
@@ -123,11 +165,35 @@ export default function HomePage({ books = [], error, fetchData }) {
                   Katalog API
                 </a>
               </div>
+              {featuredBooks.length > 1 && (
+                <div
+                  className="mt-8 flex items-center gap-2"
+                  aria-label="Pilih buku unggulan"
+                >
+                  {featuredBooks.map((book, index) => (
+                    <button
+                      key={book.key || book.id || index}
+                      type="button"
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                        index === activeHeroIndex
+                          ? "w-9 bg-accent"
+                          : "w-2.5 bg-white/30 hover:bg-white/60"
+                      }`}
+                      aria-label={`Tampilkan ${book.title}`}
+                      aria-current={index === activeHeroIndex}
+                      onClick={() => setActiveHeroIndex(index)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Gambar cover hero */}
             <div className="hidden lg:flex justify-center">
-              <figure className="relative w-52">
+              <figure
+                key={`hero-cover-${heroBook.key || heroBook.id || activeHeroIndex}`}
+                className="hero-cover-motion relative w-52"
+              >
                 {heroBook.cover ? (
                   <img
                     src={heroBook.cover}

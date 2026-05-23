@@ -140,6 +140,7 @@ const formatOpenLibraryBook = (book, index) => {
     rating: Number((3.8 + (index % 10) / 10).toFixed(1)),
     pages: book.number_of_pages_median || book.edition_count || "-",
     available: index % 3 !== 0,
+    featured: index < 5,
     cover,
     tags: formatTags(book, genres),
   };

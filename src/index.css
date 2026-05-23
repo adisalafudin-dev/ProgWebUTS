@@ -131,3 +131,48 @@ h6,
 .font-crimson {
   font-family: "Inter", system-ui, sans-serif !important;
 }
+
+.hero-bg-motion {
+  animation: hero-bg-drift 4.5s ease-out both;
+}
+
+.hero-copy-motion {
+  animation: hero-copy-in 0.7s ease-out both;
+}
+
+.hero-cover-motion {
+  animation: hero-cover-in 0.75s ease-out both;
+}
+
+@keyframes hero-bg-drift {
+  from {
+    opacity: 0.15;
+    transform: scale(1.18);
+  }
+  to {
+    opacity: 0.45;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-cover-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
