@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import LibraryPage from "./pages/LibraryPage";
 import AboutPage from "./pages/AboutPage";
+import ToastContainer from "./components/ToastContainer";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FALLBACK_BOOKS } from "./data/books";
@@ -220,6 +221,7 @@ const formatOpenLibraryBook = (book, index) => {
 };
 
 const FAVORITES_STORAGE_KEY = "folio-favorite-books";
+const THEME_STORAGE_KEY = "folio-theme";
 
 const getBookId = (book) => book?.key || book?.id || book?.workKey || book?.title;
 
@@ -227,6 +229,16 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [dataStore, setDataStore] = useState([]);
   const [error, setError] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    try {
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      if (savedTheme) return savedTheme === "dark";
+      return window.matchMedia?.("(prefers-color-scheme: dark)").matches || false;
+    } catch {
+      return false;
+    }
+  });
   const [favoriteBooks, setFavoriteBooks] = useState(() => {
     try {
       const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
@@ -238,16 +250,33 @@ export default function App() {
 
   const favoriteIds = new Set(favoriteBooks.map(getBookId).filter(Boolean));
 
+  const showToast = (title, message = "", type = "success") => {
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    setToasts((currentToasts) => [
+      { id, title, message, type },
+      ...currentToasts,
+    ].slice(0, 4));
+  };
+
+  const dismissToast = (toastId) => {
+    setToasts((currentToasts) =>
+      currentToasts.filter((toast) => toast.id !== toastId),
+    );
+  };
+
   const toggleFavorite = (book) => {
     const bookId = getBookId(book);
     if (!bookId) return;
+    const alreadySaved = favoriteBooks.some(
+      (favoriteBook) => getBookId(favoriteBook) === bookId,
+    );
 
     setFavoriteBooks((currentFavorites) => {
-      const alreadySaved = currentFavorites.some(
+      const isStillSaved = currentFavorites.some(
         (favoriteBook) => getBookId(favoriteBook) === bookId,
       );
 
-      if (alreadySaved) {
+      if (isStillSaved) {
         return currentFavorites.filter(
           (favoriteBook) => getBookId(favoriteBook) !== bookId,
         );
@@ -255,7 +284,30 @@ export default function App() {
 
       return [book, ...currentFavorites];
     });
+
+    showToast(
+      alreadySaved ? "Favorit dihapus" : "Favorit disimpan",
+      book.title || "Buku pilihan kamu sudah diperbarui.",
+      "success",
+    );
   };
+
+  const toggleTheme = () => {
+    const nextMode = !isDarkMode;
+    setIsDarkMode(nextMode);
+    showToast(
+      nextMode ? "Dark mode aktif" : "Light mode aktif",
+      nextMode
+        ? "Tampilan berubah ke mode gelap."
+        : "Tampilan kembali ke mode terang.",
+      "info",
+    );
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -346,8 +398,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-cream font-crimson">
-      <Header favoriteCount={favoriteBooks.length} />
+    <div className="min-h-screen flex flex-col bg-cream font-crimson transition-colors duration-300">
+      <Header
+        favoriteCount={favoriteBooks.length}
+        isDarkMode={isDarkMode}
+        onToggleTheme={toggleTheme}
+      />
       <main id="main-content" className="flex-1" role="main">
         <HomePage
           books={dataStore}
@@ -357,6 +413,7 @@ export default function App() {
           favoriteBooks={favoriteBooks}
           favoriteIds={favoriteIds}
           onToggleFavorite={toggleFavorite}
+          onToast={showToast}
         />
 
         <LibraryPage
@@ -364,12 +421,14 @@ export default function App() {
           isLoading={isLoading}
           favoriteIds={favoriteIds}
           onToggleFavorite={toggleFavorite}
+          onToast={showToast}
         />
 
         <AboutPage />
       </main>
 
-      <Footer />
+      <Footer onToast={showToast} />
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }

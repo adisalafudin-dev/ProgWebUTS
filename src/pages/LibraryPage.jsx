@@ -26,6 +26,7 @@ export default function LibraryPage({
   isLoading = false,
   favoriteIds = new Set(),
   onToggleFavorite,
+  onToast,
 }) {
   const ITEMS_PER_PAGE = 10;
   const [searchTerm, setSearchTerm] = useState("");
@@ -222,7 +223,14 @@ export default function LibraryPage({
                 <button
                   type="button"
                   className="btn-secondary min-h-11 whitespace-nowrap"
-                  onClick={() => setSearchTerm("")}
+                  onClick={() => {
+                    setSearchTerm("");
+                    onToast?.(
+                      "Pencarian direset",
+                      "Katalog API kembali menampilkan semua hasil.",
+                      "info",
+                    );
+                  }}
                 >
                   Reset
                 </button>
@@ -402,6 +410,7 @@ export default function LibraryPage({
         onClose={() => setSelectedBook(null)}
         isFavorite={isBookFavorite(selectedBook)}
         onToggleFavorite={onToggleFavorite}
+        onToast={onToast}
       />
     </>
   );

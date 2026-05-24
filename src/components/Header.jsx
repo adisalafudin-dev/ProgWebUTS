@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import Icon from './Icon'
 
-export default function Header({ favoriteCount = 0 }) {
+export default function Header({
+  favoriteCount = 0,
+  isDarkMode = false,
+  onToggleTheme,
+}) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
@@ -61,6 +65,22 @@ export default function Header({ favoriteCount = 0 }) {
           </nav>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white/80 shadow-sm transition-all duration-200 hover:border-accent hover:bg-white hover:text-primary"
+              aria-label={
+                isDarkMode ? "Aktifkan light mode" : "Aktifkan dark mode"
+              }
+              aria-pressed={isDarkMode}
+              onClick={onToggleTheme}
+            >
+              <Icon
+                name={isDarkMode ? "sun" : "moon"}
+                className="h-4 w-4"
+                strokeWidth={2}
+              />
+            </button>
+
             <a
               href="#favorit"
               className="hidden sm:flex items-center gap-2 border border-white/15 bg-white/10

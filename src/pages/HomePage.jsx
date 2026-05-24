@@ -16,6 +16,7 @@ export default function HomePage({
   favoriteBooks = [],
   favoriteIds = new Set(),
   onToggleFavorite,
+  onToast,
 }) {
   const ITEMS_PER_PAGE = 10;
   const [filters, setFilters] = useState(null);
@@ -352,6 +353,7 @@ export default function HomePage({
                 setFilters(values);
                 fetchData(values);
               }}
+              onToast={onToast}
             />
           </aside>
 
@@ -714,6 +716,7 @@ export default function HomePage({
         onClose={() => setSelectedBook(null)}
         isFavorite={isBookFavorite(selectedBook)}
         onToggleFavorite={onToggleFavorite}
+        onToast={onToast}
       />
     </>
   );

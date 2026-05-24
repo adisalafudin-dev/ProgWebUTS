@@ -1,7 +1,7 @@
 import Icon from "./Icon";
 import { GENRES } from "../data/books";
 
-export default function Footer() {
+export default function Footer({ onToast }) {
   const navItems = [
     { label: "Beranda", href: "#beranda", icon: "home" },
     { label: "Koleksi Buku", href: "#koleksi", icon: "collection" },
@@ -110,6 +110,15 @@ export default function Footer() {
               method="post"
               aria-label="Form berlangganan newsletter"
               className="flex gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                event.currentTarget.reset();
+                onToast?.(
+                  "Newsletter tersimpan",
+                  "Rekomendasi buku akan dikirim ke email kamu.",
+                  "success",
+                );
+              }}
             >
               <label htmlFor="newsletter-email" className="sr-only">
                 Alamat email

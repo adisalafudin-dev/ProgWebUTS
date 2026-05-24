@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GENRES, SORT_OPTIONS } from "../data/books";
 
-export default function SearchFilter({ onFilter }) {
+export default function SearchFilter({ onFilter, onToast }) {
   const defaults = {
     q: "",
     author: "",
@@ -25,6 +25,11 @@ export default function SearchFilter({ onFilter }) {
   const handleReset = () => {
     setValues(defaults);
     onFilter(null);
+    onToast?.(
+      "Filter direset",
+      "Koleksi buku kembali ke tampilan awal.",
+      "info",
+    );
   };
 
   return (

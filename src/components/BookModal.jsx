@@ -13,6 +13,7 @@ export default function BookModal({
   onClose = () => {},
   isFavorite = false,
   onToggleFavorite,
+  onToast,
 }) {
   const [isBorrowed, setIsBorrowed] = useState(false);
   const [synopsis, setSynopsis] = useState("");
@@ -98,6 +99,18 @@ export default function BookModal({
     { label: "Rating", value: book.rating ? `${book.rating} / 5.0` : "-" },
   ];
 
+  const handleBorrowToggle = () => {
+    if (!isBorrowable && !isBorrowed) return;
+
+    const nextBorrowed = !isBorrowed;
+    setIsBorrowed(nextBorrowed);
+    onToast?.(
+      nextBorrowed ? "Buku dipinjam" : "Buku dikembalikan",
+      title,
+      "success",
+    );
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -108,15 +121,11 @@ export default function BookModal({
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-lg shadow-2xl"
-        style={{ backgroundColor: "#F6F1E8", color: "#1C1B19" }}
+        className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-lg bg-cream text-textMain shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex max-h-[90vh] flex-col overflow-y-auto sm:flex-row">
-          <div
-            className="sm:w-52 flex-shrink-0"
-            style={{ backgroundColor: "#D8CFC0" }}
-          >
+          <div className="sm:w-52 flex-shrink-0 bg-borderSoft">
             {book.cover ? (
               <img
                 src={book.cover}
@@ -132,7 +141,7 @@ export default function BookModal({
             )}
           </div>
 
-          <div className="flex-1 p-6" style={{ backgroundColor: "#F6F1E8" }}>
+          <div className="flex-1 bg-cream p-6">
             <div className="mb-3 flex items-start justify-between gap-4">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="section-label">
@@ -169,8 +178,7 @@ export default function BookModal({
                 {bookInfo.map(({ label, value }) => (
                   <div
                     key={label}
-                    className="bg-white rounded-lg px-3 py-2 border"
-                    style={{ borderColor: "#D8CFC0" }}
+                    className="rounded-lg border border-borderSoft bg-white px-3 py-2"
                   >
                     <p className="text-xs text-textSecondary font-crimson">
                       {label}
@@ -195,7 +203,7 @@ export default function BookModal({
                 type="button"
                 className="btn-primary text-sm py-2.5"
                 disabled={!isBorrowable && !isBorrowed}
-                onClick={() => setIsBorrowed((current) => !current)}
+                onClick={handleBorrowToggle}
               >
                 {borrowButtonLabel}
               </button>
