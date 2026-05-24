@@ -18,7 +18,8 @@ const TOPICS = [
   { value: "Poetry", label: "Poetry", icon: "pen" },
 ];
 
-const getBookId = (book) => book?.key || book?.id || book?.workKey || book?.title;
+const getBookId = (book) =>
+  book?.key || book?.id || book?.workKey || book?.title;
 
 // ✅ Terima prop books dari App
 export default function LibraryPage({
@@ -35,6 +36,8 @@ export default function LibraryPage({
   const [selectedBook, setSelectedBook] = useState(null);
   const [showLoading, setShowLoading] = useState(isLoading);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState("grid");
+  const [searchMessage, setSearchMessage] = useState("");
 
   const activeKeyword = debouncedSearchTerm.trim().toLowerCase();
   const hasSearch = activeKeyword !== "";
@@ -42,6 +45,8 @@ export default function LibraryPage({
     TOPICS.find((topic) => topic.value === selectedTopic)?.label ||
     selectedTopic;
   const isBookFavorite = (book) => favoriteIds.has(getBookId(book));
+  const getBookGenres = (book) =>
+    [book.genre, ...(book.genres || []), ...(book.tags || [])].filter(Boolean);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -54,6 +59,7 @@ export default function LibraryPage({
   useEffect(() => {
     setSelectedBook(null);
     setCurrentPage(1);
+    if (activeKeyword || selectedTopic !== "Semua") setSearchMessage("");
   }, [debouncedSearchTerm, selectedTopic]);
 
   useEffect(() => {
@@ -99,6 +105,18 @@ export default function LibraryPage({
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
+    const hasKeyword = searchTerm.trim() !== "";
+    const hasTopic = selectedTopic !== "Semua";
+
+    if (!hasKeyword && !hasTopic) {
+      const message = "Masukkan judul, penulis, atau pilih genre dulu.";
+      setSearchMessage(message);
+      onToast?.("Pencarian masih kosong", message, "info");
+      return;
+    }
+
+    setSearchMessage("");
+    setDebouncedSearchTerm(searchTerm);
   };
 
   const resetLibraryFilters = () => {
@@ -106,6 +124,7 @@ export default function LibraryPage({
     setDebouncedSearchTerm("");
     setSelectedTopic("Semua");
     setCurrentPage(1);
+    setSearchMessage("");
     onToast?.(
       "Pencarian direset",
       "Katalog API kembali menampilkan semua hasil.",
@@ -118,6 +137,7 @@ export default function LibraryPage({
     setDebouncedSearchTerm("popular");
     setSelectedTopic("Semua");
     setCurrentPage(1);
+    setSearchMessage("");
     onToast?.(
       "Mencari buku populer",
       "Katalog menampilkan hasil dengan kata kunci populer.",
@@ -202,11 +222,21 @@ export default function LibraryPage({
                   name="search"
                   placeholder="Cari judul atau penulis..."
                   autoComplete="off"
+                  aria-invalid={searchMessage ? "true" : undefined}
+                  aria-describedby={searchMessage ? "api-search-message" : undefined}
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   className="input-field pl-9"
                 />
               </div>
+              {searchMessage && (
+                <p
+                  id="api-search-message"
+                  className="text-sm font-semibold text-accentHover"
+                >
+                  {searchMessage}
+                </p>
+              )}
 
               <fieldset className="flex flex-wrap items-center gap-2">
                 <legend className="sr-only">Pilih topik buku</legend>
@@ -289,35 +319,167 @@ export default function LibraryPage({
             {startIndex + 1}-{Math.min(endIndex, filteredBooks.length)} dari{" "}
             {filteredBooks.length} buku
           </div>
+          <div
+            className="inline-flex rounded-lg border border-borderSoft bg-white p-1 shadow-book"
+            aria-label="Ubah mode tampilan katalog"
+          >
+            {[
+              { value: "grid", label: "Grid View", icon: "collection" },
+              { value: "list", label: "List View", icon: "bookOpen" },
+            ].map((view) => (
+              <button
+                key={view.value}
+                type="button"
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all duration-300 ${
+                  viewMode === view.value
+                    ? "bg-primary text-white"
+                    : "text-textSecondary hover:bg-cream hover:text-accentHover"
+                }`}
+                aria-pressed={viewMode === view.value}
+                onClick={() => setViewMode(view.value)}
+              >
+                <Icon name={view.icon} className="h-3.5 w-3.5" />
+                {view.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ✅ render dari prop books, bukan PLACEHOLDER_BOOKS */}
         {showLoading ? (
-          <div
-            className="mb-10 grid grid-cols-[repeat(auto-fit,minmax(min(100%,13.5rem),1fr))] items-stretch gap-5 lg:gap-6"
-            role="status"
-            aria-live="polite"
-          >
-            {Array.from({ length: 8 }, (_, index) => (
-              <BookCardSkeleton key={index} />
-            ))}
+          <div className="mb-10" role="status" aria-live="polite">
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,13.5rem),1fr))] items-stretch gap-5 lg:gap-6">
+                {Array.from({ length: 8 }, (_, index) => (
+                  <BookCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {Array.from({ length: 8 }, (_, index) => (
+                  <BookCardSkeleton key={index} variant="list" />
+                ))}
+              </div>
+            )}
             <span className="sr-only">
               Mengambil data dari Open Library API...
             </span>
           </div>
         ) : hasFilteredBooks ? (
-          <div className="mb-10 grid grid-cols-[repeat(auto-fit,minmax(min(100%,13.5rem),1fr))] items-stretch gap-5 lg:gap-6">
-            {paginatedBooks.map((book, i) => (
-              <BookCard
-                key={book.key || book.id || i}
-                book={book}
-                index={i}
-                onSelect={setSelectedBook}
-                isFavorite={isBookFavorite(book)}
-                onToggleFavorite={onToggleFavorite}
-              />
-            ))}
-          </div>
+          viewMode === "grid" ? (
+            <div className="mb-10 grid grid-cols-[repeat(auto-fit,minmax(min(100%,13.5rem),1fr))] items-stretch gap-5 lg:gap-6">
+              {paginatedBooks.map((book, i) => (
+                <BookCard
+                  key={book.key || book.id || i}
+                  book={book}
+                  index={i}
+                  onSelect={setSelectedBook}
+                  isFavorite={isBookFavorite(book)}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="mb-10 space-y-3">
+              {paginatedBooks.map((book, i) => {
+                const bookGenres = [...new Set(getBookGenres(book))];
+
+                return (
+                  <article
+                    key={book.key || book.id || i}
+                    className="book-card grid grid-cols-[5rem_minmax(0,1fr)] gap-3 p-3 sm:grid-cols-[6rem_minmax(0,1fr)_auto] sm:items-center"
+                  >
+                    <button
+                      type="button"
+                      className="h-28 overflow-hidden rounded-md bg-cream sm:h-36"
+                      onClick={() => setSelectedBook(book)}
+                    >
+                      {book.cover ? (
+                        <img
+                          src={book.cover}
+                          alt={`Sampul buku ${book.title}`}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-full items-center justify-center p-2 text-center text-xs font-semibold text-textSecondary">
+                          {book.title}
+                        </span>
+                      )}
+                    </button>
+
+                    <div className="min-w-0 self-center">
+                      <p className="section-label mb-1 truncate">
+                        {bookGenres.slice(0, 2).join(" / ") || "General"}
+                      </p>
+                      <h3 className="font-playfair text-base font-bold leading-snug text-textMain line-clamp-2 sm:text-lg">
+                        {book.title}
+                      </h3>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-textSecondary sm:text-sm">
+                        <span className="line-clamp-1 font-semibold">
+                          {book.author || "Penulis tidak diketahui"}
+                        </span>
+                        <span className="hidden text-borderSoft sm:inline">
+                          /
+                        </span>
+                        <span>{book.year || "-"}</span>
+                        <span className="text-borderSoft">/</span>
+                        <span className="inline-flex items-center gap-1 font-semibold text-accentHover">
+                          <Icon
+                            name="star"
+                            className="h-3.5 w-3.5 text-accent"
+                          />
+                          {book.rating || "-"}
+                        </span>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {bookGenres.slice(0, 4).map((genre) => (
+                          <span
+                            key={genre}
+                            className="rounded-full bg-cream px-2 py-0.5 text-[10px] font-semibold leading-none text-secondary"
+                          >
+                            {genre}
+                          </span>
+                        ))}
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none ${
+                            book.available
+                              ? "bg-cream text-primary"
+                              : "bg-accentHover text-white"
+                          }`}
+                        >
+                          {book.available ? "Tersedia" : "Dipinjam"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="col-span-2 grid grid-cols-2 gap-2 sm:col-span-1 sm:flex sm:flex-wrap sm:justify-end">
+                      <button
+                        type="button"
+                        className={`inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all sm:text-sm ${
+                          isBookFavorite(book)
+                            ? "border-accent bg-accent text-white hover:bg-accentHover"
+                            : "border-borderSoft bg-white text-secondary hover:border-accent hover:text-accentHover"
+                        }`}
+                        aria-pressed={isBookFavorite(book)}
+                        onClick={() => onToggleFavorite?.(book)}
+                      >
+                        <Icon name="heart" className="h-3.5 w-3.5" />
+                        {isBookFavorite(book) ? "Hapus" : "Favorit"}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-primary min-h-9 px-3 py-1.5 text-xs sm:text-sm"
+                        onClick={() => setSelectedBook(book)}
+                      >
+                        Lihat Detail
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )
         ) : (
           <div className="rounded-lg border border-borderSoft bg-white p-8 text-center mb-10 shadow-book">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-cream text-accentHover">

@@ -71,7 +71,7 @@ export default function HomePage({
   onToggleFavorite,
   onToast,
 }) {
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 12;
   const [filters, setFilters] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
@@ -304,7 +304,8 @@ export default function HomePage({
                 <span>{heroBook.year}</span>
               </p>
               <p className="mb-6 max-w-2xl text-sm leading-relaxed text-white/70 line-clamp-3 sm:text-base">
-                {heroBook.description ||
+                {heroBook.synopsis ||
+                  heroBook.description ||
                   "Deskripsi buku belum tersedia dari katalog Open Library."}
               </p>
               <div className="mb-8 flex min-h-[2rem] flex-wrap gap-2">
@@ -585,6 +586,9 @@ export default function HomePage({
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
           <aside aria-label="Panel filter buku" className="lg:self-start">
             <SearchFilter
+              onChange={(values) => {
+                setFilters(values);
+              }}
               onFilter={(values) => {
                 setFilters(values);
                 fetchData(values);
@@ -650,11 +654,11 @@ export default function HomePage({
                   </p>
                   <div
                     className="inline-flex rounded-lg border border-borderSoft bg-white p-1 shadow-book"
-                    aria-label="Ubah tampilan koleksi"
+                    aria-label="Ubah mode tampilan koleksi"
                   >
                     {[
-                      { value: "grid", label: "Grid", icon: "collection" },
-                      { value: "list", label: "List", icon: "bookOpen" },
+                      { value: "grid", label: "Grid View", icon: "collection" },
+                      { value: "list", label: "List View", icon: "bookOpen" },
                     ].map((view) => (
                       <button
                         key={view.value}
@@ -697,15 +701,19 @@ export default function HomePage({
                       ...(book.tags || []),
                     ].filter(Boolean);
                     const uniqueBookGenres = [...new Set(bookGenres)];
+                    const synopsis =
+                      book.synopsis ||
+                      book.description ||
+                      "Deskripsi pendek buku belum tersedia.";
 
                     return (
                       <article
                         key={book.key || book.id || i}
-                        className="book-card group grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 p-3 sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:items-center"
+                        className="book-card group grid grid-cols-[5rem_minmax(0,1fr)] gap-3 p-3 sm:grid-cols-[6rem_minmax(0,1fr)_auto] sm:items-center"
                       >
                         <button
                           type="button"
-                          className="relative h-28 overflow-hidden rounded-md bg-cream sm:h-32"
+                          className="relative h-28 overflow-hidden rounded-md bg-cream sm:h-36"
                           onClick={() => setSelectedBook(book)}
                         >
                           {book.cover ? (
@@ -727,11 +735,13 @@ export default function HomePage({
                             {uniqueBookGenres.slice(0, 2).join(" / ") ||
                               "General"}
                           </p>
-                          <h3 className="font-playfair text-base font-bold leading-snug text-textMain line-clamp-1 group-hover:text-accentHover sm:text-lg">
+                          <h3 className="font-playfair text-base font-bold leading-snug text-textMain line-clamp-2 group-hover:text-accentHover sm:text-lg">
                             {book.title}
                           </h3>
                           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-textSecondary sm:text-sm">
-                            <span className="line-clamp-1">{book.author}</span>
+                            <span className="line-clamp-1 font-semibold">
+                              {book.author || "Penulis tidak diketahui"}
+                            </span>
                             <span className="hidden text-borderSoft sm:inline">
                               /
                             </span>
@@ -741,8 +751,11 @@ export default function HomePage({
                             <span className="text-borderSoft">/</span>
                             <span>{book.year || "-"}</span>
                           </div>
+                          <p className="mt-2 hidden text-sm leading-relaxed text-textSecondary line-clamp-2 md:block">
+                            {synopsis}
+                          </p>
                           <div className="mt-2 flex flex-wrap gap-1">
-                            {uniqueBookGenres.slice(0, 3).map((genre) => (
+                            {uniqueBookGenres.slice(0, 4).map((genre) => (
                               <span
                                 key={genre}
                                 className="rounded-full bg-cream px-2 py-0.5 text-[10px] font-semibold leading-none text-secondary"
@@ -750,6 +763,15 @@ export default function HomePage({
                                 {genre}
                               </span>
                             ))}
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold leading-none ${
+                                book.available
+                                  ? "bg-cream text-primary"
+                                  : "bg-accentHover text-white"
+                              }`}
+                            >
+                              {book.available ? "Tersedia" : "Dipinjam"}
+                            </span>
                           </div>
                         </div>
 
