@@ -5,14 +5,23 @@ import HomePage from "./pages/HomePage";
 import LibraryPage from "./pages/LibraryPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import AboutPage from "./pages/AboutPage";
+import LoginPage from "./pages/LoginPage";
 import ToastContainer from "./components/ToastContainer";
 import { FALLBACK_BOOKS } from "./data/books";
 import { fetchOpenLibraryBooks } from "./services/bookApi";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 const THEME_STORAGE_KEY = "aksarahub-theme";
+const AUTH_STORAGE_KEY = "aksarahub-user";
 
-const ROUTES = new Set(["home", "katalog", "favorit", "tentang", "koleksi"]);
+const ROUTES = new Set([
+  "home",
+  "katalog",
+  "favorit",
+  "tentang",
+  "koleksi",
+  "login",
+]);
 
 const getBookId = (book) => book?.key || book?.id || book?.workKey || book?.title;
 
@@ -29,6 +38,14 @@ export default function App() {
   const [recommendationStore, setRecommendationStore] = useState([]);
   const [error, setError] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem(AUTH_STORAGE_KEY);
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
@@ -65,6 +82,16 @@ export default function App() {
   };
 
   const toggleFavorite = (book) => {
+    if (!currentUser) {
+      showToast(
+        "Login diperlukan",
+        "Masuk dulu untuk menyimpan buku favorit.",
+        "info",
+      );
+      window.location.hash = "#/login";
+      return;
+    }
+
     const bookId = getBookId(book);
     if (!bookId) return;
 
@@ -103,6 +130,24 @@ export default function App() {
         : "Tampilan kembali ke mode terang.",
       "info",
     );
+  };
+
+  const handleLogin = (user) => {
+    const nextUser = {
+      name: user.name,
+      email: user.email,
+      loggedInAt: new Date().toISOString(),
+    };
+    setCurrentUser(nextUser);
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    if (activeRoute === "favorit") {
+      window.location.hash = "#/";
+    }
   };
 
   useEffect(() => {
@@ -202,6 +247,8 @@ export default function App() {
         isDarkMode={isDarkMode}
         onToggleTheme={toggleTheme}
         activePage={activePage}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
       <main id="main-content" className="flex-1" role="main">
         {activePage === "home" && (
@@ -231,15 +278,33 @@ export default function App() {
         )}
 
         {activePage === "favorit" && (
-          <FavoritesPage
-            favoriteBooks={favoriteBooks}
-            favoriteIds={favoriteIds}
-            onToggleFavorite={toggleFavorite}
-            onToast={showToast}
-          />
+          currentUser ? (
+            <FavoritesPage
+              favoriteBooks={favoriteBooks}
+              favoriteIds={favoriteIds}
+              onToggleFavorite={toggleFavorite}
+              onToast={showToast}
+            />
+          ) : (
+            <LoginPage
+              currentUser={currentUser}
+              onLogin={handleLogin}
+              onLogout={handleLogout}
+              onToast={showToast}
+              redirectTo="favorit"
+            />
+          )
         )}
 
         {activePage === "tentang" && <AboutPage />}
+        {activePage === "login" && (
+          <LoginPage
+            currentUser={currentUser}
+            onLogin={handleLogin}
+            onLogout={handleLogout}
+            onToast={showToast}
+          />
+        )}
       </main>
 
       <Footer onToast={showToast} activePage={activePage} />
