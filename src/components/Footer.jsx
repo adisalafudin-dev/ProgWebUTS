@@ -1,5 +1,6 @@
 import Icon from "./Icon";
 import { GENRES } from "../data/books";
+import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
 export default function Footer({ onToast, activePage = "home" }) {
   const navItems = [
@@ -38,15 +39,16 @@ export default function Footer({ onToast, activePage = "home" }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <Icon
-                  name="bookOpen"
-                  className="w-4 h-4 text-white"
-                  strokeWidth={2}
+              <div className="w-8 h-8 overflow-hidden rounded-lg bg-white flex items-center justify-center">
+                <img
+                  src={aksaraHubLogo}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full scale-[1.55] object-cover"
                 />
               </div>
               <span className="font-playfair font-bold text-lg text-white">
-                Folio
+                AksaraHub
               </span>
             </div>
             <p className="text-sm leading-relaxed">
@@ -152,10 +154,10 @@ export default function Footer({ onToast, activePage = "home" }) {
 
         <div
           className="border-t border-white/10 pt-6
-                        flex flex-col sm:flex-row justify-between items-center gap-4"
+                     flex flex-col sm:flex-row justify-between items-center gap-4"
         >
           <p className="text-xs text-white/40">
-            © 2026 Folio Book Library. Dibuat untuk para pembaca.
+            &copy; 2026 AksaraHub. Dibuat untuk para pembaca.
           </p>
           <div className="flex gap-6 text-xs">
             {["Privasi", "Syarat", "Kontak"].map((item) => (

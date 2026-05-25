@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon'
+import aksaraHubLogo from '../assets/AksaraHub Logo.png'
 
 export default function Header({
   favoriteCount = 0,
@@ -26,17 +27,22 @@ export default function Header({
         <div className="flex items-center justify-between h-16 gap-4">
 
           <a href="#/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center
-                            shadow-book group-hover:bg-accentHover transition-colors duration-200">
-              <Icon name="bookOpen" className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 overflow-hidden rounded-lg bg-white flex items-center justify-center
+                            shadow-book ring-1 ring-white/20 transition-transform duration-200 group-hover:scale-105">
+              <img
+                src={aksaraHubLogo}
+                alt=""
+                aria-hidden="true"
+                className="h-full w-full scale-[1.55] object-cover"
+              />
             </div>
             <div>
               <span className="font-playfair font-extrabold text-xl tracking-tight text-white">
-                Folio
+                AksaraHub
               </span>
               <span className="hidden sm:block text-[10px] tracking-[0.16em] uppercase
                                text-white/55 -mt-0.5">
-                Book Library
+                Digital Library
               </span>
             </div>
           </a>

@@ -13,7 +13,7 @@ export default function AboutPage() {
     {
       icon: "collection",
       title: "Tetap Bisa Dipakai Offline",
-      desc: "Jika API tidak bisa diakses, Folio menampilkan koleksi contoh agar halaman tetap dapat dibuka dan diuji.",
+      desc: "Jika API tidak bisa diakses, AksaraHub menampilkan koleksi contoh agar halaman tetap dapat dibuka dan diuji.",
     },
     {
       icon: "filter",
@@ -62,13 +62,13 @@ export default function AboutPage() {
       className="max-w-6xl mx-auto px-4 sm:px-6 py-14 scroll-mt-24"
     >
       <div className="mb-10 max-w-3xl">
-        <p className="section-label mb-3">Tentang Folio</p>
+        <p className="section-label mb-3">Tentang AksaraHub</p>
         <h2 className="font-extrabold text-4xl lg:text-5xl text-textMain mb-5 leading-tight">
           Perpustakaan digital untuk mencari, menyaring, dan mengenal koleksi
           buku dengan cepat.
         </h2>
         <p className="text-lg text-secondary leading-relaxed">
-          Folio Book Library dibuat sebagai aplikasi katalog buku berbasis React
+          AksaraHub dibuat sebagai aplikasi katalog buku berbasis React
           yang memadukan data Open Library dengan koleksi cadangan lokal. Fokus
           utamanya adalah pengalaman mencari buku yang sederhana, responsif, dan
           tetap berjalan saat koneksi API bermasalah.
@@ -118,7 +118,7 @@ export default function AboutPage() {
         <div className="bg-white border border-borderSoft rounded-lg p-6 shadow-book">
           <p className="section-label mb-3">Alur Penggunaan</p>
           <h2 className="font-semibold text-2xl text-textMain mb-5">
-            Cara memakai Folio
+            Cara memakai AksaraHub
           </h2>
           <div className="space-y-4">
             {workflow.map((step, index) => (

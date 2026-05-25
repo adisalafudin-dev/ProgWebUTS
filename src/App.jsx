@@ -9,8 +9,8 @@ import ToastContainer from "./components/ToastContainer";
 import { FALLBACK_BOOKS } from "./data/books";
 import { fetchOpenLibraryBooks } from "./services/bookApi";
 
-const FAVORITES_STORAGE_KEY = "folio-favorite-books";
-const THEME_STORAGE_KEY = "folio-theme";
+const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
+const THEME_STORAGE_KEY = "aksarahub-theme";
 
 const ROUTES = new Set(["home", "katalog", "favorit", "tentang", "koleksi"]);
 
