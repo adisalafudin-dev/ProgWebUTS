@@ -73,6 +73,19 @@
       0 1px 4px -1px rgba(28, 27, 25, 0.08);
   }
 
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    .book-grid {
+      gap: 1.5rem;
+    }
+  }
+
   .section-label {
     @apply text-xs font-semibold font-crimson tracking-[0.14em] uppercase;
     color: #7A2E2E;

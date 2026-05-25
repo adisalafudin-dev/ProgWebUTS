@@ -225,7 +225,7 @@ export default function HomePage({
               Memuat Buku
             </h2>
           </div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] items-stretch gap-5 lg:gap-6">
+          <div className="book-grid">
             {Array.from({ length: 6 }, (_, index) => (
               <BookCardSkeleton key={index} />
             ))}
@@ -617,7 +617,7 @@ export default function HomePage({
               </div>
 
               {collectionView === "grid" ? (
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] items-stretch gap-5 lg:gap-6">
+                <div className="book-grid">
                   {Array.from({ length: 6 }, (_, index) => (
                     <BookCardSkeleton key={index} />
                   ))}
@@ -683,7 +683,7 @@ export default function HomePage({
               </div>
 
               {collectionView === "grid" ? (
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] items-stretch gap-5 lg:gap-6">
+                <div className="book-grid">
                   {paginatedFiltered.map((book, i) => (
                     <BookCard
                       key={book.key || book.id || i}
