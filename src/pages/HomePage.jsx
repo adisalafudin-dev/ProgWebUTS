@@ -107,8 +107,11 @@ export default function HomePage({
         .sort((a, b) => {
           if (filters.sort === "title-asc")
             return a.title.localeCompare(b.title);
+          if (filters.sort === "title-desc")
+            return b.title.localeCompare(a.title);
           if (filters.sort === "rating-desc") return b.rating - a.rating;
           if (filters.sort === "year-desc") return b.year - a.year;
+          if (filters.sort === "year-asc") return a.year - b.year;
           return 0;
         })
     : books;
@@ -587,7 +590,7 @@ export default function HomePage({
           <aside aria-label="Panel filter buku" className="lg:self-start">
             <SearchFilter
               onChange={(values) => {
-                setFilters(values);
+                if (!values) setFilters(null);
               }}
               onFilter={(values) => {
                 setFilters(values);

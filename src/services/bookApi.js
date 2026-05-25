@@ -50,6 +50,38 @@ const applyLocalFilters = (books, filters = {}) => {
     filteredBooks = filteredBooks.filter((book) => book.available);
   }
 
+  if (filters.featured) {
+    filteredBooks = filteredBooks.filter((book) => book.featured);
+  }
+
+  if (filters.sort === "title-asc") {
+    return [...filteredBooks].sort((a, b) => a.title.localeCompare(b.title));
+  }
+
+  if (filters.sort === "title-desc") {
+    return [...filteredBooks].sort((a, b) => b.title.localeCompare(a.title));
+  }
+
+  if (filters.sort === "rating-desc") {
+    return [...filteredBooks].sort((a, b) => b.rating - a.rating);
+  }
+
+  if (filters.sort === "year-desc") {
+    return [...filteredBooks].sort((a, b) => {
+      const yearA = Number(a.year) || 0;
+      const yearB = Number(b.year) || 0;
+      return yearB - yearA;
+    });
+  }
+
+  if (filters.sort === "year-asc") {
+    return [...filteredBooks].sort((a, b) => {
+      const yearA = Number(a.year) || Number.MAX_SAFE_INTEGER;
+      const yearB = Number(b.year) || Number.MAX_SAFE_INTEGER;
+      return yearA - yearB;
+    });
+  }
+
   return filteredBooks;
 };
 

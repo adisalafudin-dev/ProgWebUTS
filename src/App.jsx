@@ -223,6 +223,7 @@ export default function App() {
           <LibraryPage
             books={dataStore}
             isLoading={isLoading}
+            fetchData={fetchData}
             favoriteIds={favoriteIds}
             onToggleFavorite={toggleFavorite}
             onToast={showToast}

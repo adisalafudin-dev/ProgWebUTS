@@ -3,6 +3,7 @@ import BookCard from "../components/BookCard";
 import BookCardSkeleton from "../components/BookCardSkeleton";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
+import { SORT_OPTIONS } from "../data/books";
 
 const TOPICS = [
   { value: "Semua", label: "Semua", icon: "collection" },
@@ -25,6 +26,7 @@ const getBookId = (book) =>
 export default function LibraryPage({
   books = [],
   isLoading = false,
+  fetchData,
   favoriteIds = new Set(),
   onToggleFavorite,
   onToast,
@@ -32,7 +34,11 @@ export default function LibraryPage({
   const ITEMS_PER_PAGE = 10;
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [authorTerm, setAuthorTerm] = useState("");
+  const [submittedAuthorTerm, setSubmittedAuthorTerm] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("Semua");
+  const [submittedTopic, setSubmittedTopic] = useState("Semua");
+  const [sortValue, setSortValue] = useState("default");
   const [selectedBook, setSelectedBook] = useState(null);
   const [showLoading, setShowLoading] = useState(isLoading);
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,27 +46,21 @@ export default function LibraryPage({
   const [searchMessage, setSearchMessage] = useState("");
 
   const activeKeyword = debouncedSearchTerm.trim().toLowerCase();
+  const activeAuthor = submittedAuthorTerm.trim().toLowerCase();
   const hasSearch = activeKeyword !== "";
   const selectedTopicLabel =
-    TOPICS.find((topic) => topic.value === selectedTopic)?.label ||
-    selectedTopic;
+    TOPICS.find((topic) => topic.value === submittedTopic)?.label ||
+    submittedTopic;
   const isBookFavorite = (book) => favoriteIds.has(getBookId(book));
   const getBookGenres = (book) =>
     [book.genre, ...(book.genres || []), ...(book.tags || [])].filter(Boolean);
 
   useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 300);
-
-    return () => clearTimeout(timerId);
-  }, [searchTerm]);
-
-  useEffect(() => {
     setSelectedBook(null);
     setCurrentPage(1);
-    if (activeKeyword || selectedTopic !== "Semua") setSearchMessage("");
-  }, [debouncedSearchTerm, selectedTopic]);
+    if (activeKeyword || activeAuthor || submittedTopic !== "Semua")
+      setSearchMessage("");
+  }, [activeKeyword, activeAuthor, submittedTopic]);
 
   useEffect(() => {
     let timerId;
@@ -79,7 +79,6 @@ export default function LibraryPage({
   const filteredBooks = books.filter((book) => {
     const searchableText = [
       book.title,
-      book.author,
       book.genre,
       ...(book.genres || []),
       ...(book.tags || []),
@@ -88,12 +87,16 @@ export default function LibraryPage({
       .toLowerCase();
 
     const matchesSearch =
-      activeKeyword === "" || searchableText.includes(activeKeyword);
+      activeKeyword === "" ||
+      [book.title, book.author].join(" ").toLowerCase().includes(activeKeyword);
+    const matchesAuthor =
+      activeAuthor === "" ||
+      (book.author || "").toLowerCase().includes(activeAuthor);
     const matchesTopic =
-      selectedTopic === "Semua" ||
-      searchableText.includes(selectedTopic.toLowerCase());
+      submittedTopic === "Semua" ||
+      searchableText.includes(submittedTopic.toLowerCase());
 
-    return matchesSearch && matchesTopic;
+    return matchesSearch && matchesAuthor && matchesTopic;
   });
   const hasFilteredBooks = filteredBooks.length > 0;
 
@@ -106,10 +109,12 @@ export default function LibraryPage({
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     const hasKeyword = searchTerm.trim() !== "";
+    const hasAuthor = authorTerm.trim() !== "";
     const hasTopic = selectedTopic !== "Semua";
+    const hasSort = sortValue !== "default";
 
-    if (!hasKeyword && !hasTopic) {
-      const message = "Masukkan judul, penulis, atau pilih genre dulu.";
+    if (!hasKeyword && !hasAuthor && !hasTopic && !hasSort) {
+      const message = "Masukkan judul, penulis, pilih genre, atau urutkan dulu.";
       setSearchMessage(message);
       onToast?.("Pencarian masih kosong", message, "info");
       return;
@@ -117,14 +122,31 @@ export default function LibraryPage({
 
     setSearchMessage("");
     setDebouncedSearchTerm(searchTerm);
+    setSubmittedAuthorTerm(authorTerm);
+    setSubmittedTopic(selectedTopic);
+    fetchData?.({
+      q: searchTerm.trim(),
+      author: authorTerm.trim(),
+      genre: selectedTopic,
+      yearMin: 1800,
+      minRating: 0,
+      available: false,
+      featured: false,
+      sort: sortValue,
+    });
   };
 
   const resetLibraryFilters = () => {
     setSearchTerm("");
     setDebouncedSearchTerm("");
+    setAuthorTerm("");
+    setSubmittedAuthorTerm("");
     setSelectedTopic("Semua");
+    setSubmittedTopic("Semua");
+    setSortValue("default");
     setCurrentPage(1);
     setSearchMessage("");
+    fetchData?.(null);
     onToast?.(
       "Pencarian direset",
       "Katalog API kembali menampilkan semua hasil.",
@@ -135,9 +157,23 @@ export default function LibraryPage({
   const searchPopularBooks = () => {
     setSearchTerm("popular");
     setDebouncedSearchTerm("popular");
+    setAuthorTerm("");
+    setSubmittedAuthorTerm("");
     setSelectedTopic("Semua");
+    setSubmittedTopic("Semua");
+    setSortValue("rating-desc");
     setCurrentPage(1);
     setSearchMessage("");
+    fetchData?.({
+      q: "popular",
+      author: "",
+      genre: "Semua",
+      yearMin: 1800,
+      minRating: 0,
+      available: false,
+      featured: false,
+      sort: "rating-desc",
+    });
     onToast?.(
       "Mencari buku populer",
       "Katalog menampilkan hasil dengan kata kunci populer.",
@@ -198,36 +234,89 @@ export default function LibraryPage({
             className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(260px,1fr)_auto] lg:items-start"
           >
             <div className="space-y-3">
-              <div className="relative max-w-xl">
-                <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-textSecondary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div className="relative">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-textSecondary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                    />
+                  </svg>
+                  <label htmlFor="api-search" className="sr-only">
+                    Cari judul buku
+                  </label>
+                  <input
+                    id="api-search"
+                    type="search"
+                    name="search"
+                    placeholder="Cari judul buku..."
+                    autoComplete="off"
+                    aria-invalid={searchMessage ? "true" : undefined}
+                    aria-describedby={
+                      searchMessage ? "api-search-message" : undefined
+                    }
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    className="input-field pl-9"
                   />
-                </svg>
-                <label htmlFor="api-search" className="sr-only">
-                  Cari judul atau penulis
-                </label>
-                <input
-                  id="api-search"
-                  type="search"
-                  name="search"
-                  placeholder="Cari judul atau penulis..."
-                  autoComplete="off"
-                  aria-invalid={searchMessage ? "true" : undefined}
-                  aria-describedby={searchMessage ? "api-search-message" : undefined}
-                  value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  className="input-field pl-9"
-                />
+                </div>
+
+                <div>
+                  <label htmlFor="api-author" className="sr-only">
+                    Cari nama penulis
+                  </label>
+                  <input
+                    id="api-author"
+                    type="text"
+                    name="author"
+                    placeholder="Cari penulis..."
+                    autoComplete="off"
+                    value={authorTerm}
+                    onChange={(event) => setAuthorTerm(event.target.value)}
+                    className="input-field"
+                  />
+                </div>
+
+                <div className="relative">
+                  <label htmlFor="api-sort" className="sr-only">
+                    Urutkan hasil
+                  </label>
+                  <select
+                    id="api-sort"
+                    name="sort"
+                    className="select-field"
+                    value={sortValue}
+                    onChange={(event) => setSortValue(event.target.value)}
+                  >
+                    {SORT_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <svg
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-textSecondary pointer-events-none"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
               </div>
               {searchMessage && (
                 <p
@@ -273,7 +362,10 @@ export default function LibraryPage({
                 <Icon name="search" className="w-4 h-4" strokeWidth={2} />
                 Cari
               </button>
-              {searchTerm && (
+              {(searchTerm ||
+                authorTerm ||
+                selectedTopic !== "Semua" ||
+                sortValue !== "default") && (
                 <button
                   type="button"
                   className="btn-secondary min-h-11 whitespace-nowrap"
