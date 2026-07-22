@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
@@ -7,8 +8,11 @@ export default function LoginPage({
   onLogin,
   onLogout,
   onToast,
-  redirectTo = "home",
+  redirectTo = "/",
 }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const nextRedirect = location.state?.redirectTo || redirectTo;
   const [values, setValues] = useState({
     name: currentUser?.name || "",
     email: currentUser?.email || "",
@@ -34,7 +38,7 @@ export default function LoginPage({
 
     onLogin?.({ name, email });
     onToast?.("Login berhasil", `Selamat datang, ${name}.`, "success");
-    window.location.hash = redirectTo === "favorit" ? "#/favorit" : "#/";
+    navigate(nextRedirect, { replace: true });
   };
 
   return (
@@ -70,16 +74,20 @@ export default function LoginPage({
                 {currentUser.email}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <a href="#/" className="btn-primary">
+                <Link to="/" className="btn-primary">
                   <Icon name="home" className="h-4 w-4" />
                   Ke Beranda
-                </a>
+                </Link>
                 <button
                   type="button"
                   className="btn-secondary"
                   onClick={() => {
                     onLogout?.();
-                    onToast?.("Logout berhasil", "Sesi akun sudah keluar.", "info");
+                    onToast?.(
+                      "Logout berhasil",
+                      "Sesi akun sudah keluar.",
+                      "info",
+                    );
                   }}
                 >
                   Keluar
@@ -97,7 +105,10 @@ export default function LoginPage({
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="login-name" className="section-label mb-1.5 block">
+                  <label
+                    htmlFor="login-name"
+                    className="section-label mb-1.5 block"
+                  >
                     Nama
                   </label>
                   <input
@@ -107,12 +118,17 @@ export default function LoginPage({
                     className="input-field"
                     placeholder="Nama kamu"
                     value={values.name}
-                    onChange={(event) => handleChange("name", event.target.value)}
+                    onChange={(event) =>
+                      handleChange("name", event.target.value)
+                    }
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="login-email" className="section-label mb-1.5 block">
+                  <label
+                    htmlFor="login-email"
+                    className="section-label mb-1.5 block"
+                  >
                     Email
                   </label>
                   <input
@@ -122,7 +138,9 @@ export default function LoginPage({
                     className="input-field"
                     placeholder="nama@email.com"
                     value={values.email}
-                    onChange={(event) => handleChange("email", event.target.value)}
+                    onChange={(event) =>
+                      handleChange("email", event.target.value)
+                    }
                   />
                 </div>
 

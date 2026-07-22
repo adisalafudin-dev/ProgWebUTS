@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
@@ -13,10 +14,10 @@ export default function Header({
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: "#/", page: "home", label: "Beranda", icon: "home" },
-    { href: "#/katalog", page: "katalog", label: "Katalog API", icon: "cloud" },
-    { href: "#/favorit", page: "favorit", label: "Favorit", icon: "heart" },
-    { href: "#/tentang", page: "tentang", label: "Tentang", icon: "info" },
+    { to: "/", page: "home", label: "Beranda", icon: "home" },
+    { to: "/books", page: "katalog", label: "Katalog API", icon: "cloud" },
+    { to: "/favorites", page: "favorit", label: "Favorit", icon: "heart" },
+    { to: "/about", page: "tentang", label: "Tentang", icon: "info" },
   ];
 
   const handleNavClick = () => setMenuOpen(false);
@@ -25,7 +26,7 @@ export default function Header({
     <header className="sticky top-0 z-40 border-b border-accent/30 bg-primary/95 backdrop-blur-sm shadow-book">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
-          <a href="#/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 overflow-hidden rounded-lg bg-white flex items-center justify-center shadow-book ring-1 ring-white/20 transition-transform duration-200 group-hover:scale-105">
               <img
                 src={aksaraHubLogo}
@@ -42,16 +43,16 @@ export default function Header({
                 Digital Library
               </span>
             </div>
-          </a>
+          </Link>
 
           <nav
             aria-label="Navigasi utama"
             className="hidden md:flex items-center gap-1 bg-white/10 rounded-lg p-1"
           >
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
+              <Link
+                key={link.to}
+                to={link.to}
                 aria-current={activePage === link.page ? "page" : undefined}
                 className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold font-crimson rounded-md text-white/75 hover:bg-white hover:text-primary hover:shadow-sm transition-all duration-200 ${
                   activePage === link.page
@@ -69,7 +70,7 @@ export default function Header({
                     {favoriteCount}
                   </span>
                 )}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -103,18 +104,20 @@ export default function Header({
                 </button>
               </div>
             ) : (
-              <a
-                href="#/login"
+              <Link
+                to="/login"
                 className="hidden sm:flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 shadow-sm transition-all duration-200 hover:border-accent hover:bg-white hover:text-primary"
               >
                 <Icon name="users" className="h-3.5 w-3.5" />
                 Masuk
-              </a>
+              </Link>
             )}
 
             <button
               type="button"
-              aria-label={menuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+              aria-label={
+                menuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"
+              }
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
               onClick={() => setMenuOpen((prev) => !prev)}
@@ -151,9 +154,9 @@ export default function Header({
       >
         <div className="max-w-7xl mx-auto px-4 py-2 grid grid-cols-5 gap-1">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
+            <Link
+              key={link.to}
+              to={link.to}
               onClick={handleNavClick}
               aria-current={activePage === link.page ? "page" : undefined}
               className={`flex flex-col items-center gap-1 py-2 text-xs font-semibold font-crimson text-white/70 rounded-lg hover:bg-white/10 hover:text-accent transition-colors duration-200 ${
@@ -169,7 +172,7 @@ export default function Header({
                   </span>
                 )}
               </span>
-            </a>
+            </Link>
           ))}
 
           {currentUser ? (
@@ -185,8 +188,8 @@ export default function Header({
               <span>Keluar</span>
             </button>
           ) : (
-            <a
-              href="#/login"
+            <Link
+              to="/login"
               onClick={handleNavClick}
               aria-current={activePage === "login" ? "page" : undefined}
               className={`flex flex-col items-center gap-1 py-2 text-xs font-semibold font-crimson text-white/70 rounded-lg hover:bg-white/10 hover:text-accent transition-colors duration-200 ${
@@ -195,7 +198,7 @@ export default function Header({
             >
               <Icon name="users" className="w-4 h-4" />
               <span>Masuk</span>
-            </a>
+            </Link>
           )}
         </div>
       </nav>

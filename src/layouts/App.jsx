@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import {
+  useLocation,
+  useNavigate,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import LibraryPage from "../pages/LibraryPage";
 import FavoritesPage from "../pages/FavoritesPage";
 import AboutPage from "../pages/AboutPage";
 import LoginPage from "../pages/LoginPage";
-import ToastContainer from "../components/ToastContainer";
+import RegisterPage from "../pages/RegisterPage";
+import ProfilePage from "../pages/ProfilePage";
+import SettingsPage from "../pages/SettingsPage";
+import BookDetailPage from "../pages/BookDetailPage";
+import NotFoundPage from "../pages/NotFoundPage";
+import MainLayout from "./MainLayout";
 import { FALLBACK_BOOKS } from "../constants/books";
 import { fetchOpenLibraryBooks } from "../services/bookApi";
 
@@ -14,26 +24,13 @@ const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 const THEME_STORAGE_KEY = "aksarahub-theme";
 const AUTH_STORAGE_KEY = "aksarahub-user";
 
-const ROUTES = new Set([
-  "home",
-  "katalog",
-  "favorit",
-  "tentang",
-  "koleksi",
-  "login",
-]);
-
 const getBookId = (book) =>
   book?.key || book?.id || book?.workKey || book?.title;
 
-const getRouteFromHash = () => {
-  const rawHash = window.location.hash.replace(/^#\/?/, "");
-  const route = rawHash.split("/")[0] || "home";
-  return ROUTES.has(route) ? route : "home";
-};
-
 export default function App() {
-  const [activeRoute, setActiveRoute] = useState(() => getRouteFromHash());
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(true);
   const [dataStore, setDataStore] = useState([]);
   const [recommendationStore, setRecommendationStore] = useState([]);
@@ -68,7 +65,6 @@ export default function App() {
   });
 
   const favoriteIds = new Set(favoriteBooks.map(getBookId).filter(Boolean));
-  const activePage = activeRoute === "koleksi" ? "home" : activeRoute;
 
   const showToast = (title, message = "", type = "success") => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -90,7 +86,9 @@ export default function App() {
         "Masuk dulu untuk menyimpan buku favorit.",
         "info",
       );
-      window.location.hash = "#/login";
+      navigate("/login", {
+        state: { redirectTo: location.pathname },
+      });
       return;
     }
 
@@ -147,8 +145,8 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     localStorage.removeItem(AUTH_STORAGE_KEY);
-    if (activeRoute === "favorit") {
-      window.location.hash = "#/";
+    if (location.pathname === "/favorites") {
+      navigate("/", { replace: true });
     }
   };
 
@@ -156,30 +154,6 @@ export default function App() {
     document.documentElement.classList.toggle("dark", isDarkMode);
     localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      setActiveRoute(getRouteFromHash());
-    };
-
-    window.addEventListener("hashchange", handleRouteChange);
-    handleRouteChange();
-
-    return () => window.removeEventListener("hashchange", handleRouteChange);
-  }, []);
-
-  useEffect(() => {
-    const targetId = activeRoute === "koleksi" ? "koleksi" : null;
-    window.setTimeout(() => {
-      if (targetId) {
-        document
-          .getElementById(targetId)
-          ?.scrollIntoView({ behavior: "smooth" });
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    }, 0);
-  }, [activeRoute]);
 
   useEffect(() => {
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteBooks));
@@ -214,7 +188,6 @@ export default function App() {
         return nextBooks;
       });
       setError("API Open Library belum bisa diakses, menampilkan data contoh.");
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -245,73 +218,129 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-cream font-crimson transition-colors duration-300">
-      <Header
-        favoriteCount={favoriteBooks.length}
-        isDarkMode={isDarkMode}
-        onToggleTheme={toggleTheme}
-        activePage={activePage}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-      />
-      <main id="main-content" className="flex-1" role="main">
-        {activePage === "home" && (
-          <HomePage
-            books={dataStore}
-            featuredSourceBooks={
-              recommendationStore.length > 0 ? recommendationStore : dataStore
-            }
-            error={error}
-            fetchData={fetchData}
-            isLoading={isLoading}
-            favoriteIds={favoriteIds}
-            onToggleFavorite={toggleFavorite}
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <MainLayout
+            favoriteCount={favoriteBooks.length}
+            isDarkMode={isDarkMode}
+            onToggleTheme={toggleTheme}
+            currentUser={currentUser}
+            onLogout={handleLogout}
             onToast={showToast}
+            toasts={toasts}
+            onDismissToast={dismissToast}
           />
-        )}
-
-        {activePage === "katalog" && (
-          <LibraryPage
-            books={dataStore}
-            isLoading={isLoading}
-            fetchData={fetchData}
-            favoriteIds={favoriteIds}
-            onToggleFavorite={toggleFavorite}
-            onToast={showToast}
-          />
-        )}
-
-        {activePage === "favorit" &&
-          (currentUser ? (
-            <FavoritesPage
-              favoriteBooks={favoriteBooks}
+        }
+      >
+        <Route
+          index
+          element={
+            <HomePage
+              books={dataStore}
+              featuredSourceBooks={
+                recommendationStore.length > 0 ? recommendationStore : dataStore
+              }
+              error={error}
+              fetchData={fetchData}
+              isLoading={isLoading}
               favoriteIds={favoriteIds}
               onToggleFavorite={toggleFavorite}
               onToast={showToast}
             />
-          ) : (
+          }
+        />
+        <Route
+          path="books"
+          element={
+            <LibraryPage
+              books={dataStore}
+              isLoading={isLoading}
+              fetchData={fetchData}
+              favoriteIds={favoriteIds}
+              onToggleFavorite={toggleFavorite}
+              onToast={showToast}
+            />
+          }
+        />
+        <Route
+          path="books/:id"
+          element={
+            <BookDetailPage
+              dataStore={dataStore}
+              favoriteBooks={favoriteBooks}
+              onToggleFavorite={toggleFavorite}
+              onToast={showToast}
+            />
+          }
+        />
+        <Route
+          path="favorites"
+          element={
+            currentUser ? (
+              <FavoritesPage
+                favoriteBooks={favoriteBooks}
+                favoriteIds={favoriteIds}
+                onToggleFavorite={toggleFavorite}
+                onToast={showToast}
+              />
+            ) : (
+              <Navigate
+                to="/login"
+                state={{ redirectTo: "/favorites" }}
+                replace
+              />
+            )
+          }
+        />
+        <Route path="about" element={<AboutPage />} />
+        <Route
+          path="login"
+          element={
             <LoginPage
               currentUser={currentUser}
               onLogin={handleLogin}
               onLogout={handleLogout}
               onToast={showToast}
-              redirectTo="favorit"
             />
-          ))}
-
-        {activePage === "tentang" && <AboutPage />}
-        {activePage === "login" && (
-          <LoginPage
-            currentUser={currentUser}
-            onLogin={handleLogin}
-            onLogout={handleLogout}
-            onToast={showToast}
-          />
-        )}
-      </main>
-
-      <Footer onToast={showToast} activePage={activePage} />
-      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
-    </div>
+          }
+        />
+        <Route
+          path="register"
+          element={
+            <RegisterPage
+              currentUser={currentUser}
+              onLogin={handleLogin}
+              onToast={showToast}
+            />
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            currentUser ? (
+              <ProfilePage
+                currentUser={currentUser}
+                favoriteBooks={favoriteBooks}
+              />
+            ) : (
+              <Navigate
+                to="/login"
+                state={{ redirectTo: "/profile" }}
+                replace
+              />
+            )
+          }
+        />
+        <Route
+          path="settings"
+          element={
+            <SettingsPage isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }

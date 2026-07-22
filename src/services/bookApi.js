@@ -1,7 +1,10 @@
 import axios from "axios";
+import { FALLBACK_BOOKS } from "../constants/books";
 import { formatOpenLibraryBook } from "../utils/bookFormatter";
 
-const OPEN_LIBRARY_SEARCH_URL = "https://openlibrary.org/search.json";
+const OPEN_LIBRARY_SEARCH_URL = import.meta.env.DEV
+  ? "/openlibrary/search.json"
+  : "https://openlibrary.org/search.json";
 
 const SORT_MAP = {
   "title-asc": "title",
@@ -13,7 +16,12 @@ const SORT_MAP = {
 
 const buildOpenLibrarySearchParams = (filters = {}) => {
   const params = new URLSearchParams();
-  const q = [filters.q, filters.author].filter(Boolean).join(" ") || "general";
+  const qParts =
+    [filters.q, filters.author].filter(Boolean).join(" ") || "general";
+
+  // language dimasukkan ke dalam query string pakai sintaks Solr,
+  // bukan sebagai parameter terpisah (itu yang bikin 500 sebelumnya)
+  const q = `${qParts} language:eng`;
 
   params.set("q", q);
 
@@ -26,7 +34,6 @@ const buildOpenLibrarySearchParams = (filters = {}) => {
   }
 
   params.set("limit", "30");
-  params.set("language", "eng");
 
   return params;
 };
@@ -88,10 +95,20 @@ const applyLocalFilters = (books, filters = {}) => {
 export const fetchOpenLibraryBooks = async (rawFilters = {}) => {
   const filters = rawFilters || {};
   const params = buildOpenLibrarySearchParams(filters);
-  const response = await axios.get(
-    `${OPEN_LIBRARY_SEARCH_URL}?${params.toString()}`,
-  );
-  const books = response.data.docs.map(formatOpenLibraryBook);
 
-  return applyLocalFilters(books, filters);
+  try {
+    const response = await axios.get(
+      `${OPEN_LIBRARY_SEARCH_URL}?${params.toString()}`,
+    );
+    const books = response.data.docs.map(formatOpenLibraryBook);
+    return applyLocalFilters(books, filters);
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        "Open Library request failed, using fallback data.",
+        error?.message || error,
+      );
+    }
+    return applyLocalFilters(FALLBACK_BOOKS, filters);
+  }
 };

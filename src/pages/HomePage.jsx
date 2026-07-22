@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import BookCardSkeleton from "../components/BookCardSkeleton";
 import BookModal from "../components/BookModal";
@@ -327,14 +328,14 @@ export default function HomePage({
                   ))}
               </div>
               <div className="flex flex-wrap gap-3">
-                <a href="#/koleksi" className="btn-primary">
+                <Link to="/books" className="btn-primary">
                   <Icon name="eye" className="w-4 h-4" strokeWidth={2} />
                   Lihat Koleksi
-                </a>
-                <a href="#/katalog" className="btn-secondary text-primary">
+                </Link>
+                <Link to="/books" className="btn-secondary text-primary">
                   <Icon name="cloud" className="w-4 h-4" />
                   Katalog API
-                </a>
+                </Link>
                 <button
                   type="button"
                   className={`inline-flex items-center justify-center gap-2 rounded-lg border px-5 py-2.5 font-crimson font-semibold transition-all duration-300 ${

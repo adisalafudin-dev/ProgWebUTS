@@ -1,19 +1,20 @@
+import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import { GENRES } from "../constants/books";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
 export default function Footer({ onToast, activePage = "home" }) {
   const navItems = [
-    { label: "Beranda", href: "#/", page: "home", icon: "home" },
+    { label: "Beranda", to: "/", page: "home", icon: "home" },
     {
       label: "Koleksi Buku",
-      href: "#/koleksi",
+      to: "/books",
       page: "home",
       icon: "collection",
     },
-    { label: "Katalog API", href: "#/katalog", page: "katalog", icon: "cloud" },
-    { label: "Favorit", href: "#/favorit", page: "favorit", icon: "heart" },
-    { label: "Tentang", href: "#/tentang", page: "tentang", icon: "info" },
+    { label: "Katalog API", to: "/books", page: "katalog", icon: "cloud" },
+    { label: "Favorit", to: "/favorites", page: "favorit", icon: "heart" },
+    { label: "Tentang", to: "/about", page: "tentang", icon: "info" },
   ];
 
   const genreIcons = {
@@ -69,8 +70,8 @@ export default function Footer({ onToast, activePage = "home" }) {
             <ul className="space-y-2 text-sm">
               {navItems.map((item) => (
                 <li key={item.label}>
-                  <a
-                    href={item.href}
+                  <Link
+                    to={item.to}
                     aria-current={activePage === item.page ? "page" : undefined}
                     className={`inline-flex items-center gap-2 transition-colors duration-200 hover:text-accent ${
                       activePage === item.page ? "text-accent" : ""
@@ -78,7 +79,7 @@ export default function Footer({ onToast, activePage = "home" }) {
                   >
                     <Icon name={item.icon} className="w-3.5 h-3.5" />
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -91,8 +92,8 @@ export default function Footer({ onToast, activePage = "home" }) {
             <ul className="space-y-2 text-sm">
               {genres.map((item) => (
                 <li key={item}>
-                  <a
-                    href="#/koleksi"
+                  <Link
+                    to="/books"
                     className="inline-flex items-center gap-2
                                hover:text-accent transition-colors duration-200"
                   >
@@ -101,7 +102,7 @@ export default function Footer({ onToast, activePage = "home" }) {
                       className="w-3.5 h-3.5"
                     />
                     {item}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

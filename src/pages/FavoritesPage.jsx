@@ -3,7 +3,8 @@ import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
 
-const getBookId = (book) => book?.key || book?.id || book?.workKey || book?.title;
+const getBookId = (book) =>
+  book?.key || book?.id || book?.workKey || book?.title;
 
 export default function FavoritesPage({
   favoriteBooks = [],
@@ -60,9 +61,9 @@ export default function FavoritesPage({
               Simpan buku dari beranda atau katalog API untuk membuat rak
               favorit pribadi.
             </p>
-            <a href="#/" className="btn-primary mt-5">
+            <Link to="/" className="btn-primary mt-5">
               Jelajahi Buku
-            </a>
+            </Link>
           </div>
         )}
       </section>
