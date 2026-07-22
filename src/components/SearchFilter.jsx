@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GENRES, SORT_OPTIONS } from "../data/books";
+import { GENRES, SORT_OPTIONS } from "../constants/books";
 
 export default function SearchFilter({
   onFilter,
@@ -306,7 +306,6 @@ export default function SearchFilter({
         </svg>
         Terapkan Filter
       </button>
-
     </form>
   );
 }

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import HomePage from "./pages/HomePage";
-import LibraryPage from "./pages/LibraryPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import AboutPage from "./pages/AboutPage";
-import LoginPage from "./pages/LoginPage";
-import ToastContainer from "./components/ToastContainer";
-import { FALLBACK_BOOKS } from "./data/books";
-import { fetchOpenLibraryBooks } from "./services/bookApi";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import HomePage from "../pages/HomePage";
+import LibraryPage from "../pages/LibraryPage";
+import FavoritesPage from "../pages/FavoritesPage";
+import AboutPage from "../pages/AboutPage";
+import LoginPage from "../pages/LoginPage";
+import ToastContainer from "../components/ToastContainer";
+import { FALLBACK_BOOKS } from "../constants/books";
+import { fetchOpenLibraryBooks } from "../services/bookApi";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 const THEME_STORAGE_KEY = "aksarahub-theme";
@@ -23,7 +23,8 @@ const ROUTES = new Set([
   "login",
 ]);
 
-const getBookId = (book) => book?.key || book?.id || book?.workKey || book?.title;
+const getBookId = (book) =>
+  book?.key || book?.id || book?.workKey || book?.title;
 
 const getRouteFromHash = () => {
   const rawHash = window.location.hash.replace(/^#\/?/, "");
@@ -50,7 +51,9 @@ export default function App() {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
       if (savedTheme) return savedTheme === "dark";
-      return window.matchMedia?.("(prefers-color-scheme: dark)").matches || false;
+      return (
+        window.matchMedia?.("(prefers-color-scheme: dark)").matches || false
+      );
     } catch {
       return false;
     }
@@ -69,10 +72,9 @@ export default function App() {
 
   const showToast = (title, message = "", type = "success") => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    setToasts((currentToasts) => [
-      { id, title, message, type },
-      ...currentToasts,
-    ].slice(0, 4));
+    setToasts((currentToasts) =>
+      [{ id, title, message, type }, ...currentToasts].slice(0, 4),
+    );
   };
 
   const dismissToast = (toastId) => {
@@ -170,7 +172,9 @@ export default function App() {
     const targetId = activeRoute === "koleksi" ? "koleksi" : null;
     window.setTimeout(() => {
       if (targetId) {
-        document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
+        document
+          .getElementById(targetId)
+          ?.scrollIntoView({ behavior: "smooth" });
       } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -178,10 +182,7 @@ export default function App() {
   }, [activeRoute]);
 
   useEffect(() => {
-    localStorage.setItem(
-      FAVORITES_STORAGE_KEY,
-      JSON.stringify(favoriteBooks),
-    );
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteBooks));
   }, [favoriteBooks]);
 
   async function fetchData(rawFilters = {}) {
@@ -203,9 +204,12 @@ export default function App() {
       }
     } catch (err) {
       setDataStore((currentBooks) => {
-        const nextBooks = currentBooks.length > 0 ? currentBooks : FALLBACK_BOOKS;
+        const nextBooks =
+          currentBooks.length > 0 ? currentBooks : FALLBACK_BOOKS;
         setRecommendationStore((currentRecommendations) =>
-          currentRecommendations.length === 0 ? nextBooks : currentRecommendations,
+          currentRecommendations.length === 0
+            ? nextBooks
+            : currentRecommendations,
         );
         return nextBooks;
       });
@@ -277,8 +281,8 @@ export default function App() {
           />
         )}
 
-        {activePage === "favorit" && (
-          currentUser ? (
+        {activePage === "favorit" &&
+          (currentUser ? (
             <FavoritesPage
               favoriteBooks={favoriteBooks}
               favoriteIds={favoriteIds}
@@ -293,8 +297,7 @@ export default function App() {
               onToast={showToast}
               redirectTo="favorit"
             />
-          )
-        )}
+          ))}
 
         {activePage === "tentang" && <AboutPage />}
         {activePage === "login" && (

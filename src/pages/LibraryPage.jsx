@@ -3,7 +3,7 @@ import BookCard from "../components/BookCard";
 import BookCardSkeleton from "../components/BookCardSkeleton";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
-import { SORT_OPTIONS } from "../data/books";
+import { SORT_OPTIONS } from "../constants/books";
 
 const TOPICS = [
   { value: "Semua", label: "Semua", icon: "collection" },

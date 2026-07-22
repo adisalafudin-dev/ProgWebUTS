@@ -4,9 +4,10 @@ import BookCardSkeleton from "../components/BookCardSkeleton";
 import BookModal from "../components/BookModal";
 import SearchFilter from "../components/SearchFilter";
 import Icon from "../components/Icon";
-import { GENRES } from "../data/books";
+import { GENRES } from "../constants/books";
 
-const getBookId = (book) => book?.key || book?.id || book?.workKey || book?.title;
+const getBookId = (book) =>
+  book?.key || book?.id || book?.workKey || book?.title;
 
 const getNumericYear = (book) => {
   const year = Number(book?.year || book?.first_publish_year);
@@ -54,7 +55,8 @@ const getRecommendedBooks = (books, limit = 5) => {
       if (b.score !== a.score) return b.score - a.score;
       if (b.rating !== a.rating) return b.rating - a.rating;
       if (b.year !== a.year) return b.year - a.year;
-      if (a.book.available !== b.book.available) return a.book.available ? -1 : 1;
+      if (a.book.available !== b.book.available)
+        return a.book.available ? -1 : 1;
       return a.index - b.index;
     })
     .slice(0, limit)

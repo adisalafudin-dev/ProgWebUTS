@@ -1,11 +1,16 @@
 import Icon from "./Icon";
-import { GENRES } from "../data/books";
+import { GENRES } from "../constants/books";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
 export default function Footer({ onToast, activePage = "home" }) {
   const navItems = [
     { label: "Beranda", href: "#/", page: "home", icon: "home" },
-    { label: "Koleksi Buku", href: "#/koleksi", page: "home", icon: "collection" },
+    {
+      label: "Koleksi Buku",
+      href: "#/koleksi",
+      page: "home",
+      icon: "collection",
+    },
     { label: "Katalog API", href: "#/katalog", page: "katalog", icon: "cloud" },
     { label: "Favorit", href: "#/favorit", page: "favorit", icon: "heart" },
     { label: "Tentang", href: "#/tentang", page: "tentang", icon: "info" },

@@ -1,5 +1,5 @@
 import Icon from "../components/Icon";
-import { GENRES } from "../data/books";
+import { GENRES } from "../constants/books";
 
 export default function AboutPage() {
   const visibleGenres = GENRES.filter((genre) => genre !== "Semua");
@@ -68,8 +68,8 @@ export default function AboutPage() {
           buku dengan cepat.
         </h2>
         <p className="text-lg text-secondary leading-relaxed">
-          AksaraHub dibuat sebagai aplikasi katalog buku berbasis React
-          yang memadukan data Open Library dengan koleksi cadangan lokal. Fokus
+          AksaraHub dibuat sebagai aplikasi katalog buku berbasis React yang
+          memadukan data Open Library dengan koleksi cadangan lokal. Fokus
           utamanya adalah pengalaman mencari buku yang sederhana, responsif, dan
           tetap berjalan saat koneksi API bermasalah.
         </p>
