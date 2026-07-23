@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import ToastContainer from "../components/ToastContainer";
 import Sidebar from "../components/Sidebar";
 import Breadcrumb from "../components/Breadcrumb";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
 
 const getActivePage = (pathname) => {
   if (pathname === "/dashboard") return "dashboard";
@@ -17,29 +19,27 @@ const getActivePage = (pathname) => {
   return "home";
 };
 
-export default function MainLayout({
-  favoriteCount,
-  isDarkMode,
-  onToggleTheme,
-  currentUser,
-  onLogout,
-  onToast,
-  toasts,
-  onDismissToast,
-}) {
+export default function MainLayout() {
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const { favoriteCount } = useFavorites();
   const activePage = getActivePage(location.pathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    if (
+      location.pathname === "/favorites" ||
+      location.pathname.startsWith("/admin")
+    ) {
+      // Navigation handled by App.jsx
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-cream font-crimson transition-colors duration-300">
       <Header
-        favoriteCount={favoriteCount}
-        isDarkMode={isDarkMode}
-        onToggleTheme={onToggleTheme}
         activePage={activePage}
-        currentUser={currentUser}
-        onLogout={onLogout}
         drawerOpen={drawerOpen}
         onToggleDrawer={() => setDrawerOpen((value) => !value)}
       />
@@ -82,12 +82,6 @@ export default function MainLayout({
             <div className="p-5">
               <Sidebar
                 activePage={activePage}
-                favoriteCount={favoriteCount}
-                currentUser={currentUser}
-                onLogout={() => {
-                  setDrawerOpen(false);
-                  onLogout?.();
-                }}
                 onClose={() => setDrawerOpen(false)}
               />
             </div>
@@ -96,12 +90,7 @@ export default function MainLayout({
           <div className="mx-auto max-w-7xl px-4 pb-12 pt-6 sm:px-6 lg:px-8">
             <div className="grid gap-8 lg:grid-cols-[minmax(16rem,19rem)_minmax(0,1fr)]">
               <aside className="hidden lg:block">
-                <Sidebar
-                  activePage={activePage}
-                  favoriteCount={favoriteCount}
-                  currentUser={currentUser}
-                  onLogout={onLogout}
-                />
+                <Sidebar activePage={activePage} />
               </aside>
 
               <div className="min-w-0 space-y-6">
@@ -113,8 +102,8 @@ export default function MainLayout({
         </div>
       </main>
 
-      <Footer onToast={onToast} activePage={activePage} />
-      <ToastContainer toasts={toasts} onDismiss={onDismissToast} />
+      <Footer activePage={activePage} />
+      <ToastContainer />
     </div>
   );
 }

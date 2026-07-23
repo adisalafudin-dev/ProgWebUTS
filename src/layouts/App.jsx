@@ -30,110 +30,23 @@ import { ROLES } from "../constants/roles.js";
 import { FALLBACK_BOOKS } from "../constants/books";
 import { fetchOpenLibraryBooks } from "../services/openLibraryApi";
 import { useAuth } from "../contexts/AuthContext.jsx";
-
-const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
-const THEME_STORAGE_KEY = "aksarahub-theme";
-
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
+import { useTheme } from "../contexts/ThemeContext.jsx";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, login, logout, register } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
+  const { favoriteBooks, favoriteIds, favoriteCount, toggleFavorite } =
+    useFavorites();
+  const { showToast } = useNotification();
 
   const [isLoading, setIsLoading] = useState(true);
   const [dataStore, setDataStore] = useState([]);
   const [recommendationStore, setRecommendationStore] = useState([]);
   const [error, setError] = useState(null);
-  const [toasts, setToasts] = useState([]);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    try {
-      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      if (savedTheme) return savedTheme === "dark";
-      return (
-        window.matchMedia?.("(prefers-color-scheme: dark)").matches || false
-      );
-    } catch {
-      return false;
-    }
-  });
-  const [favoriteBooks, setFavoriteBooks] = useState(() => {
-    try {
-      const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      return savedFavorites ? JSON.parse(savedFavorites) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const favoriteIds = new Set(favoriteBooks.map(getBookId).filter(Boolean));
-
-  const showToast = (title, message = "", type = "success") => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    setToasts((currentToasts) =>
-      [{ id, title, message, type }, ...currentToasts].slice(0, 4),
-    );
-  };
-
-  const dismissToast = (toastId) => {
-    setToasts((currentToasts) =>
-      currentToasts.filter((toast) => toast.id !== toastId),
-    );
-  };
-
-  const toggleFavorite = (book) => {
-    if (!isAuthenticated) {
-      showToast(
-        "Login diperlukan",
-        "Masuk dulu untuk menyimpan buku favorit.",
-        "info",
-      );
-      navigate("/login", {
-        state: { redirectTo: location.pathname },
-      });
-      return;
-    }
-
-    const bookId = getBookId(book);
-    if (!bookId) return;
-
-    const alreadySaved = favoriteBooks.some(
-      (favoriteBook) => getBookId(favoriteBook) === bookId,
-    );
-
-    setFavoriteBooks((currentFavorites) => {
-      const isStillSaved = currentFavorites.some(
-        (favoriteBook) => getBookId(favoriteBook) === bookId,
-      );
-
-      if (isStillSaved) {
-        return currentFavorites.filter(
-          (favoriteBook) => getBookId(favoriteBook) !== bookId,
-        );
-      }
-
-      return [book, ...currentFavorites];
-    });
-
-    showToast(
-      alreadySaved ? "Favorit dihapus" : "Favorit disimpan",
-      book.title || "Buku pilihan kamu sudah diperbarui.",
-      "success",
-    );
-  };
-
-  const toggleTheme = () => {
-    const nextMode = !isDarkMode;
-    setIsDarkMode(nextMode);
-    showToast(
-      nextMode ? "Dark mode aktif" : "Light mode aktif",
-      nextMode
-        ? "Tampilan berubah ke mode gelap."
-        : "Tampilan kembali ke mode terang.",
-      "info",
-    );
-  };
 
   const handleLogout = () => {
     logout();
@@ -144,15 +57,6 @@ export default function App() {
       navigate("/", { replace: true });
     }
   };
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDarkMode);
-    localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteBooks));
-  }, [favoriteBooks]);
 
   async function fetchData(rawFilters = {}) {
     const filters = rawFilters || {};
@@ -214,20 +118,7 @@ export default function App() {
 
   return (
     <Routes>
-      <Route
-        element={
-          <MainLayout
-            favoriteCount={favoriteBooks.length}
-            isDarkMode={isDarkMode}
-            onToggleTheme={toggleTheme}
-            currentUser={user}
-            onLogout={handleLogout}
-            onToast={showToast}
-            toasts={toasts}
-            onDismissToast={dismissToast}
-          />
-        }
-      >
+      <Route element={<MainLayout />}>
         <Route
           index
           element={
@@ -239,9 +130,6 @@ export default function App() {
               error={error}
               fetchData={fetchData}
               isLoading={isLoading}
-              favoriteIds={favoriteIds}
-              onToggleFavorite={toggleFavorite}
-              onToast={showToast}
             />
           }
         />
@@ -252,38 +140,23 @@ export default function App() {
               books={dataStore}
               isLoading={isLoading}
               fetchData={fetchData}
-              favoriteIds={favoriteIds}
-              onToggleFavorite={toggleFavorite}
-              onToast={showToast}
             />
           }
         />
         <Route
           path="books/:id"
-          element={
-            <BookDetailPage
-              dataStore={dataStore}
-              favoriteBooks={favoriteBooks}
-              onToggleFavorite={toggleFavorite}
-              onToast={showToast}
-            />
-          }
+          element={<BookDetailPage dataStore={dataStore} />}
         />
         <Route
           path="dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage
-                currentUser={user}
                 books={dataStore}
-                favoriteBooks={favoriteBooks}
-                favoriteIds={favoriteIds}
-                onToggleFavorite={toggleFavorite}
                 continueReadingBooks={dataStore.slice(0, 4)}
                 recentReviews={[]}
                 notifications={[]}
                 onMarkNotificationRead={(id) => {}}
-                onToast={showToast}
               />
             </ProtectedRoute>
           }
@@ -292,12 +165,7 @@ export default function App() {
           path="favorites"
           element={
             <ProtectedRoute>
-              <FavoritesPage
-                favoriteBooks={favoriteBooks}
-                favoriteIds={favoriteIds}
-                onToggleFavorite={toggleFavorite}
-                onToast={showToast}
-              />
+              <FavoritesPage />
             </ProtectedRoute>
           }
         />
@@ -306,33 +174,24 @@ export default function App() {
           path="profile"
           element={
             <ProtectedRoute>
-              <ProfilePage currentUser={user} favoriteBooks={favoriteBooks} />
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="settings"
-          element={
-            <SettingsPage isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />
-          }
-        />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 
-      <Route
-        element={
-          <AuthLayout isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />
-        }
-      >
-        <Route path="login" element={<LoginPage onToast={showToast} />} />
-        <Route path="register" element={<RegisterPage onToast={showToast} />} />
+      <Route element={<AuthLayout />}>
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
       </Route>
 
       <Route
         path="/admin"
         element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <AdminLayout currentUser={user} onLogout={handleLogout} />
+            <AdminLayout />
           </ProtectedRoute>
         }
       >

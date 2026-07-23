@@ -2,6 +2,9 @@ import { useState } from "react";
 import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 import SectionHeader from "../components/dashboard/SectionHeader";
 import WelcomeBanner from "../components/dashboard/WelcomeBanner";
 import ReadingProgressCard from "../components/dashboard/ReadingProgressCard";
@@ -21,17 +24,15 @@ function EmptyState({ icon, text }) {
 }
 
 export default function DashboardPage({
-  currentUser,
   books = [],
-  favoriteBooks = [],
-  favoriteIds = new Set(),
-  onToggleFavorite,
   continueReadingBooks = [],
   recentReviews = [],
   notifications = [],
   onMarkNotificationRead,
-  onToast,
 }) {
+  const { user } = useAuth();
+  const { favoriteBooks, favoriteIds, toggleFavorite } = useFavorites();
+  const { showToast } = useNotification();
   const [selectedBook, setSelectedBook] = useState(null);
   const isBookFavorite = (book) => favoriteIds.has(getBookId(book));
 
@@ -49,7 +50,7 @@ export default function DashboardPage({
 
   return (
     <section className="mx-auto min-h-[70vh] max-w-7xl space-y-12 px-4 py-10 sm:px-6 lg:px-8">
-      <WelcomeBanner currentUser={currentUser} stats={stats} />
+      <WelcomeBanner currentUser={user} stats={stats} />
 
       <div>
         <SectionHeader
@@ -92,7 +93,7 @@ export default function DashboardPage({
                 book={book}
                 onSelect={setSelectedBook}
                 isFavorite={isBookFavorite(book)}
-                onToggleFavorite={onToggleFavorite}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -116,7 +117,7 @@ export default function DashboardPage({
                 book={book}
                 onSelect={setSelectedBook}
                 isFavorite
-                onToggleFavorite={onToggleFavorite}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -174,8 +175,8 @@ export default function DashboardPage({
         book={selectedBook}
         onClose={() => setSelectedBook(null)}
         isFavorite={isBookFavorite(selectedBook)}
-        onToggleFavorite={onToggleFavorite}
-        onToast={onToast}
+        onToggleFavorite={toggleFavorite}
+        onToast={showToast}
       />
     </section>
   );

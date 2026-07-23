@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import { GENRES } from "../constants/books";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
-export default function Footer({ onToast, activePage = "home" }) {
+export default function Footer({ activePage = "home" }) {
+  const { showToast } = useNotification();
   const navItems = [
     { label: "Beranda", to: "/", page: "home", icon: "home" },
     {
@@ -124,7 +126,7 @@ export default function Footer({ onToast, activePage = "home" }) {
               onSubmit={(event) => {
                 event.preventDefault();
                 event.currentTarget.reset();
-                onToast?.(
+                showToast(
                   "Newsletter tersimpan",
                   "Rekomendasi buku akan dikirim ke email kamu.",
                   "success",

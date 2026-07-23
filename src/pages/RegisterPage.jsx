@@ -3,9 +3,11 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
-export default function RegisterPage({ onToast }) {
+export default function RegisterPage() {
   const { user, isAuthenticated, register } = useAuth();
+  const { showToast } = useNotification();
   const location = useLocation();
   const navigate = useNavigate();
   const [values, setValues] = useState({
@@ -36,7 +38,7 @@ export default function RegisterPage({ onToast }) {
     setLoading(true);
     try {
       register({ name, email, password });
-      onToast?.("Pendaftaran berhasil", `Selamat datang, ${name}.`, "success");
+      showToast("Pendaftaran berhasil", `Selamat datang, ${name}.`, "success");
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setMessage(err.message || "Pendaftaran gagal.");

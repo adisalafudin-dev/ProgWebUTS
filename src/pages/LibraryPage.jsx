@@ -4,6 +4,8 @@ import BookCardSkeleton from "../components/BookCardSkeleton";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
 import { SORT_OPTIONS } from "../constants/books";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
 const TOPICS = [
   { value: "Semua", label: "Semua", icon: "collection" },
@@ -22,15 +24,13 @@ const TOPICS = [
 const getBookId = (book) =>
   book?.key || book?.id || book?.workKey || book?.title;
 
-// ✅ Terima prop books dari App
 export default function LibraryPage({
   books = [],
   isLoading = false,
   fetchData,
-  favoriteIds = new Set(),
-  onToggleFavorite,
-  onToast,
 }) {
+  const { favoriteIds, toggleFavorite } = useFavorites();
+  const { showToast } = useNotification();
   const ITEMS_PER_PAGE = 10;
   const [searchTerm, setSearchTerm] = useState("");
   const [authorTerm, setAuthorTerm] = useState("");
@@ -142,7 +142,7 @@ export default function LibraryPage({
     setCurrentPage(1);
     setSearchMessage("");
     fetchData?.(null);
-    onToast?.(
+    showToast(
       "Pencarian direset",
       "Katalog API kembali menampilkan semua hasil.",
       "info",
@@ -167,7 +167,7 @@ export default function LibraryPage({
       featured: false,
       sort: "rating-desc",
     });
-    onToast?.(
+    showToast(
       "Mencari buku populer",
       "Katalog menampilkan hasil dengan kata kunci populer.",
       "info",
@@ -460,7 +460,7 @@ export default function LibraryPage({
                   index={i}
                   onSelect={setSelectedBook}
                   isFavorite={isBookFavorite(book)}
-                  onToggleFavorite={onToggleFavorite}
+                  onToggleFavorite={toggleFavorite}
                 />
               ))}
             </div>
@@ -547,7 +547,7 @@ export default function LibraryPage({
                             : "border-borderSoft bg-white text-secondary hover:border-accent hover:text-accentHover"
                         }`}
                         aria-pressed={isBookFavorite(book)}
-                        onClick={() => onToggleFavorite?.(book)}
+                        onClick={() => toggleFavorite(book)}
                       >
                         <Icon name="heart" className="h-3.5 w-3.5" />
                         {isBookFavorite(book) ? "Hapus" : "Favorit"}
@@ -692,8 +692,8 @@ export default function LibraryPage({
         book={selectedBook}
         onClose={() => setSelectedBook(null)}
         isFavorite={isBookFavorite(selectedBook)}
-        onToggleFavorite={onToggleFavorite}
-        onToast={onToast}
+        onToggleFavorite={toggleFavorite}
+        onToast={showToast}
       />
     </>
   );

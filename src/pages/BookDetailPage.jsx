@@ -2,18 +2,17 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BookModal from "../components/BookModal";
 import { FALLBACK_BOOKS } from "../constants/books";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
 const getBookId = (book) =>
   book?.key || book?.id || book?.workKey || book?.title;
 
-export default function BookDetailPage({
-  dataStore = [],
-  favoriteBooks = [],
-  onToggleFavorite,
-  onToast,
-}) {
+export default function BookDetailPage({ dataStore = [] }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { favoriteBooks, toggleFavorite } = useFavorites();
+  const { showToast } = useNotification();
 
   const book = useMemo(() => {
     const allBooks = [...dataStore, ...favoriteBooks, ...FALLBACK_BOOKS];
@@ -53,8 +52,8 @@ export default function BookDetailPage({
       isFavorite={favoriteBooks.some(
         (item) => getBookId(item) === getBookId(book),
       )}
-      onToggleFavorite={onToggleFavorite}
-      onToast={onToast}
+      onToggleFavorite={toggleFavorite}
+      onToast={showToast}
     />
   );
 }

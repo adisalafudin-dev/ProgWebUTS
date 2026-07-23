@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import Icon from "./Icon";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
 
 const sidebarLinks = [
   { to: "/", page: "home", label: "Beranda", icon: "home" },
@@ -11,13 +13,10 @@ const sidebarLinks = [
   { to: "/settings", page: "settings", label: "Pengaturan", icon: "monitor" },
 ];
 
-export default function Sidebar({
-  activePage = "home",
-  favoriteCount = 0,
-  currentUser,
-  onLogout,
-  onClose,
-}) {
+export default function Sidebar({ activePage = "home", onClose }) {
+  const { user, isAuthenticated, logout } = useAuth();
+  const { favoriteCount } = useFavorites();
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-borderSoft bg-white p-5 shadow-book">
@@ -32,10 +31,10 @@ export default function Sidebar({
         </div>
         <div className="rounded-2xl bg-cream p-4 text-sm text-textSecondary">
           <p className="font-semibold text-textMain">
-            {currentUser ? `Halo, ${currentUser.name}` : "Belum masuk"}
+            {isAuthenticated ? `Halo, ${user?.name}` : "Belum masuk"}
           </p>
           <p className="mt-2 leading-relaxed">
-            {currentUser
+            {isAuthenticated
               ? "Kelola akun dan favorit dengan lebih cepat."
               : "Masuk untuk menyimpan buku dan melihat profil."}
           </p>
@@ -63,12 +62,12 @@ export default function Sidebar({
         </div>
       </div>
 
-      {currentUser ? (
+      {isAuthenticated ? (
         <div className="rounded-3xl border border-borderSoft bg-white p-5 shadow-book">
           <p className="section-label mb-4">Akun</p>
           <button
             type="button"
-            onClick={onLogout}
+            onClick={logout}
             className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-accentHover"
           >
             Keluar dari Akun

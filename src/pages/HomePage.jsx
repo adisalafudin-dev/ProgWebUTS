@@ -6,6 +6,8 @@ import BookModal from "../components/BookModal";
 import SearchFilter from "../components/SearchFilter";
 import Icon from "../components/Icon";
 import { GENRES } from "../constants/books";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
 const getBookId = (book) =>
   book?.key || book?.id || book?.workKey || book?.title;
@@ -70,10 +72,9 @@ export default function HomePage({
   error,
   fetchData,
   isLoading = false,
-  favoriteIds = new Set(),
-  onToggleFavorite,
-  onToast,
 }) {
+  const { favoriteIds, toggleFavorite } = useFavorites();
+  const { showToast } = useNotification();
   const ITEMS_PER_PAGE = 12;
   const [filters, setFilters] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
@@ -143,7 +144,7 @@ export default function HomePage({
     setFilterExternalValues(null);
     setFilterResetSignal((current) => current + 1);
     fetchData(null);
-    onToast?.(
+    showToast(
       "Filter direset",
       "Koleksi buku kembali ke tampilan awal.",
       "info",
@@ -165,7 +166,7 @@ export default function HomePage({
     setFilters(popularFilters);
     setFilterExternalValues({ ...popularFilters });
     fetchData(popularFilters);
-    onToast?.(
+    showToast(
       "Mencari buku populer",
       "Kami memuat rekomendasi populer dari katalog.",
       "info",
@@ -344,7 +345,7 @@ export default function HomePage({
                       : "border-white/20 bg-white/10 text-white hover:border-accent hover:bg-white hover:text-primary"
                   }`}
                   aria-pressed={isBookFavorite(heroBook)}
-                  onClick={() => onToggleFavorite?.(heroBook)}
+                  onClick={() => toggleFavorite(heroBook)}
                 >
                   <Icon name="heart" className="h-4 w-4" strokeWidth={2} />
                   {isBookFavorite(heroBook)
@@ -599,7 +600,7 @@ export default function HomePage({
                 setFilters(values);
                 fetchData(values);
               }}
-              onToast={onToast}
+              onToast={showToast}
               resetSignal={filterResetSignal}
               externalValues={filterExternalValues}
             />
@@ -694,7 +695,7 @@ export default function HomePage({
                       index={i}
                       onSelect={setSelectedBook}
                       isFavorite={isBookFavorite(book)}
-                      onToggleFavorite={onToggleFavorite}
+                      onToggleFavorite={toggleFavorite}
                     />
                   ))}
                 </div>
@@ -791,7 +792,7 @@ export default function HomePage({
                                   : "border-borderSoft bg-white text-secondary hover:border-accent hover:text-accentHover"
                               }`}
                               aria-pressed={isBookFavorite(book)}
-                              onClick={() => onToggleFavorite?.(book)}
+                              onClick={() => toggleFavorite(book)}
                             >
                               <Icon name="heart" className="h-3.5 w-3.5" />
                               {isBookFavorite(book) ? "Hapus" : "Favorit"}
@@ -908,8 +909,8 @@ export default function HomePage({
         book={selectedBook}
         onClose={() => setSelectedBook(null)}
         isFavorite={isBookFavorite(selectedBook)}
-        onToggleFavorite={onToggleFavorite}
-        onToast={onToast}
+        onToggleFavorite={toggleFavorite}
+        onToast={showToast}
       />
     </>
   );

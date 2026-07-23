@@ -3,9 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
-export default function LoginPage({ onToast, redirectTo = "/" }) {
+export default function LoginPage({ redirectTo = "/" }) {
   const { user, isAuthenticated, login, logout } = useAuth();
+  const { showToast } = useNotification();
   const location = useLocation();
   const navigate = useNavigate();
   const nextRedirect = location.state?.redirectTo || redirectTo;
@@ -34,7 +36,7 @@ export default function LoginPage({ onToast, redirectTo = "/" }) {
       const session = login({ email, password });
       const displayName =
         session?.user?.name || email.split("@")[0] || "Pembaca";
-      onToast?.("Login berhasil", `Selamat datang, ${displayName}.`, "success");
+      showToast("Login berhasil", `Selamat datang, ${displayName}.`, "success");
       navigate(nextRedirect, { replace: true });
     } catch (err) {
       setMessage(err.message || "Email atau password salah.");
@@ -43,7 +45,7 @@ export default function LoginPage({ onToast, redirectTo = "/" }) {
 
   const handleLogout = () => {
     logout();
-    onToast?.("Logout berhasil", "Sesi akun sudah keluar.", "info");
+    showToast("Logout berhasil", "Sesi akun sudah keluar.", "info");
   };
 
   return (

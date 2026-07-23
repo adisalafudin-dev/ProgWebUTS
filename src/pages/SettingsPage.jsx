@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import Icon from "../components/Icon";
+import { useTheme } from "../contexts/ThemeContext.jsx";
 
-export default function SettingsPage({ isDarkMode, onToggleTheme }) {
+export default function SettingsPage() {
+  const { isDarkMode, toggleTheme } = useTheme();
   const [themeLabel, setThemeLabel] = useState(isDarkMode ? "Gelap" : "Terang");
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function SettingsPage({ isDarkMode, onToggleTheme }) {
               <button
                 type="button"
                 className="btn-primary inline-flex items-center gap-2"
-                onClick={onToggleTheme}
+                onClick={toggleTheme}
               >
                 <Icon name={isDarkMode ? "sun" : "moon"} className="h-4 w-4" />
                 Ubah ke {isDarkMode ? "Terang" : "Gelap"}

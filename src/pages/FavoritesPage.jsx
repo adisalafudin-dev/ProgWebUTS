@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
 const getBookId = (book) =>
   book?.key || book?.id || book?.workKey || book?.title;
 
-export default function FavoritesPage({
-  favoriteBooks = [],
-  favoriteIds = new Set(),
-  onToggleFavorite,
-  onToast,
-}) {
+export default function FavoritesPage() {
+  const { favoriteBooks, favoriteIds, toggleFavorite } = useFavorites();
+  const { showToast } = useNotification();
   const [selectedBook, setSelectedBook] = useState(null);
   const isBookFavorite = (book) => favoriteIds.has(getBookId(book));
 
@@ -47,7 +47,7 @@ export default function FavoritesPage({
                 index={index}
                 onSelect={setSelectedBook}
                 isFavorite={isBookFavorite(book)}
-                onToggleFavorite={onToggleFavorite}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -73,8 +73,8 @@ export default function FavoritesPage({
         book={selectedBook}
         onClose={() => setSelectedBook(null)}
         isFavorite={isBookFavorite(selectedBook)}
-        onToggleFavorite={onToggleFavorite}
-        onToast={onToast}
+        onToggleFavorite={toggleFavorite}
+        onToast={showToast}
       />
     </>
   );

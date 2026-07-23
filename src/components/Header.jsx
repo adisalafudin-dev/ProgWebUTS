@@ -1,17 +1,18 @@
 import { Link } from "react-router-dom";
 import Icon from "./Icon";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useTheme } from "../contexts/ThemeContext.jsx";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
 export default function Header({
-  favoriteCount = 0,
-  isDarkMode = false,
-  onToggleTheme,
   activePage = "home",
-  currentUser,
-  onLogout,
   drawerOpen = false,
   onToggleDrawer,
 }) {
+  const { user, isAuthenticated, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
+  const { favoriteCount } = useFavorites();
   const navLinks = [
     { to: "/", page: "home", label: "Beranda", icon: "home" },
     { to: "/books", page: "katalog", label: "Katalog API", icon: "cloud" },
@@ -79,7 +80,7 @@ export default function Header({
                 isDarkMode ? "Aktifkan light mode" : "Aktifkan dark mode"
               }
               aria-pressed={isDarkMode}
-              onClick={onToggleTheme}
+              onClick={toggleTheme}
             >
               <Icon
                 name={isDarkMode ? "sun" : "moon"}
@@ -88,14 +89,14 @@ export default function Header({
               />
             </button>
 
-            {currentUser ? (
+            {isAuthenticated ? (
               <div className="hidden sm:flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 shadow-sm">
                 <Icon name="users" className="h-3.5 w-3.5" />
-                <span className="max-w-24 truncate">{currentUser.name}</span>
+                <span className="max-w-24 truncate">{user?.name}</span>
                 <button
                   type="button"
                   className="ml-1 text-xs text-white/60 transition-colors hover:text-accent"
-                  onClick={onLogout}
+                  onClick={logout}
                 >
                   Keluar
                 </button>

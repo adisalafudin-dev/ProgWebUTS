@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import Icon from "./Icon";
+import { useNotification } from "../contexts/NotificationContext.jsx";
 
 const toastStyles = {
   success: "border-primary/20 bg-white text-textMain",
@@ -13,16 +14,18 @@ const toastIcons = {
   error: "close",
 };
 
-export default function ToastContainer({ toasts = [], onDismiss }) {
+export default function ToastContainer() {
+  const { toasts, dismissToast } = useNotification();
+
   useEffect(() => {
     if (toasts.length === 0) return undefined;
 
     const timers = toasts.map((toast) =>
-      window.setTimeout(() => onDismiss(toast.id), 3200),
+      window.setTimeout(() => dismissToast(toast.id), 3200),
     );
 
     return () => timers.forEach((timerId) => window.clearTimeout(timerId));
-  }, [toasts, onDismiss]);
+  }, [toasts, dismissToast]);
 
   return (
     <div
@@ -55,7 +58,7 @@ export default function ToastContainer({ toasts = [], onDismiss }) {
             type="button"
             className="rounded-md p-1 text-textSecondary transition-colors hover:bg-cream hover:text-textMain"
             aria-label="Tutup notifikasi"
-            onClick={() => onDismiss(toast.id)}
+            onClick={() => dismissToast(toast.id)}
           >
             <Icon name="close" className="h-4 w-4" strokeWidth={2} />
           </button>

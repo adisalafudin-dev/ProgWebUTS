@@ -1,7 +1,8 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AdminSidebar from "../components/AdminSidebar";
 import Icon from "../components/Icon";
+import { useAuth } from "../contexts/AuthContext.jsx";
 
 const getActivePage = (pathname) => {
   if (pathname.startsWith("/admin/books")) return "books";
@@ -19,8 +20,10 @@ const pageTitles = {
   reviews: "Kelola Ulasan",
 };
 
-export default function AdminLayout({ currentUser, onLogout }) {
+export default function AdminLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const activePage = getActivePage(location.pathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -28,11 +31,7 @@ export default function AdminLayout({ currentUser, onLogout }) {
     <div className="min-h-screen bg-slate-100 font-crimson">
       <div className="flex min-h-screen">
         <aside className="hidden w-64 shrink-0 bg-slate-900 lg:block">
-          <AdminSidebar
-            activePage={activePage}
-            currentUser={currentUser}
-            onLogout={onLogout}
-          />
+          <AdminSidebar activePage={activePage} />
         </aside>
 
         <div
@@ -55,11 +54,6 @@ export default function AdminLayout({ currentUser, onLogout }) {
         >
           <AdminSidebar
             activePage={activePage}
-            currentUser={currentUser}
-            onLogout={() => {
-              setDrawerOpen(false);
-              onLogout?.();
-            }}
             onClose={() => setDrawerOpen(false)}
           />
         </aside>
@@ -86,7 +80,7 @@ export default function AdminLayout({ currentUser, onLogout }) {
                 </div>
               </div>
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-                {currentUser?.role || "ADMIN"}
+                {user?.role || "ADMIN"}
               </span>
             </div>
           </header>

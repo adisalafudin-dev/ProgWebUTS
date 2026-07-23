@@ -1,27 +1,31 @@
 import { Link } from "react-router-dom";
 import Icon from "../components/Icon";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useFavorites } from "../contexts/FavoriteContext.jsx";
 
-export default function ProfilePage({ currentUser, favoriteBooks = [] }) {
+export default function ProfilePage() {
+  const { user } = useAuth();
+  const { favoriteBooks } = useFavorites();
   return (
     <section className="mx-auto min-h-[70vh] max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
       <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-lg border border-borderSoft bg-white p-8 shadow-book">
           <p className="section-label mb-3">Profil Pengguna</p>
-          {currentUser ? (
+          {user ? (
             <>
               <h1 className="font-playfair text-3xl font-bold text-textMain mb-4">
-                {currentUser.name}
+                {user.name}
               </h1>
               <div className="space-y-3 text-sm text-textSecondary">
                 <p>
                   <span className="font-semibold text-textMain">Email:</span>{" "}
-                  {currentUser.email}
+                  {user.email}
                 </p>
                 <p>
                   <span className="font-semibold text-textMain">
                     Login sejak:
                   </span>{" "}
-                  {new Date(currentUser.loggedInAt).toLocaleString()}
+                  {new Date(user.loggedInAt).toLocaleString()}
                 </p>
                 <p>
                   <span className="font-semibold text-textMain">

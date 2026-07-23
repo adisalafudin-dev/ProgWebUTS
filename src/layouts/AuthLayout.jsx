@@ -1,7 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
 import Icon from "../components/Icon";
+import { useTheme } from "../contexts/ThemeContext.jsx";
 
-export default function AuthLayout({ isDarkMode, onToggleTheme }) {
+export default function AuthLayout() {
+  const { isDarkMode, toggleTheme } = useTheme();
   return (
     <div className="grid min-h-screen bg-slate-50 dark:bg-slate-950 lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-blue-600 p-12 text-white lg:block">
@@ -27,7 +29,7 @@ export default function AuthLayout({ isDarkMode, onToggleTheme }) {
       <div className="relative flex items-center justify-center p-6">
         <button
           type="button"
-          onClick={onToggleTheme}
+          onClick={toggleTheme}
           className="absolute right-6 top-6 text-sm text-slate-500"
         >
           Ubah tema
