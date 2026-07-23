@@ -12,4 +12,30 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Enable code splitting and chunk optimization
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'axios': ['axios'],
+        },
+        // Optimize chunk size warnings
+        chunkSizeWarningLimit: 1000,
+      },
+    },
+    // Enable source maps for production debugging
+    sourcemap: false,
+    // Minify CSS
+    cssMinify: true,
+    // Optimize dependencies
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
+  // Optimize dependency pre-bundling
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'axios'],
+  },
 });

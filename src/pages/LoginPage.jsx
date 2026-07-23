@@ -57,6 +57,7 @@ export default function LoginPage({ redirectTo = "/" }) {
               src={aksaraHubLogo}
               alt=""
               aria-hidden="true"
+              loading="lazy"
               className="h-full w-full scale-[1.55] object-cover"
             />
           </div>

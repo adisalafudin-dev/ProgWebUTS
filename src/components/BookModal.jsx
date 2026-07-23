@@ -130,6 +130,7 @@ export default function BookModal({
               <img
                 src={book.cover}
                 alt={`Sampul ${title}`}
+                loading="lazy"
                 className="w-full sm:h-full object-cover max-h-56 sm:max-h-none"
               />
             ) : (

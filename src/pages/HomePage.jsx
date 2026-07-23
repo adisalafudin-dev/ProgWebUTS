@@ -385,6 +385,7 @@ export default function HomePage({
                   <img
                     src={heroBook.cover}
                     alt={`Sampul buku ${heroBook.title}`}
+                    loading="lazy"
                     className="aspect-[2/3] w-full rounded-lg border border-white/15 object-cover shadow-2xl transition-transform duration-700 ease-out hover:scale-[1.03]"
                   />
                 ) : (

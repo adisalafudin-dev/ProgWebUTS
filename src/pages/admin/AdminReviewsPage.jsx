@@ -1,4 +1,5 @@
 import Icon from "../../components/Icon";
+import EmptyState from "../../components/EmptyState";
 
 const mockReviews = [
   {
@@ -39,39 +40,47 @@ export default function AdminReviewsPage() {
         </p>
       </div>
 
-      <div className="space-y-4">
-        {mockReviews.map((review) => (
-          <article
-            key={review.id}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 className="font-semibold text-slate-900">{review.book}</h3>
-                <p className="mt-1 text-sm text-slate-500">oleh {review.user}</p>
+      {mockReviews.length > 0 ? (
+        <div className="space-y-4">
+          {mockReviews.map((review) => (
+            <article
+              key={review.id}
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-semibold text-slate-900">{review.book}</h3>
+                  <p className="mt-1 text-sm text-slate-500">oleh {review.user}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                    <Icon name="star" className="h-3.5 w-3.5" />
+                    {review.rating}/5
+                  </span>
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      review.status === "Disetujui"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-orange-100 text-orange-700"
+                    }`}
+                  >
+                    {review.status}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
-                  <Icon name="star" className="h-3.5 w-3.5" />
-                  {review.rating}/5
-                </span>
-                <span
-                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    review.status === "Disetujui"
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-orange-100 text-orange-700"
-                  }`}
-                >
-                  {review.status}
-                </span>
-              </div>
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-slate-600">
-              {review.comment}
-            </p>
-          </article>
-        ))}
-      </div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-600">
+                {review.comment}
+              </p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon="star"
+          title="Tidak ada ulasan"
+          description="Belum ada ulasan yang perlu dimoderasi."
+        />
+      )}
     </div>
   );
 }

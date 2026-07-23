@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import {
   useLocation,
   useNavigate,
@@ -6,22 +6,6 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-import DashboardPage from "../pages/DashboardPage";
-import LibraryPage from "../pages/LibraryPage";
-import FavoritesPage from "../pages/FavoritesPage";
-import AboutPage from "../pages/AboutPage";
-import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
-import ProfilePage from "../pages/ProfilePage";
-import SettingsPage from "../pages/SettingsPage";
-import BookDetailPage from "../pages/BookDetailPage";
-import NotFoundPage from "../pages/NotFoundPage";
-import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
-import AdminBooksPage from "../pages/admin/AdminBooksPage";
-import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
-import AdminUsersPage from "../pages/admin/AdminUsersPage";
-import AdminReviewsPage from "../pages/admin/AdminReviewsPage";
 import MainLayout from "./MainLayout";
 import AuthLayout from "./AuthLayout";
 import AdminLayout from "./AdminLayout";
@@ -33,6 +17,26 @@ import { useAuth } from "../contexts/AuthContext.jsx";
 import { useTheme } from "../contexts/ThemeContext.jsx";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
+import { useScrollRestoration } from "../hooks/useScrollRestoration";
+
+// Lazy load pages for code splitting
+const HomePage = lazy(() => import("../pages/HomePage"));
+const DashboardPage = lazy(() => import("../pages/DashboardPage"));
+const LibraryPage = lazy(() => import("../pages/LibraryPage"));
+const FavoritesPage = lazy(() => import("../pages/FavoritesPage"));
+const AboutPage = lazy(() => import("../pages/AboutPage"));
+const LoginPage = lazy(() => import("../pages/LoginPage"));
+const RegisterPage = lazy(() => import("../pages/RegisterPage"));
+const ProfilePage = lazy(() => import("../pages/ProfilePage"));
+const SettingsPage = lazy(() => import("../pages/SettingsPage"));
+const BookDetailPage = lazy(() => import("../pages/BookDetailPage"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
+const AdminBooksPage = lazy(() => import("../pages/admin/AdminBooksPage"));
+const AdminCategoriesPage = lazy(() => import("../pages/admin/AdminCategoriesPage"));
+const AdminUsersPage = lazy(() => import("../pages/admin/AdminUsersPage"));
+const AdminReviewsPage = lazy(() => import("../pages/admin/AdminReviewsPage"));
 
 export default function App() {
   const location = useLocation();
@@ -42,6 +46,9 @@ export default function App() {
   const { favoriteBooks, favoriteIds, favoriteCount, toggleFavorite } =
     useFavorites();
   const { showToast } = useNotification();
+  
+  // Custom scroll restoration
+  useScrollRestoration();
 
   const [isLoading, setIsLoading] = useState(true);
   const [dataStore, setDataStore] = useState([]);
@@ -76,6 +83,7 @@ export default function App() {
         );
       }
     } catch (err) {
+      console.error("Error fetching books:", err);
       setDataStore((currentBooks) => {
         const nextBooks =
           currentBooks.length > 0 ? currentBooks : FALLBACK_BOOKS;
@@ -86,7 +94,9 @@ export default function App() {
         );
         return nextBooks;
       });
-      setError("API Open Library belum bisa diakses, menampilkan data contoh.");
+      setError(
+        "API Open Library belum bisa diakses, menampilkan data contoh. Silakan coba lagi nanti.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -117,91 +127,93 @@ export default function App() {
   }
 
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route
-          index
-          element={
-            <HomePage
-              books={dataStore}
-              featuredSourceBooks={
-                recommendationStore.length > 0 ? recommendationStore : dataStore
-              }
-              error={error}
-              fetchData={fetchData}
-              isLoading={isLoading}
-            />
-          }
-        />
-        <Route
-          path="books"
-          element={
-            <LibraryPage
-              books={dataStore}
-              isLoading={isLoading}
-              fetchData={fetchData}
-            />
-          }
-        />
-        <Route
-          path="books/:id"
-          element={<BookDetailPage dataStore={dataStore} />}
-        />
-        <Route
-          path="dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route
+            index
+            element={
+              <HomePage
                 books={dataStore}
-                continueReadingBooks={dataStore.slice(0, 4)}
-                recentReviews={[]}
-                notifications={[]}
-                onMarkNotificationRead={(id) => {}}
+                featuredSourceBooks={
+                  recommendationStore.length > 0 ? recommendationStore : dataStore
+                }
+                error={error}
+                fetchData={fetchData}
+                isLoading={isLoading}
               />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="favorites"
-          element={
-            <ProtectedRoute>
-              <FavoritesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="about" element={<AboutPage />} />
-        <Route
-          path="profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
+            }
+          />
+          <Route
+            path="books"
+            element={
+              <LibraryPage
+                books={dataStore}
+                isLoading={isLoading}
+                fetchData={fetchData}
+              />
+            }
+          />
+          <Route
+            path="books/:id"
+            element={<BookDetailPage dataStore={dataStore} />}
+          />
+          <Route
+            path="dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage
+                  books={dataStore}
+                  continueReadingBooks={dataStore.slice(0, 4)}
+                  recentReviews={[]}
+                  notifications={[]}
+                  onMarkNotificationRead={(id) => {}}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="favorites"
+            element={
+              <ProtectedRoute>
+                <FavoritesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="about" element={<AboutPage />} />
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
 
-      <Route element={<AuthLayout />}>
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-      </Route>
+        <Route element={<AuthLayout />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+        </Route>
 
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <AdminLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<AdminDashboardPage />} />
-        <Route path="books" element={<AdminBooksPage />} />
-        <Route path="categories" element={<AdminCategoriesPage />} />
-        <Route path="users" element={<AdminUsersPage />} />
-        <Route path="reviews" element={<AdminReviewsPage />} />
-      </Route>
-    </Routes>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="books" element={<AdminBooksPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }

@@ -6,6 +6,7 @@ import Icon from "../components/Icon";
 import { SORT_OPTIONS } from "../constants/books";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
+import { useDebounce } from "../hooks/useDebounce";
 
 const TOPICS = [
   { value: "Semua", label: "Semua", icon: "collection" },
@@ -42,10 +43,14 @@ export default function LibraryPage({
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("grid");
   const [searchMessage, setSearchMessage] = useState("");
+  
+  // Debounce search terms for better performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const debouncedAuthorTerm = useDebounce(authorTerm, 300);
 
-  const activeKeyword = searchTerm.trim().toLowerCase();
-  const activeAuthor = authorTerm.trim().toLowerCase();
-  const searchSummary = [searchTerm.trim(), authorTerm.trim()]
+  const activeKeyword = debouncedSearchTerm.trim().toLowerCase();
+  const activeAuthor = debouncedAuthorTerm.trim().toLowerCase();
+  const searchSummary = [debouncedSearchTerm.trim(), debouncedAuthorTerm.trim()]
     .filter(Boolean)
     .join(" / ");
   const hasSearch = searchSummary !== "";
