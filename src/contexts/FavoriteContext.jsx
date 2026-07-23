@@ -2,26 +2,61 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
+import { favoriteApi } from "../services/favoriteApi.js";
+import { useAuth } from "./AuthContext.jsx";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 
 const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
+  book?.key || book?.id || book?.workKey || book?._id || book?.title;
 
 const FavoriteContext = createContext(null);
 
 export function FavoriteProvider({ children }) {
-  const [favoriteBooks, setFavoriteBooks] = useState(() => {
-    try {
-      const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      return savedFavorites ? JSON.parse(savedFavorites) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { isAuthenticated } = useAuth();
+  const [favoriteBooks, setFavoriteBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Load favorites from localStorage for offline/guest, or from API when authenticated
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (isAuthenticated) {
+        setLoading(true);
+        try {
+          const response = await favoriteApi.getFavorites();
+          const data = response.data || response;
+          const books = Array.isArray(data)
+            ? data
+            : data?.favorites || data?.data || [];
+          setFavoriteBooks(books);
+        } catch {
+          // Fallback ke localStorage jika API gagal
+          try {
+            const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
+            setFavoriteBooks(saved ? JSON.parse(saved) : []);
+          } catch {
+            setFavoriteBooks([]);
+          }
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // Guest: load dari localStorage
+        try {
+          const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
+          setFavoriteBooks(saved ? JSON.parse(saved) : []);
+        } catch {
+          setFavoriteBooks([]);
+        }
+      }
+    };
+
+    loadFavorites();
+  }, [isAuthenticated]);
 
   const favoriteIds = useMemo(() => {
     return new Set(favoriteBooks.map((book) => getBookId(book)));
@@ -29,28 +64,71 @@ export function FavoriteProvider({ children }) {
 
   const favoriteCount = favoriteBooks.length;
 
-  const persistFavorites = useCallback((books) => {
-    try {
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(books));
-    } catch {
-      // localStorage not available
-    }
-  }, []);
-
   const toggleFavorite = useCallback(
-    (book) => {
+    async (book) => {
       if (!book) return;
       const bookId = getBookId(book);
-      setFavoriteBooks((prev) => {
-        const exists = prev.some((item) => getBookId(item) === bookId);
-        const updated = exists
-          ? prev.filter((item) => getBookId(item) !== bookId)
-          : [...prev, book];
-        persistFavorites(updated);
-        return updated;
-      });
+
+      const exists = favoriteBooks.some((item) => getBookId(item) === bookId);
+
+      if (isAuthenticated) {
+        try {
+          if (exists) {
+            // Remove from backend
+            await favoriteApi.removeFavoriteByBook(bookId);
+            setFavoriteBooks((prev) =>
+              prev.filter((item) => getBookId(item) !== bookId),
+            );
+          } else {
+            // Add to backend
+            const payload = {
+              bookId,
+              title: book.title,
+              author: book.author_name?.join(", ") || book.author || "",
+              coverUrl: book.cover_i
+                ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+                : "",
+              ...book,
+            };
+            await favoriteApi.addFavorite(payload);
+            setFavoriteBooks((prev) => [...prev, book]);
+          }
+        } catch {
+          // Fallback ke localStorage jika API gagal
+          setFavoriteBooks((prev) => {
+            const updated = exists
+              ? prev.filter((item) => getBookId(item) !== bookId)
+              : [...prev, book];
+            try {
+              localStorage.setItem(
+                FAVORITES_STORAGE_KEY,
+                JSON.stringify(updated),
+              );
+            } catch {
+              // ignore
+            }
+            return updated;
+          });
+        }
+      } else {
+        // Guest: simpan di localStorage
+        setFavoriteBooks((prev) => {
+          const updated = exists
+            ? prev.filter((item) => getBookId(item) !== bookId)
+            : [...prev, book];
+          try {
+            localStorage.setItem(
+              FAVORITES_STORAGE_KEY,
+              JSON.stringify(updated),
+            );
+          } catch {
+            // ignore
+          }
+          return updated;
+        });
+      }
     },
-    [persistFavorites],
+    [favoriteBooks, isAuthenticated],
   );
 
   const value = useMemo(
@@ -58,9 +136,10 @@ export function FavoriteProvider({ children }) {
       favoriteBooks,
       favoriteIds,
       favoriteCount,
+      loading,
       toggleFavorite,
     }),
-    [favoriteBooks, favoriteIds, favoriteCount, toggleFavorite],
+    [favoriteBooks, favoriteIds, favoriteCount, loading, toggleFavorite],
   );
 
   return (

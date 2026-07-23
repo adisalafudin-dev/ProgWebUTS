@@ -1,21 +1,10 @@
-# Context API Implementation Progress
+# Frontend-Backend Integration Plan
 
-## Context Files to Create
+## Steps
 
-- [x] `src/contexts/ThemeContext.jsx` - Theme state (dark/light mode)
-- [x] `src/contexts/FavoriteContext.jsx` - Favorite books management
-- [x] `src/contexts/NotificationContext.jsx` - Toast notifications
-
-## Files to Update
-
-- [x] `src/main.jsx` - Wrap providers in correct order
-- [x] `src/layouts/MainLayout.jsx` - Remove prop drilling, use context hooks
-- [x] `src/layouts/App.jsx` - Remove local state for theme/favorites/toasts
-- [x] `src/pages/DashboardPage.jsx` - Use context hooks instead of props
-- [x] `src/pages/FavoritesPage.jsx` - Use context hooks instead of props
-- [x] `src/pages/ProfilePage.jsx` - Use context hooks instead of props
-- [x] `src/pages/LoginPage.jsx` - Use context hooks instead of props
-- [x] `src/pages/RegisterPage.jsx` - Use context hooks instead of props
-- [x] `src/pages/SettingsPage.jsx` - Use context hooks instead of props
-- [x] `src/pages/BookDetailPage.jsx` - Use context hooks instead of props
-- [x] Build verified - zero errors
+- [x] **Step 1:** Create `.env` file with all 7 microservice URLs
+- [x] **Step 2:** Update `AuthContext.jsx` to use `authApi.js` for backend API calls
+- [x] **Step 2b:** Update `LoginPage.jsx` and `RegisterPage.jsx` for async login/register
+- [x] **Step 3:** Update `FavoriteContext.jsx` to integrate with `favoriteApi.js`
+- [x] **Step 4:** Update `NotificationContext.jsx` to integrate with `notificationApi.js`
+- [x] **Step 5:** Verify build with `npm run build`

@@ -24,7 +24,7 @@ export default function RegisterPage() {
     setMessage("");
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const email = values.email.trim();
     const password = values.password.trim();
@@ -37,7 +37,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      register({ name, email, password });
+      await register({ name, email, password });
       showToast("Pendaftaran berhasil", `Selamat datang, ${name}.`, "success");
       navigate(redirectTo, { replace: true });
     } catch (err) {

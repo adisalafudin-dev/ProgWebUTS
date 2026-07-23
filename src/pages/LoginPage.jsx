@@ -22,7 +22,7 @@ export default function LoginPage({ redirectTo = "/" }) {
     setMessage("");
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const email = values.email.trim();
     const password = values.password.trim();
@@ -33,7 +33,7 @@ export default function LoginPage({ redirectTo = "/" }) {
     }
 
     try {
-      const session = login({ email, password });
+      const session = await login({ email, password });
       const displayName =
         session?.user?.name || email.split("@")[0] || "Pembaca";
       showToast("Login berhasil", `Selamat datang, ${displayName}.`, "success");
