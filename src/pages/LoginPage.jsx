@@ -2,20 +2,15 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
+import { useAuth } from "../contexts/AuthContext.jsx";
 
-export default function LoginPage({
-  currentUser,
-  onLogin,
-  onLogout,
-  onToast,
-  redirectTo = "/",
-}) {
+export default function LoginPage({ onToast, redirectTo = "/" }) {
+  const { user, isAuthenticated, login, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const nextRedirect = location.state?.redirectTo || redirectTo;
   const [values, setValues] = useState({
-    name: currentUser?.name || "",
-    email: currentUser?.email || "",
+    email: "",
     password: "",
   });
   const [message, setMessage] = useState("");
@@ -29,16 +24,26 @@ export default function LoginPage({
     event.preventDefault();
     const email = values.email.trim();
     const password = values.password.trim();
-    const name = values.name.trim() || email.split("@")[0] || "Pembaca";
 
     if (!email || !password) {
       setMessage("Email dan password wajib diisi.");
       return;
     }
 
-    onLogin?.({ name, email });
-    onToast?.("Login berhasil", `Selamat datang, ${name}.`, "success");
-    navigate(nextRedirect, { replace: true });
+    try {
+      const session = login({ email, password });
+      const displayName =
+        session?.user?.name || email.split("@")[0] || "Pembaca";
+      onToast?.("Login berhasil", `Selamat datang, ${displayName}.`, "success");
+      navigate(nextRedirect, { replace: true });
+    } catch (err) {
+      setMessage(err.message || "Email atau password salah.");
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    onToast?.("Logout berhasil", "Sesi akun sudah keluar.", "info");
   };
 
   return (
@@ -64,15 +69,13 @@ export default function LoginPage({
         </div>
 
         <div className="rounded-lg border border-borderSoft bg-white p-6 shadow-book">
-          {currentUser ? (
+          {isAuthenticated ? (
             <div>
               <p className="section-label mb-2">Sudah Login</p>
               <h2 className="font-playfair text-2xl font-bold text-textMain">
-                {currentUser.name}
+                {user.name}
               </h2>
-              <p className="mt-1 text-sm text-textSecondary">
-                {currentUser.email}
-              </p>
+              <p className="mt-1 text-sm text-textSecondary">{user.email}</p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link to="/" className="btn-primary">
                   <Icon name="home" className="h-4 w-4" />
@@ -81,14 +84,7 @@ export default function LoginPage({
                 <button
                   type="button"
                   className="btn-secondary"
-                  onClick={() => {
-                    onLogout?.();
-                    onToast?.(
-                      "Logout berhasil",
-                      "Sesi akun sudah keluar.",
-                      "info",
-                    );
-                  }}
+                  onClick={handleLogout}
                 >
                   Keluar
                 </button>
@@ -104,26 +100,6 @@ export default function LoginPage({
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="login-name"
-                    className="section-label mb-1.5 block"
-                  >
-                    Nama
-                  </label>
-                  <input
-                    id="login-name"
-                    type="text"
-                    autoComplete="name"
-                    className="input-field"
-                    placeholder="Nama kamu"
-                    value={values.name}
-                    onChange={(event) =>
-                      handleChange("name", event.target.value)
-                    }
-                  />
-                </div>
-
                 <div>
                   <label
                     htmlFor="login-email"
@@ -175,6 +151,19 @@ export default function LoginPage({
                 <Icon name="users" className="h-4 w-4" />
                 Masuk
               </button>
+
+              <p className="mt-4 text-sm text-textSecondary">
+                Demo:{" "}
+                <span className="font-semibold">demo@aksarahub.local</span> /{" "}
+                <span className="font-semibold">demo123</span>
+              </p>
+
+              <p className="mt-2 text-sm text-textSecondary">
+                Belum punya akun?{" "}
+                <Link to="/register" className="font-semibold text-accentHover">
+                  Daftar
+                </Link>
+              </p>
             </form>
           )}
         </div>

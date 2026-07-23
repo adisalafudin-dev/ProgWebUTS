@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
@@ -10,17 +9,15 @@ export default function Header({
   activePage = "home",
   currentUser,
   onLogout,
+  drawerOpen = false,
+  onToggleDrawer,
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   const navLinks = [
     { to: "/", page: "home", label: "Beranda", icon: "home" },
     { to: "/books", page: "katalog", label: "Katalog API", icon: "cloud" },
     { to: "/favorites", page: "favorit", label: "Favorit", icon: "heart" },
     { to: "/about", page: "tentang", label: "Tentang", icon: "info" },
   ];
-
-  const handleNavClick = () => setMenuOpen(false);
 
   return (
     <header className="sticky top-0 z-40 border-b border-accent/30 bg-primary/95 backdrop-blur-sm shadow-book">
@@ -116,27 +113,27 @@ export default function Header({
             <button
               type="button"
               aria-label={
-                menuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"
+                drawerOpen ? "Tutup menu navigasi" : "Buka menu navigasi"
               }
-              aria-expanded={menuOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-expanded={drawerOpen}
+              aria-controls="mobile-drawer"
+              onClick={onToggleDrawer}
               className="md:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
             >
               <div className="w-5 flex flex-col gap-1.5">
                 <span
                   className={`block h-0.5 bg-white rounded transition-all duration-300 ${
-                    menuOpen ? "rotate-45 translate-y-2" : ""
+                    drawerOpen ? "rotate-45 translate-y-2" : ""
                   }`}
                 />
                 <span
                   className={`block h-0.5 bg-white rounded transition-all duration-300 ${
-                    menuOpen ? "opacity-0" : ""
+                    drawerOpen ? "opacity-0" : ""
                   }`}
                 />
                 <span
                   className={`block h-0.5 bg-white rounded transition-all duration-300 ${
-                    menuOpen ? "-rotate-45 -translate-y-2" : ""
+                    drawerOpen ? "-rotate-45 -translate-y-2" : ""
                   }`}
                 />
               </div>
@@ -144,64 +141,6 @@ export default function Header({
           </div>
         </div>
       </div>
-
-      <nav
-        id="mobile-nav"
-        aria-label="Navigasi mobile"
-        className={`md:hidden border-t border-white/10 bg-primary transition-all duration-300 overflow-hidden ${
-          menuOpen ? "max-h-56 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 py-2 grid grid-cols-5 gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={handleNavClick}
-              aria-current={activePage === link.page ? "page" : undefined}
-              className={`flex flex-col items-center gap-1 py-2 text-xs font-semibold font-crimson text-white/70 rounded-lg hover:bg-white/10 hover:text-accent transition-colors duration-200 ${
-                activePage === link.page ? "bg-white/10 text-accent" : ""
-              }`}
-            >
-              <Icon name={link.icon} className="w-4 h-4" />
-              <span className="inline-flex items-center gap-1">
-                {link.label}
-                {link.page === "favorit" && (
-                  <span className="inline-flex min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
-                    {favoriteCount}
-                  </span>
-                )}
-              </span>
-            </Link>
-          ))}
-
-          {currentUser ? (
-            <button
-              type="button"
-              onClick={() => {
-                onLogout?.();
-                handleNavClick();
-              }}
-              className="flex flex-col items-center gap-1 py-2 text-xs font-semibold font-crimson text-white/70 rounded-lg hover:bg-white/10 hover:text-accent transition-colors duration-200"
-            >
-              <Icon name="users" className="w-4 h-4" />
-              <span>Keluar</span>
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              onClick={handleNavClick}
-              aria-current={activePage === "login" ? "page" : undefined}
-              className={`flex flex-col items-center gap-1 py-2 text-xs font-semibold font-crimson text-white/70 rounded-lg hover:bg-white/10 hover:text-accent transition-colors duration-200 ${
-                activePage === "login" ? "bg-white/10 text-accent" : ""
-              }`}
-            >
-              <Icon name="users" className="w-4 h-4" />
-              <span>Masuk</span>
-            </Link>
-          )}
-        </div>
-      </nav>
     </header>
   );
 }

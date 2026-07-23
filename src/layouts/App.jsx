@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { useLocation, useNavigate, Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import LibraryPage from "../pages/LibraryPage";
 import FavoritesPage from "../pages/FavoritesPage";
@@ -17,12 +11,14 @@ import SettingsPage from "../pages/SettingsPage";
 import BookDetailPage from "../pages/BookDetailPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import MainLayout from "./MainLayout";
+import AuthLayout from "./AuthLayout";
+import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import { FALLBACK_BOOKS } from "../constants/books";
 import { fetchOpenLibraryBooks } from "../services/bookApi";
+import { useAuth } from "../contexts/AuthContext.jsx";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 const THEME_STORAGE_KEY = "aksarahub-theme";
-const AUTH_STORAGE_KEY = "aksarahub-user";
 
 const getBookId = (book) =>
   book?.key || book?.id || book?.workKey || book?.title;
@@ -30,20 +26,13 @@ const getBookId = (book) =>
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isAuthenticated, login, logout, register } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [dataStore, setDataStore] = useState([]);
   const [recommendationStore, setRecommendationStore] = useState([]);
   const [error, setError] = useState(null);
   const [toasts, setToasts] = useState([]);
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem(AUTH_STORAGE_KEY);
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch {
-      return null;
-    }
-  });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     try {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
@@ -80,7 +69,7 @@ export default function App() {
   };
 
   const toggleFavorite = (book) => {
-    if (!currentUser) {
+    if (!isAuthenticated) {
       showToast(
         "Login diperlukan",
         "Masuk dulu untuk menyimpan buku favorit.",
@@ -132,19 +121,8 @@ export default function App() {
     );
   };
 
-  const handleLogin = (user) => {
-    const nextUser = {
-      name: user.name,
-      email: user.email,
-      loggedInAt: new Date().toISOString(),
-    };
-    setCurrentUser(nextUser);
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(nextUser));
-  };
-
   const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    logout();
     if (location.pathname === "/favorites") {
       navigate("/", { replace: true });
     }
@@ -220,13 +198,12 @@ export default function App() {
   return (
     <Routes>
       <Route
-        path="/"
         element={
           <MainLayout
             favoriteCount={favoriteBooks.length}
             isDarkMode={isDarkMode}
             onToggleTheme={toggleTheme}
-            currentUser={currentUser}
+            currentUser={user}
             onLogout={handleLogout}
             onToast={showToast}
             toasts={toasts}
@@ -278,59 +255,23 @@ export default function App() {
         <Route
           path="favorites"
           element={
-            currentUser ? (
+            <ProtectedRoute>
               <FavoritesPage
                 favoriteBooks={favoriteBooks}
                 favoriteIds={favoriteIds}
                 onToggleFavorite={toggleFavorite}
                 onToast={showToast}
               />
-            ) : (
-              <Navigate
-                to="/login"
-                state={{ redirectTo: "/favorites" }}
-                replace
-              />
-            )
+            </ProtectedRoute>
           }
         />
         <Route path="about" element={<AboutPage />} />
         <Route
-          path="login"
-          element={
-            <LoginPage
-              currentUser={currentUser}
-              onLogin={handleLogin}
-              onLogout={handleLogout}
-              onToast={showToast}
-            />
-          }
-        />
-        <Route
-          path="register"
-          element={
-            <RegisterPage
-              currentUser={currentUser}
-              onLogin={handleLogin}
-              onToast={showToast}
-            />
-          }
-        />
-        <Route
           path="profile"
           element={
-            currentUser ? (
-              <ProfilePage
-                currentUser={currentUser}
-                favoriteBooks={favoriteBooks}
-              />
-            ) : (
-              <Navigate
-                to="/login"
-                state={{ redirectTo: "/profile" }}
-                replace
-              />
-            )
+            <ProtectedRoute>
+              <ProfilePage currentUser={user} favoriteBooks={favoriteBooks} />
+            </ProtectedRoute>
           }
         />
         <Route
@@ -340,6 +281,15 @@ export default function App() {
           }
         />
         <Route path="*" element={<NotFoundPage />} />
+      </Route>
+
+      <Route
+        element={
+          <AuthLayout isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />
+        }
+      >
+        <Route path="login" element={<LoginPage onToast={showToast} />} />
+        <Route path="register" element={<RegisterPage onToast={showToast} />} />
       </Route>
     </Routes>
   );

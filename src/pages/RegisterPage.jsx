@@ -2,16 +2,19 @@ import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
+import { useAuth } from "../contexts/AuthContext.jsx";
 
-export default function RegisterPage({ currentUser, onLogin, onToast }) {
+export default function RegisterPage({ onToast }) {
+  const { user, isAuthenticated, register } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [values, setValues] = useState({
-    name: currentUser?.name || "",
-    email: currentUser?.email || "",
+    name: "",
+    email: "",
     password: "",
   });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const redirectTo = location.state?.redirectTo || "/";
 
   const handleChange = (key, value) => {
@@ -30,9 +33,16 @@ export default function RegisterPage({ currentUser, onLogin, onToast }) {
       return;
     }
 
-    onLogin?.({ name, email });
-    onToast?.("Pendaftaran berhasil", `Selamat datang, ${name}.`, "success");
-    navigate(redirectTo, { replace: true });
+    setLoading(true);
+    try {
+      register({ name, email, password });
+      onToast?.("Pendaftaran berhasil", `Selamat datang, ${name}.`, "success");
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setMessage(err.message || "Pendaftaran gagal.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,15 +68,13 @@ export default function RegisterPage({ currentUser, onLogin, onToast }) {
         </div>
 
         <div className="rounded-lg border border-borderSoft bg-white p-6 shadow-book">
-          {currentUser ? (
+          {isAuthenticated ? (
             <div>
               <p className="section-label mb-2">Sudah Login</p>
               <h2 className="font-playfair text-2xl font-bold text-textMain">
-                {currentUser.name}
+                {user.name}
               </h2>
-              <p className="mt-1 text-sm text-textSecondary">
-                {currentUser.email}
-              </p>
+              <p className="mt-1 text-sm text-textSecondary">{user.email}</p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link to="/" className="btn-primary">
                   <Icon name="home" className="h-4 w-4" />
@@ -151,9 +159,13 @@ export default function RegisterPage({ currentUser, onLogin, onToast }) {
                 </p>
               )}
 
-              <button type="submit" className="btn-primary mt-6 w-full">
+              <button
+                type="submit"
+                className="btn-primary mt-6 w-full"
+                disabled={loading}
+              >
                 <Icon name="users" className="h-4 w-4" />
-                Daftar
+                {loading ? "Mendaftarkan..." : "Daftar"}
               </button>
             </form>
           )}
