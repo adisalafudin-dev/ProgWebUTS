@@ -7,6 +7,7 @@ import Sidebar from "../components/Sidebar";
 import Breadcrumb from "../components/Breadcrumb";
 
 const getActivePage = (pathname) => {
+  if (pathname === "/dashboard") return "dashboard";
   if (pathname.startsWith("/books")) return "katalog";
   if (pathname === "/favorites") return "favorit";
   if (pathname === "/about") return "tentang";

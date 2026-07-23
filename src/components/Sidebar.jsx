@@ -3,6 +3,7 @@ import Icon from "./Icon";
 
 const sidebarLinks = [
   { to: "/", page: "home", label: "Beranda", icon: "home" },
+  { to: "/dashboard", page: "dashboard", label: "Dashboard", icon: "grid" },
   { to: "/books", page: "katalog", label: "Katalog API", icon: "cloud" },
   { to: "/favorites", page: "favorit", label: "Favorit", icon: "heart" },
   { to: "/about", page: "tentang", label: "Tentang", icon: "info" },

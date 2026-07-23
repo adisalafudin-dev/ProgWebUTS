@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, Routes, Route, Navigate } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import HomePage from "../pages/HomePage";
+import DashboardPage from "../pages/DashboardPage";
 import LibraryPage from "../pages/LibraryPage";
 import FavoritesPage from "../pages/FavoritesPage";
 import AboutPage from "../pages/AboutPage";
@@ -260,6 +267,25 @@ export default function App() {
               onToggleFavorite={toggleFavorite}
               onToast={showToast}
             />
+          }
+        />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage
+                currentUser={user}
+                books={dataStore}
+                favoriteBooks={favoriteBooks}
+                favoriteIds={favoriteIds}
+                onToggleFavorite={toggleFavorite}
+                continueReadingBooks={dataStore.slice(0, 4)}
+                recentReviews={[]}
+                notifications={[]}
+                onMarkNotificationRead={(id) => {}}
+                onToast={showToast}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
