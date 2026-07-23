@@ -8,13 +8,8 @@ export default function Footer({ activePage = "home" }) {
   const { showToast } = useNotification();
   const navItems = [
     { label: "Beranda", to: "/", page: "home", icon: "home" },
-    {
-      label: "Koleksi Buku",
-      to: "/books",
-      page: "home",
-      icon: "collection",
-    },
-    { label: "Katalog API", to: "/books", page: "katalog", icon: "cloud" },
+    { label: "Jelajah", to: "/dashboard", page: "dashboard", icon: "compass" },
+    { label: "Katalog Buku", to: "/books", page: "katalog", icon: "cloud" },
     { label: "Favorit", to: "/favorites", page: "favorit", icon: "heart" },
     { label: "Tentang", to: "/about", page: "tentang", icon: "info" },
   ];

@@ -18,7 +18,7 @@ export default function DiscoverHero({ userName }) {
 
   return (
     <section className="rounded-3xl border border-borderSoft bg-white/60 p-6 shadow-book sm:p-8">
-      <p className="section-label mb-1">Discover</p>
+      <p className="section-label mb-1">Jelajah</p>
       <h1 className="font-playfair text-3xl font-extrabold text-textMain sm:text-4xl">
         {userName ? `Halo, ${userName} 👋` : "Temukan bacaan berikutnya"}
       </h1>

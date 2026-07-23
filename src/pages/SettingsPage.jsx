@@ -11,7 +11,7 @@ export default function SettingsPage() {
   }, [isDarkMode]);
 
   return (
-    <section className="mx-auto min-h-[70vh] max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+    <section className="mx-auto min-h-[70vh] max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
       <div className="rounded-lg border border-borderSoft bg-white p-8 shadow-book">
         <p className="section-label mb-3">Pengaturan</p>
         <h1 className="font-playfair text-3xl font-bold text-textMain mb-6">

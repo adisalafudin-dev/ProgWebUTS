@@ -6,8 +6,8 @@ import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
 const sidebarLinks = [
   { to: "/", page: "home", label: "Beranda", icon: "home" },
-  { to: "/dashboard", page: "dashboard", label: "Discover", icon: "compass" },
-  { to: "/books", page: "katalog", label: "Katalog API", icon: "cloud" },
+  { to: "/dashboard", page: "dashboard", label: "Jelajah", icon: "compass" },
+  { to: "/books", page: "katalog", label: "Katalog Buku", icon: "cloud" },
   { to: "/favorites", page: "favorit", label: "Favorit", icon: "heart" },
   { to: "/about", page: "tentang", label: "Tentang", icon: "info" },
 ];
@@ -102,7 +102,7 @@ export default function Sidebar({ activePage = "home", onClose }) {
               }}
               className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-white/60 transition-colors duration-200 hover:bg-white/10 hover:text-white"
             >
-              <Icon name="close" className="h-4 w-4" />
+              <Icon name="logOut" className="h-4 w-4" />
               Keluar
             </button>
           )}

@@ -40,13 +40,13 @@ export default function DashboardPage({
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <section className="mx-auto min-h-[70vh] max-w-6xl space-y-12 pb-4">
+    <section className="mx-auto min-h-[70vh] max-w-7xl space-y-12 pb-4">
       <DiscoverHero userName={user?.name?.split(" ")[0]} />
 
       <div>
         <SectionHeader
           label="Rekomendasi"
-          title="Book Recommendation"
+          title="Rekomendasi Buku"
           actionTo="/books"
           actionLabel="Lihat Semua"
           actionIcon="eye"
@@ -68,7 +68,7 @@ export default function DashboardPage({
       <div>
         <SectionHeader
           label="Rak Pribadi"
-          title="Favorite Books"
+          title="Buku Favorit"
           actionTo="/favorites"
           actionIcon="heart"
         />
@@ -91,7 +91,7 @@ export default function DashboardPage({
         <div>
           <SectionHeader
             label="Aktivitas"
-            title="Recent Review"
+            title="Ulasan Terbaru"
             actionTo="/profile"
             actionIcon="pen"
           />

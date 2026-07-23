@@ -5,16 +5,6 @@ import { useAuth } from "../contexts/AuthContext.jsx";
 import { useTheme } from "../contexts/ThemeContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 
-const pageTitles = {
-  home: "Beranda",
-  dashboard: "Discover",
-  katalog: "Katalog API",
-  favorit: "Favorit",
-  tentang: "Tentang",
-  profile: "Profil",
-  settings: "Pengaturan",
-};
-
 export default function Header({
   activePage = "home",
   drawerOpen = false,
@@ -44,7 +34,7 @@ export default function Header({
   return (
     <header className="sticky top-0 z-30 border-b border-borderSoft bg-cream/90 backdrop-blur-sm">
       <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-1 items-center gap-3 max-w-md">
           <button
             type="button"
             aria-label={
@@ -73,36 +63,33 @@ export default function Header({
               />
             </div>
           </button>
-          <p className="font-playfair text-sm font-semibold text-textSecondary sm:text-base">
-            {pageTitles[activePage] || "AksaraHub"}
-          </p>
-        </div>
 
-        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
-          <div className="relative w-full">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-textSecondary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          <form onSubmit={handleSearch} className="flex-1">
+            <div className="relative w-full">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-textSecondary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+              <input
+                type="search"
+                placeholder="Cari buku..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 rounded-lg border border-borderSoft bg-white text-sm text-textMain placeholder-textSecondary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               />
-            </svg>
-            <input
-              type="search"
-              placeholder="Cari buku..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-lg border border-borderSoft bg-white text-sm text-textMain placeholder-textSecondary focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-            />
-          </div>
-        </form>
+            </div>
+          </form>
+        </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
           <button
@@ -162,7 +149,7 @@ export default function Header({
                     className="flex items-center gap-2 px-4 py-2 text-sm text-textMain hover:bg-cream"
                     onClick={() => setShowAvatarDropdown(false)}
                   >
-                    <Icon name="user" className="h-4 w-4" />
+                    <Icon name="users" className="h-4 w-4" />
                     Profil
                   </Link>
                   <Link
@@ -170,7 +157,7 @@ export default function Header({
                     className="flex items-center gap-2 px-4 py-2 text-sm text-textMain hover:bg-cream"
                     onClick={() => setShowAvatarDropdown(false)}
                   >
-                    <Icon name="settings" className="h-4 w-4" />
+                    <Icon name="monitor" className="h-4 w-4" />
                     Pengaturan
                   </Link>
                   <hr className="border-borderSoft my-1" />

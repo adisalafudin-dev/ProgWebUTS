@@ -59,7 +59,7 @@ export default function AboutPage() {
   return (
     <section
       id="tentang"
-      className="max-w-6xl mx-auto px-4 sm:px-6 py-14 scroll-mt-24"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 scroll-mt-24"
     >
       <div className="mb-10 max-w-3xl">
         <p className="section-label mb-3">Tentang AksaraHub</p>

@@ -4,7 +4,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ToastContainer from "../components/ToastContainer";
 import Sidebar from "../components/Sidebar";
-import Breadcrumb from "../components/Breadcrumb";
 
 const getActivePage = (pathname) => {
   if (pathname === "/dashboard") return "dashboard";
@@ -74,8 +73,7 @@ export default function MainLayout() {
         />
 
         <main id="main-content" role="main" className="flex-1">
-          <div className="mx-auto max-w-6xl space-y-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
-            <Breadcrumb />
+          <div className="mx-auto max-w-7xl space-y-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
             <Outlet />
           </div>
         </main>
