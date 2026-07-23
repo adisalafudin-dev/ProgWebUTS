@@ -5,9 +5,7 @@ import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
-
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
+import { getBookId } from "../utils/bookHelpers.js";
 
 export default function FavoritesPage() {
   const { favoriteBooks, favoriteIds, toggleFavorite } = useFavorites();

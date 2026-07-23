@@ -4,9 +4,7 @@ import BookModal from "../components/BookModal";
 import { FALLBACK_BOOKS } from "../constants/books";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
-
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
+import { getBookId } from "../utils/bookHelpers.js";
 
 export default function BookDetailPage({ dataStore = [] }) {
   const { id } = useParams();

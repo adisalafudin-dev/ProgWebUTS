@@ -2,13 +2,17 @@ import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
+import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 
 const sidebarLinks = [
   { to: "/", page: "home", label: "Beranda", icon: "home" },
-  { to: "/dashboard", page: "dashboard", label: "Dashboard", icon: "grid" },
+  { to: "/dashboard", page: "dashboard", label: "Discover", icon: "compass" },
   { to: "/books", page: "katalog", label: "Katalog API", icon: "cloud" },
   { to: "/favorites", page: "favorit", label: "Favorit", icon: "heart" },
   { to: "/about", page: "tentang", label: "Tentang", icon: "info" },
+];
+
+const bottomLinks = [
   { to: "/profile", page: "profile", label: "Profil", icon: "users" },
   { to: "/settings", page: "settings", label: "Pengaturan", icon: "monitor" },
 ];
@@ -18,62 +22,108 @@ export default function Sidebar({ activePage = "home", onClose }) {
   const { favoriteCount } = useFavorites();
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-borderSoft bg-white p-5 shadow-book">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="section-label">Ringkasan</p>
-            <p className="text-sm text-textSecondary">Statistik singkat</p>
+    <div className="flex h-full min-h-full flex-col justify-between px-4 py-6">
+      <div>
+        <Link
+          to="/"
+          onClick={() => onClose?.()}
+          className="mb-8 flex items-center gap-3 px-2"
+        >
+          <div className="h-10 w-10 overflow-hidden rounded-xl bg-white shadow-book">
+            <img
+              src={aksaraHubLogo}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full scale-[1.55] object-cover"
+            />
           </div>
-          <span className="inline-flex h-10 min-w-[2.5rem] items-center justify-center rounded-full bg-accent text-sm font-semibold text-white">
-            {favoriteCount}
-          </span>
-        </div>
-        <div className="rounded-2xl bg-cream p-4 text-sm text-textSecondary">
-          <p className="font-semibold text-textMain">
-            {isAuthenticated ? `Halo, ${user?.name}` : "Belum masuk"}
-          </p>
-          <p className="mt-2 leading-relaxed">
-            {isAuthenticated
-              ? "Kelola akun dan favorit dengan lebih cepat."
-              : "Masuk untuk menyimpan buku dan melihat profil."}
-          </p>
-        </div>
-      </div>
+          <div>
+            <p className="font-playfair text-lg font-extrabold leading-none text-white">
+              AksaraHub
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.16em] text-white/45">
+              Digital Library
+            </p>
+          </div>
+        </Link>
 
-      <div className="rounded-3xl border border-borderSoft bg-white p-5 shadow-book">
-        <p className="section-label mb-4">Navigasi Cepat</p>
-        <div className="space-y-2">
+        <p className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+          Menu
+        </p>
+        <nav aria-label="Navigasi utama" className="space-y-1.5">
           {sidebarLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => onClose?.()}
-              className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors duration-200 ${
+              aria-current={activePage === link.page ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-colors duration-200 ${
+                activePage === link.page
+                  ? "bg-accent text-white shadow-book"
+                  : "text-white/60 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Icon name={link.icon} className="h-4 w-4" />
+              {link.label}
+              {link.page === "favorit" && favoriteCount > 0 && (
+                <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1 text-[10px] font-bold">
+                  {favoriteCount}
+                </span>
+              )}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      <div className="space-y-4">
+        <div className="space-y-1.5 border-t border-white/10 pt-4">
+          {bottomLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => onClose?.()}
+              aria-current={activePage === link.page ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-colors duration-200 ${
                 activePage === link.page
                   ? "bg-accent text-white"
-                  : "text-textSecondary hover:bg-cream hover:text-textMain"
+                  : "text-white/60 hover:bg-white/10 hover:text-white"
               }`}
             >
               <Icon name={link.icon} className="h-4 w-4" />
               {link.label}
             </Link>
           ))}
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                onClose?.();
+              }}
+              className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-white/60 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+            >
+              <Icon name="close" className="h-4 w-4" />
+              Keluar
+            </button>
+          )}
+        </div>
+
+        <div className="rounded-2xl bg-gradient-to-br from-accent to-accentHover p-4 text-white shadow-book">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/70">
+            Reading Challenge
+          </p>
+          <p className="mt-1 font-playfair text-sm font-bold leading-snug">
+            {isAuthenticated
+              ? `Semangat, ${user?.name?.split(" ")[0] || "Pembaca"}!`
+              : "Yuk gabung AksaraHub"}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-white/70">
+            {isAuthenticated
+              ? "Lanjutkan target bacaanmu minggu ini."
+              : "Masuk untuk menyimpan progres bacamu."}
+          </p>
         </div>
       </div>
-
-      {isAuthenticated ? (
-        <div className="rounded-3xl border border-borderSoft bg-white p-5 shadow-book">
-          <p className="section-label mb-4">Akun</p>
-          <button
-            type="button"
-            onClick={logout}
-            className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-accentHover"
-          >
-            Keluar dari Akun
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

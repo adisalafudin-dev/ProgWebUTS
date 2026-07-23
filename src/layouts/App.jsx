@@ -14,7 +14,6 @@ import { ROLES } from "../constants/roles.js";
 import { FALLBACK_BOOKS } from "../constants/books";
 import { fetchOpenLibraryBooks } from "../services/openLibraryApi";
 import { useAuth } from "../contexts/AuthContext.jsx";
-import { useTheme } from "../contexts/ThemeContext.jsx";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
@@ -42,7 +41,6 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
   const { favoriteBooks, favoriteIds, favoriteCount, toggleFavorite } =
     useFavorites();
   const { showToast } = useNotification();
@@ -164,7 +162,6 @@ export default function App() {
               <ProtectedRoute>
                 <DashboardPage
                   books={dataStore}
-                  continueReadingBooks={dataStore.slice(0, 4)}
                   recentReviews={[]}
                   notifications={[]}
                   onMarkNotificationRead={(id) => {}}

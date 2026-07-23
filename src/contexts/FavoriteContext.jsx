@@ -8,11 +8,9 @@ import {
 } from "react";
 import { favoriteApi } from "../services/favoriteApi.js";
 import { useAuth } from "./AuthContext.jsx";
+import { getBookId } from "../utils/bookHelpers.js";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
-
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?._id || book?.title;
 
 const FavoriteContext = createContext(null);
 

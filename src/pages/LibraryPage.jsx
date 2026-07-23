@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import BookCardSkeleton from "../components/BookCardSkeleton";
 import BookModal from "../components/BookModal";
@@ -7,6 +8,7 @@ import { SORT_OPTIONS } from "../constants/books";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import { useDebounce } from "../hooks/useDebounce";
+import { getBookId } from "../utils/bookHelpers.js";
 
 const TOPICS = [
   { value: "Semua", label: "Semua", icon: "collection" },
@@ -22,14 +24,12 @@ const TOPICS = [
   { value: "Poetry", label: "Poetry", icon: "pen" },
 ];
 
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
-
 export default function LibraryPage({
   books = [],
   isLoading = false,
   fetchData,
 }) {
+  const [searchParams] = useSearchParams();
   const { favoriteIds, toggleFavorite } = useFavorites();
   const { showToast } = useNotification();
   const ITEMS_PER_PAGE = 10;
@@ -47,6 +47,24 @@ export default function LibraryPage({
   // Debounce search terms for better performance
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const debouncedAuthorTerm = useDebounce(authorTerm, 300);
+
+  // Handle URL query parameter for search
+  useEffect(() => {
+    const queryParam = searchParams.get("q");
+    if (queryParam) {
+      setSearchTerm(queryParam);
+      fetchData?.({
+        q: queryParam,
+        author: "",
+        genre: "Semua",
+        yearMin: 1800,
+        minRating: 0,
+        available: false,
+        featured: false,
+        sort: "default",
+      });
+    }
+  }, [searchParams]);
 
   const activeKeyword = debouncedSearchTerm.trim().toLowerCase();
   const activeAuthor = debouncedAuthorTerm.trim().toLowerCase();

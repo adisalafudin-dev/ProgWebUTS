@@ -77,8 +77,8 @@ export default function BookCard({
             type="button"
             className={`absolute left-2 top-2 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 ${
               isFavorite
-                ? "border-accent bg-accent text-white"
-                : "border-white/40 bg-primary/70 text-white hover:border-accent hover:bg-accent"
+                ? "border-red-500 bg-red-500 text-white"
+                : "border-white/40 bg-primary/70 text-white hover:border-red-500 hover:bg-red-500"
             }`}
             aria-label={
               isFavorite
@@ -164,8 +164,8 @@ export default function BookCard({
             type="button"
             className={`mt-3 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition-all duration-200 ${
               isFavorite
-                ? "border-accent bg-accent text-white hover:bg-accentHover"
-                : "border-borderSoft bg-white text-secondary hover:border-accent hover:text-accentHover"
+                ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                : "border-borderSoft bg-white text-secondary hover:border-red-500 hover:text-red-500"
             }`}
             aria-pressed={isFavorite}
             onClick={() => onToggleFavorite(book)}
@@ -176,12 +176,12 @@ export default function BookCard({
         )}
 
         {uniqueGenres.length > 0 && (
-          <div className="mt-3 flex min-h-[1.5rem] flex-wrap gap-1">
+          <div className="mt-3 flex min-h-[1.5rem] flex-wrap gap-1.5 items-center">
             {uniqueGenres.slice(0, 4).map((tag) => (
               <span
                 key={tag}
                 className="text-[10px] font-crimson bg-cream
-                           text-secondary px-2 py-0.5 rounded-full"
+                           text-secondary px-2.5 py-1 rounded-full border border-borderSoft"
               >
                 {tag}
               </span>

@@ -142,8 +142,8 @@ export default function BookModal({
             )}
           </div>
 
-          <div className="flex-1 bg-cream p-6">
-            <div className="mb-3 flex items-start justify-between gap-4">
+          <div className="flex-1 bg-cream p-6 flex flex-col">
+            <div className="mb-3 flex items-start justify-between gap-4 flex-shrink-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="section-label">
                   {uniqueGenres.slice(0, 2).join(" / ") || "General"}
@@ -169,11 +169,11 @@ export default function BookModal({
               </button>
             </div>
 
-            <h2 className="font-playfair font-bold text-2xl text-textMain leading-tight mb-1">
+            <h2 className="font-playfair font-bold text-2xl text-textMain leading-tight mb-1 flex-shrink-0">
               {title}
             </h2>
 
-            <div className="mb-5 mt-4">
+            <div className="mb-5 mt-4 flex-shrink-0">
               <p className="section-label mb-2">Informasi Buku</p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {bookInfo.map(({ label, value }) => (
@@ -192,14 +192,14 @@ export default function BookModal({
               </div>
             </div>
 
-            <div className="mb-5 rounded-lg border border-borderSoft bg-white px-4 py-3">
+            <div className="mb-5 rounded-lg border border-borderSoft bg-white px-4 py-3 flex-shrink-0">
               <p className="section-label mb-1">Sinopsis</p>
-              <p className="text-sm leading-relaxed text-textSecondary">
+              <p className="text-sm leading-relaxed text-textSecondary line-clamp-6">
                 {isSynopsisLoading ? "Mengambil sinopsis buku..." : synopsis}
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 mt-auto flex-shrink-0">
               <button
                 type="button"
                 className="btn-primary text-sm py-2.5"
@@ -210,7 +210,11 @@ export default function BookModal({
               </button>
               <button
                 type="button"
-                className="btn-secondary text-sm py-2.5"
+                className={`inline-flex items-center gap-2 text-sm py-2.5 px-4 rounded-lg border font-semibold transition-all duration-200 ${
+                  isFavorite
+                    ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                    : "border-borderSoft bg-white text-textSecondary hover:border-red-500 hover:text-red-500"
+                }`}
                 onClick={() => onToggleFavorite?.(book)}
               >
                 <Icon name="heart" className="h-4 w-4" strokeWidth={2} />

@@ -405,3 +405,33 @@ h6,
     transform: translateY(0) scale(1);
   }
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(216, 207, 192, 0.4) 0%,
+    rgba(216, 207, 192, 0.8) 50%,
+    rgba(216, 207, 192, 0.4) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+html.dark .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(51, 66, 60, 0.4) 0%,
+    rgba(51, 66, 60, 0.8) 50%,
+    rgba(51, 66, 60, 0.4) 100%
+  );
+  background-size: 200% 100%;
+}

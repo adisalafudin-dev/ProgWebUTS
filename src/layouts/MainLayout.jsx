@@ -5,8 +5,6 @@ import Footer from "../components/Footer";
 import ToastContainer from "../components/ToastContainer";
 import Sidebar from "../components/Sidebar";
 import Breadcrumb from "../components/Breadcrumb";
-import { useAuth } from "../contexts/AuthContext.jsx";
-import { useFavorites } from "../contexts/FavoriteContext.jsx";
 
 const getActivePage = (pathname) => {
   if (pathname === "/dashboard") return "dashboard";
@@ -21,88 +19,70 @@ const getActivePage = (pathname) => {
 
 export default function MainLayout() {
   const location = useLocation();
-  const { user, logout } = useAuth();
-  const { favoriteCount } = useFavorites();
   const activePage = getActivePage(location.pathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    if (
-      location.pathname === "/favorites" ||
-      location.pathname.startsWith("/admin")
-    ) {
-      // Navigation handled by App.jsx
-    }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-cream font-crimson transition-colors duration-300">
-      <Header
-        activePage={activePage}
-        drawerOpen={drawerOpen}
-        onToggleDrawer={() => setDrawerOpen((value) => !value)}
+    <div className="min-h-screen bg-cream font-crimson transition-colors duration-300 lg:flex">
+      {/* Overlay + drawer sidebar (mobile) */}
+      <div
+        className={`fixed inset-0 z-40 bg-slate-950/40 transition-opacity duration-300 lg:hidden ${
+          drawerOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!drawerOpen}
+        onClick={() => setDrawerOpen(false)}
       />
-
-      <main id="main-content" className="flex-1" role="main">
-        <div className="relative">
-          <div
-            className={`fixed inset-0 z-40 bg-slate-950/40 transition-opacity duration-300 lg:hidden ${
-              drawerOpen
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`}
-            aria-hidden={!drawerOpen}
+      <div
+        id="mobile-drawer"
+        className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-primary shadow-2xl transition-transform duration-300 lg:hidden ${
+          drawerOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigasi aplikasi"
+      >
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <div>
+            <p className="text-sm font-semibold text-white">AksaraHub</p>
+            <p className="text-xs text-white/50">Navigasi cepat</p>
+          </div>
+          <button
+            type="button"
             onClick={() => setDrawerOpen(false)}
-          />
-
-          <div
-            id="mobile-drawer"
-            className={`fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-borderSoft bg-white shadow-2xl transition-transform duration-300 lg:hidden ${
-              drawerOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigasi aplikasi"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors duration-200 hover:bg-white/10"
+            aria-label="Tutup menu"
           >
-            <div className="flex items-center justify-between border-b border-borderSoft px-5 py-4">
-              <div>
-                <p className="text-sm font-semibold text-textMain">AksaraHub</p>
-                <p className="text-xs text-textSecondary">Navigasi cepat</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft text-textSecondary transition-colors duration-200 hover:bg-cream"
-                aria-label="Tutup menu"
-              >
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div className="p-5">
-              <Sidebar
-                activePage={activePage}
-                onClose={() => setDrawerOpen(false)}
-              />
-            </div>
-          </div>
-
-          <div className="mx-auto max-w-7xl px-4 pb-12 pt-6 sm:px-6 lg:px-8">
-            <div className="grid gap-8 lg:grid-cols-[minmax(16rem,19rem)_minmax(0,1fr)]">
-              <aside className="hidden lg:block">
-                <Sidebar activePage={activePage} />
-              </aside>
-
-              <div className="min-w-0 space-y-6">
-                <Breadcrumb />
-                <Outlet />
-              </div>
-            </div>
-          </div>
+            <span aria-hidden="true">×</span>
+          </button>
         </div>
-      </main>
+        <Sidebar activePage={activePage} onClose={() => setDrawerOpen(false)} />
+      </div>
 
-      <Footer activePage={activePage} />
+      {/* Sidebar tetap (desktop) */}
+      <aside className="hidden border-r border-black/10 bg-primary lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:shrink-0 lg:flex-col">
+        <Sidebar activePage={activePage} />
+      </aside>
+
+      {/* Kolom konten kanan */}
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+        <Header
+          activePage={activePage}
+          drawerOpen={drawerOpen}
+          onToggleDrawer={() => setDrawerOpen((value) => !value)}
+        />
+
+        <main id="main-content" role="main" className="flex-1">
+          <div className="mx-auto max-w-6xl space-y-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
+            <Breadcrumb />
+            <Outlet />
+          </div>
+        </main>
+
+        <Footer activePage={activePage} />
+      </div>
+
       <ToastContainer />
     </div>
   );

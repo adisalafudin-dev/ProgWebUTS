@@ -1,18 +1,16 @@
 import { useState } from "react";
-import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
 import Icon from "../components/Icon";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import SectionHeader from "../components/dashboard/SectionHeader";
-import WelcomeBanner from "../components/dashboard/WelcomeBanner";
-import ReadingProgressCard from "../components/dashboard/ReadingProgressCard";
 import ReviewCard from "../components/dashboard/ReviewCard";
 import NotificationCard from "../components/dashboard/NotificationCard";
-
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
+import DiscoverHero from "../components/dashboard/DiscoverHero";
+import BookCarousel from "../components/dashboard/BookCarousel";
+import CategoryGrid from "../components/dashboard/CategoryGrid";
+import { getBookId } from "../utils/bookHelpers.js";
 
 function EmptyState({ icon, text }) {
   return (
@@ -25,7 +23,6 @@ function EmptyState({ icon, text }) {
 
 export default function DashboardPage({
   books = [],
-  continueReadingBooks = [],
   recentReviews = [],
   notifications = [],
   onMarkNotificationRead,
@@ -38,69 +35,35 @@ export default function DashboardPage({
 
   const popularBooks = [...books]
     .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
-    .slice(0, 8);
+    .slice(0, 10);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  const stats = {
-    reading: continueReadingBooks.length,
-    favorites: favoriteBooks.length,
-    reviews: recentReviews.length,
-  };
-
   return (
-    <section className="mx-auto min-h-[70vh] max-w-7xl space-y-12 px-4 py-10 sm:px-6 lg:px-8">
-      <WelcomeBanner currentUser={user} stats={stats} />
+    <section className="mx-auto min-h-[70vh] max-w-6xl space-y-12 pb-4">
+      <DiscoverHero userName={user?.name?.split(" ")[0]} />
 
       <div>
         <SectionHeader
-          label="Lanjutkan"
-          title="Continue Reading"
-          actionTo="/library"
-          actionLabel="Rak Baca"
-          actionIcon="bookOpen"
-        />
-        {continueReadingBooks.length > 0 ? (
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {continueReadingBooks.map((book, i) => (
-              <ReadingProgressCard
-                key={getBookId(book) || i}
-                book={book}
-                onSelect={setSelectedBook}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon="bookOpen"
-            text="Belum ada buku yang sedang dibaca."
-          />
-        )}
-      </div>
-
-      <div>
-        <SectionHeader
-          label="Trending"
-          title="Popular Books"
+          label="Rekomendasi"
+          title="Book Recommendation"
           actionTo="/books"
+          actionLabel="Lihat Semua"
           actionIcon="eye"
         />
         {popularBooks.length > 0 ? (
-          <div className="book-grid">
-            {popularBooks.map((book, i) => (
-              <BookCard
-                key={getBookId(book) || i}
-                book={book}
-                onSelect={setSelectedBook}
-                isFavorite={isBookFavorite(book)}
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
-          </div>
+          <BookCarousel
+            books={popularBooks}
+            onSelect={setSelectedBook}
+            isBookFavorite={isBookFavorite}
+            onToggleFavorite={toggleFavorite}
+          />
         ) : (
           <EmptyState icon="collection" text="Belum ada data buku populer." />
         )}
       </div>
+
+      <CategoryGrid books={books} />
 
       <div>
         <SectionHeader
@@ -110,17 +73,12 @@ export default function DashboardPage({
           actionIcon="heart"
         />
         {favoriteBooks.length > 0 ? (
-          <div className="book-grid">
-            {favoriteBooks.slice(0, 8).map((book, i) => (
-              <BookCard
-                key={getBookId(book) || i}
-                book={book}
-                onSelect={setSelectedBook}
-                isFavorite
-                onToggleFavorite={toggleFavorite}
-              />
-            ))}
-          </div>
+          <BookCarousel
+            books={favoriteBooks.slice(0, 10)}
+            onSelect={setSelectedBook}
+            isBookFavorite={() => true}
+            onToggleFavorite={toggleFavorite}
+          />
         ) : (
           <EmptyState
             icon="heart"

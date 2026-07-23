@@ -8,9 +8,7 @@ import Icon from "../components/Icon";
 import { GENRES } from "../constants/books";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
-
-const getBookId = (book) =>
-  book?.key || book?.id || book?.workKey || book?.title;
+import { getBookId } from "../utils/bookHelpers.js";
 
 const getNumericYear = (book) => {
   const year = Number(book?.year || book?.first_publish_year);
@@ -315,14 +313,14 @@ export default function HomePage({
                   heroBook.description ||
                   "Deskripsi buku belum tersedia dari katalog Open Library."}
               </p>
-              <div className="mb-8 flex min-h-[2rem] flex-wrap gap-2">
+              <div className="mb-8 flex min-h-[2rem] flex-wrap gap-1.5 items-center">
                 {(heroBook.genres || heroBook.tags || [heroBook.genre])
                   .filter(Boolean)
                   .slice(0, 4)
                   .map((genre) => (
                     <span
                       key={genre}
-                      className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs font-semibold text-white/75"
+                      className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/85"
                     >
                       {genre}
                     </span>
@@ -341,8 +339,8 @@ export default function HomePage({
                   type="button"
                   className={`inline-flex items-center justify-center gap-2 rounded-lg border px-5 py-2.5 font-crimson font-semibold transition-all duration-300 ${
                     isBookFavorite(heroBook)
-                      ? "border-accent bg-accent text-white hover:bg-accentHover"
-                      : "border-white/20 bg-white/10 text-white hover:border-accent hover:bg-white hover:text-primary"
+                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                      : "border-white/20 bg-white/10 text-white hover:border-red-500 hover:bg-white hover:text-red-500"
                   }`}
                   aria-pressed={isBookFavorite(heroBook)}
                   onClick={() => toggleFavorite(heroBook)}
@@ -476,14 +474,14 @@ export default function HomePage({
               </div>
 
               <div className="flex min-w-0 flex-col">
-                <div className="mb-3 flex flex-wrap gap-2">
+                <div className="mb-3 flex flex-wrap gap-1.5 items-center">
                   {(editorBook.genres || editorBook.tags || [editorBook.genre])
                     .filter(Boolean)
                     .slice(0, 3)
                     .map((genre) => (
                       <span
                         key={genre}
-                        className="rounded-full border border-borderSoft bg-cream px-3 py-1 text-xs font-semibold text-secondary"
+                        className="rounded-full border border-borderSoft bg-cream px-3 py-1.5 text-xs font-semibold text-secondary"
                       >
                         {genre}
                       </span>
@@ -762,11 +760,11 @@ export default function HomePage({
                           <p className="mt-2 hidden text-sm leading-relaxed text-textSecondary line-clamp-2 md:block">
                             {synopsis}
                           </p>
-                          <div className="mt-2 flex flex-wrap gap-1">
+                          <div className="mt-2 flex flex-wrap gap-1.5 items-center">
                             {uniqueBookGenres.slice(0, 4).map((genre) => (
                               <span
                                 key={genre}
-                                className="rounded-full bg-cream px-2 py-0.5 text-[10px] font-semibold leading-none text-secondary"
+                                className="rounded-full bg-cream px-2.5 py-1 text-[10px] font-semibold leading-none text-secondary border border-borderSoft"
                               >
                                 {genre}
                               </span>
