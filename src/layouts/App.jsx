@@ -21,7 +21,7 @@ import AdminLayout from "./AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import { ROLES } from "../constants/roles.js";
 import { FALLBACK_BOOKS } from "../constants/books";
-import { fetchOpenLibraryBooks } from "../services/bookApi";
+import { fetchOpenLibraryBooks } from "../services/openLibraryApi";
 import { useAuth } from "../contexts/AuthContext.jsx";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
