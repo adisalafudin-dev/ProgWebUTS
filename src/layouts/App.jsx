@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, Routes, Route } from "react-router-dom";
+import { useLocation, useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import LibraryPage from "../pages/LibraryPage";
 import FavoritesPage from "../pages/FavoritesPage";
@@ -10,9 +10,16 @@ import ProfilePage from "../pages/ProfilePage";
 import SettingsPage from "../pages/SettingsPage";
 import BookDetailPage from "../pages/BookDetailPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import AdminBooksPage from "../pages/admin/AdminBooksPage";
+import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
+import AdminUsersPage from "../pages/admin/AdminUsersPage";
+import AdminReviewsPage from "../pages/admin/AdminReviewsPage";
 import MainLayout from "./MainLayout";
 import AuthLayout from "./AuthLayout";
+import AdminLayout from "./AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import { ROLES } from "../constants/roles.js";
 import { FALLBACK_BOOKS } from "../constants/books";
 import { fetchOpenLibraryBooks } from "../services/bookApi";
 import { useAuth } from "../contexts/AuthContext.jsx";
@@ -123,7 +130,10 @@ export default function App() {
 
   const handleLogout = () => {
     logout();
-    if (location.pathname === "/favorites") {
+    if (
+      location.pathname === "/favorites" ||
+      location.pathname.startsWith("/admin")
+    ) {
       navigate("/", { replace: true });
     }
   };
@@ -290,6 +300,22 @@ export default function App() {
       >
         <Route path="login" element={<LoginPage onToast={showToast} />} />
         <Route path="register" element={<RegisterPage onToast={showToast} />} />
+      </Route>
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminLayout currentUser={user} onLogout={handleLogout} />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboardPage />} />
+        <Route path="books" element={<AdminBooksPage />} />
+        <Route path="categories" element={<AdminCategoriesPage />} />
+        <Route path="users" element={<AdminUsersPage />} />
+        <Route path="reviews" element={<AdminReviewsPage />} />
       </Route>
     </Routes>
   );

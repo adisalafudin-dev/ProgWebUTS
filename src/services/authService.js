@@ -1,3 +1,5 @@
+import { ROLES } from "../constants/roles.js";
+
 const AUTH_SESSION_STORAGE_KEY = "aksarahub-auth";
 const AUTH_USERS_STORAGE_KEY = "aksarahub-auth-users";
 const ACCESS_TOKEN_TTL = 5 * 60 * 1000; // 5 menit
@@ -8,6 +10,13 @@ const DEFAULT_USERS = {
     name: "Demo Reader",
     email: "demo@aksarahub.local",
     password: "demo123",
+    role: ROLES.USER,
+  },
+  "admin@aksarahub.local": {
+    name: "Admin AksaraHub",
+    email: "admin@aksarahub.local",
+    password: "admin123",
+    role: ROLES.ADMIN,
   },
 };
 
@@ -73,12 +82,13 @@ export const isRefreshTokenValid = (session) =>
       Number(session.refreshExpiresAt) > Date.now(),
   );
 
-export const createAuthSession = ({ name, email }) => {
+export const createAuthSession = ({ name, email, role = ROLES.USER }) => {
   const normalizedEmail = normalizeEmail(email);
   const now = Date.now();
   const user = {
     name: name?.trim() || normalizedEmail.split("@")[0] || "Pembaca",
     email: normalizedEmail,
+    role: role || ROLES.USER,
     loggedInAt: new Date(now).toISOString(),
   };
 
@@ -132,7 +142,11 @@ export const verifyUserCredentials = ({ email, password }) => {
     throw new Error("Email atau password salah.");
   }
 
-  return { name: user.name, email: user.email };
+  return {
+    name: user.name,
+    email: user.email,
+    role: user.role || ROLES.USER,
+  };
 };
 
 export const registerUser = ({ name, email, password }) => {
@@ -151,7 +165,12 @@ export const registerUser = ({ name, email, password }) => {
     name: name?.trim() || normalizedEmail.split("@")[0] || "Pembaca",
     email: normalizedEmail,
     password,
+    role: ROLES.USER,
   };
   saveUsers({ ...users, [normalizedEmail]: nextUser });
-  return { name: nextUser.name, email: nextUser.email };
+  return {
+    name: nextUser.name,
+    email: nextUser.email,
+    role: nextUser.role,
+  };
 };
