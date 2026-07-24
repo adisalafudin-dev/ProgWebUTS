@@ -318,6 +318,101 @@ h6,
   font-family: "Inter", system-ui, sans-serif !important;
 }
 
+/* Menyamakan tampilan admin dengan identitas visual halaman user. */
+.admin-shell .bg-slate-50,
+.admin-shell .bg-slate-50\/60,
+.admin-shell .bg-slate-50\/80 {
+  background-color: #fffdf8 !important;
+}
+
+.admin-shell .bg-slate-100,
+.admin-shell .bg-slate-100\/60 {
+  background-color: #f6f1e8 !important;
+}
+
+.admin-shell .bg-slate-200 {
+  background-color: #d8cfc0 !important;
+}
+
+.admin-shell .bg-slate-800,
+.admin-shell .bg-slate-900 {
+  background-color: #18332f !important;
+}
+
+.admin-shell .border-slate-100,
+.admin-shell .border-slate-200 {
+  border-color: #d8cfc0 !important;
+}
+
+.admin-shell .text-slate-900,
+.admin-shell .text-slate-800,
+.admin-shell .text-slate-700 {
+  color: #1c1b19 !important;
+}
+
+.admin-shell .text-slate-600,
+.admin-shell .text-slate-500,
+.admin-shell .text-slate-400 {
+  color: #6f6a61 !important;
+}
+
+.admin-shell .bg-indigo-50,
+.admin-shell .bg-violet-50 {
+  background-color: #f6f1e8 !important;
+}
+
+.admin-shell .bg-indigo-100,
+.admin-shell .bg-violet-100 {
+  background-color: #efe7da !important;
+}
+
+.admin-shell .bg-indigo-500,
+.admin-shell .bg-violet-500 {
+  background-color: #b8892d !important;
+}
+
+.admin-shell .border-indigo-100,
+.admin-shell .border-indigo-200,
+.admin-shell .border-indigo-300,
+.admin-shell .border-violet-100,
+.admin-shell .border-violet-200 {
+  border-color: #d8cfc0 !important;
+}
+
+.admin-shell .border-indigo-500 {
+  border-color: #b8892d !important;
+}
+
+.admin-shell .text-indigo-900,
+.admin-shell .text-indigo-700,
+.admin-shell .text-violet-700 {
+  color: #18332f !important;
+}
+
+.admin-shell .text-indigo-600,
+.admin-shell .text-violet-600 {
+  color: #7a2e2e !important;
+}
+
+.admin-shell .hover\:bg-slate-50:hover,
+.admin-shell .hover\:bg-indigo-50:hover,
+.admin-shell .hover\:bg-violet-50:hover {
+  background-color: #f6f1e8 !important;
+}
+
+.admin-shell .hover\:bg-slate-100:hover {
+  background-color: #efe7da !important;
+}
+
+.admin-shell .hover\:border-indigo-300:hover {
+  border-color: #b8892d !important;
+}
+
+.admin-shell .hover\:text-indigo-700:hover,
+.admin-shell .hover\:text-indigo-500:hover {
+  color: #7a2e2e !important;
+}
+
 .hero-bg-motion {
   animation: hero-bg-drift 4.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   transform-origin: center;

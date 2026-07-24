@@ -3,6 +3,7 @@ import Icon from "./Icon";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
+import { ROLES } from "../constants/roles.js";
 
 const sidebarLinks = [
   { to: "/", page: "home", label: "Beranda", icon: "home" },
@@ -93,6 +94,16 @@ export default function Sidebar({ activePage = "home", onClose }) {
               {link.label}
             </Link>
           ))}
+          {user?.role === ROLES.ADMIN && (
+            <Link
+              to="/admin/dashboard"
+              onClick={() => onClose?.()}
+              className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-accent transition-colors duration-200 hover:bg-white/10 hover:text-white"
+            >
+              <Icon name="shield" className="h-4 w-4" />
+              Panel Admin
+            </Link>
+          )}
           {isAuthenticated && (
             <button
               type="button"

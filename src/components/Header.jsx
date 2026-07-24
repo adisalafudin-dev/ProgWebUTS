@@ -4,6 +4,7 @@ import Icon from "./Icon";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useTheme } from "../contexts/ThemeContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
+import { ROLES } from "../constants/roles.js";
 
 export default function Header({
   activePage = "home",
@@ -160,6 +161,16 @@ export default function Header({
                     <Icon name="monitor" className="h-4 w-4" />
                     Pengaturan
                   </Link>
+                  {user?.role === ROLES.ADMIN && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-primary hover:bg-cream"
+                      onClick={() => setShowAvatarDropdown(false)}
+                    >
+                      <Icon name="shield" className="h-4 w-4" />
+                      Panel Admin
+                    </Link>
+                  )}
                   <hr className="border-borderSoft my-1" />
                   <button
                     type="button"

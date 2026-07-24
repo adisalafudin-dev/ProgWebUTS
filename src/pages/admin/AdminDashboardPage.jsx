@@ -12,7 +12,6 @@ import {
   Clock,
   TrendingUp,
   ShieldCheck,
-  Sparkles,
   AlertTriangle,
   RefreshCw,
   InboxIcon,
@@ -404,35 +403,30 @@ function BookRow({ book, rank }) {
 
 function WelcomeBanner() {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 text-white shadow-xl sm:p-8">
-      {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-blue-500/15 blur-3xl" />
-
-      <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-3xl bg-primary p-6 text-white shadow-book sm:p-8">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-300 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+          <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3.5 py-1 text-xs font-semibold text-accent">
             Sistem Informasi Perpustakaan
           </span>
           <h1 className="font-playfair text-2xl font-bold tracking-tight text-white sm:text-3xl">
             Admin Dashboard
           </h1>
-          <p className="max-w-xl text-sm leading-relaxed text-slate-300">
+          <p className="max-w-xl text-sm leading-relaxed text-white/75">
             Pantau koleksi buku, kategori, dan aktivitas pencarian dari satu
             tempat. Data real-time bersumber dari Open Library API.
           </p>
         </div>
 
         <div className="flex flex-col items-start gap-3 sm:items-end">
-          <span className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-2.5 text-xs font-medium text-slate-200 backdrop-blur-md">
+          <span className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-medium text-white/85">
             <span className="relative flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
             </span>
             Open Library API Aktif
           </span>
-          <span className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-2.5 text-xs font-medium text-slate-200 backdrop-blur-md">
+          <span className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-medium text-white/85">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
             Mode Administrator
           </span>
