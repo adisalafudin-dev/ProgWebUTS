@@ -6,6 +6,7 @@ import Pagination from "../../components/Pagination";
 import BookModal from "../../components/BookModal";
 import { GENRES, SORT_OPTIONS } from "../../constants/books";
 import { fetchOpenLibraryBooks } from "../../services/openLibraryApi";
+import { saveSearchHistory } from "../../services/dashboardService";
 import { useDebounce } from "../../hooks/useDebounce";
 
 export default function AdminBooksPage() {
@@ -38,6 +39,10 @@ export default function AdminBooksPage() {
       });
       setBooks(data || []);
       setCurrentPage(1);
+      // Simpan ke riwayat pencarian admin (untuk Dashboard "Aktivitas Terakhir")
+      if (debouncedSearchTerm && debouncedSearchTerm.trim()) {
+        saveSearchHistory(debouncedSearchTerm.trim(), (data || []).length);
+      }
     } catch (err) {
       console.error("Error fetching books from Public API:", err);
       setError(
