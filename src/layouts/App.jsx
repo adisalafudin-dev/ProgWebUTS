@@ -33,6 +33,7 @@ const BookDetailPage = lazy(() => import("../pages/BookDetailPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
 const AdminBooksPage = lazy(() => import("../pages/admin/AdminBooksPage"));
+const AdminBookDetailPage = lazy(() => import("../pages/admin/AdminBookDetailPage"));
 const AdminCategoriesPage = lazy(() => import("../pages/admin/AdminCategoriesPage"));
 const AdminUsersPage = lazy(() => import("../pages/admin/AdminUsersPage"));
 const AdminReviewsPage = lazy(() => import("../pages/admin/AdminReviewsPage"));
@@ -206,6 +207,7 @@ export default function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="books" element={<AdminBooksPage />} />
+          <Route path="books/:workId" element={<AdminBookDetailPage />} />
           <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="reviews" element={<AdminReviewsPage />} />

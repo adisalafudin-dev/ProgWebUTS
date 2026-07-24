@@ -15,6 +15,7 @@
  */
 
 import { fetchOpenLibraryBooks } from "./openLibraryApi";
+import { buildCategoriesFromBooks } from "./categoryService";
 
 // ── Konstanta ─────────────────────────────────────────────────────────────────
 
@@ -90,25 +91,8 @@ const normalizeBook = (book) => ({
   cover: book.cover || "",
 });
 
-const getCategoriesFromBooks = (books) => {
-  const counts = new Map();
-
-  books.forEach((book) => {
-    const categories = book.subjects?.length ? book.subjects : [book.genre];
-    [...new Set(categories.filter(Boolean))].forEach((name) => {
-      counts.set(name, (counts.get(name) || 0) + 1);
-    });
-  });
-
-  return [...counts.entries()]
-    .map(([name, bookCount]) => ({
-      id: `subject-${name.toLowerCase().replace(/[^\w]+/g, "-")}`,
-      name,
-      bookCount,
-      slug: name.toLowerCase().replace(/[^\w]+/g, "-"),
-    }))
-    .sort((a, b) => b.bookCount - a.bookCount || a.name.localeCompare(b.name));
-};
+const getCategoriesFromBooks = (books) => buildCategoriesFromBooks(books).categories
+  .sort((a, b) => b.bookCount - a.bookCount || a.name.localeCompare(b.name));
 
 // ── Public API ─────────────────────────────────────────────────────────────────
 

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import Icon from "../../components/Icon";
 import EmptyState from "../../components/EmptyState";
 import Pagination from "../../components/Pagination";
-import AdminBookDetailModal from "../../components/admin/AdminBookDetailModal";
 import { fetchOpenLibraryBooks } from "../../services/openLibraryApi";
 import { useDebounce } from "../../hooks/useDebounce";
 
@@ -43,16 +43,23 @@ function BookTableSkeleton() {
 const displayValue = (value) => value || "—";
 
 export default function AdminBooksPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState(() => searchParams.get("subject") || "");
   const [sortBy, setSortBy] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [selectedBook, setSelectedBook] = useState(null);
   const debouncedSearchTerm = useDebounce(searchTerm, 400);
+
+  useEffect(() => {
+    const subjectFromUrl = searchParams.get("subject") || "";
+    setSelectedSubject((currentSubject) =>
+      currentSubject === subjectFromUrl ? currentSubject : subjectFromUrl,
+    );
+  }, [searchParams]);
 
   useEffect(() => {
     let isCurrentRequest = true;
@@ -132,6 +139,17 @@ export default function AdminBooksPage() {
     setSearchTerm("");
     setSelectedSubject("");
     setSortBy("default");
+    setSearchParams({});
+  };
+
+  const handleSubjectChange = (subject) => {
+    setSelectedSubject(subject);
+    setSearchParams((currentParams) => {
+      const nextParams = new URLSearchParams(currentParams);
+      if (subject) nextParams.set("subject", subject);
+      else nextParams.delete("subject");
+      return nextParams;
+    });
   };
 
   return (
@@ -178,7 +196,7 @@ export default function AdminBooksPage() {
 
           <label className="relative block">
             <span className="sr-only">Filter subject</span>
-            <select value={selectedSubject} onChange={(event) => setSelectedSubject(event.target.value)} className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-9 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+            <select value={selectedSubject} onChange={(event) => handleSubjectChange(event.target.value)} className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-9 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
               <option value="">Semua subject</option>
               {subjectOptions.map((subject) => <option key={subject} value={subject}>{subject}</option>)}
             </select>
@@ -232,7 +250,7 @@ export default function AdminBooksPage() {
                     <td className="px-5 py-3 font-mono text-xs text-slate-600">{displayValue(book.isbn)}</td>
                     <td className="px-5 py-3"><div className="flex max-w-52 flex-wrap gap-1">{book.subjects?.length ? book.subjects.slice(0, 2).map((subject) => <span key={subject} className="rounded-md bg-indigo-50 px-2 py-1 text-[11px] font-medium text-indigo-700">{subject}</span>) : <span className="text-slate-400">—</span>}</div></td>
                     <td className="px-5 py-3 text-xs text-slate-600">{book.languages?.join(", ") || "—"}</td>
-                    <td className="px-5 py-3"><div className="flex justify-end gap-1.5"><button type="button" onClick={() => setSelectedBook(book)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"><Icon name="eye" className="h-3.5 w-3.5" /> Detail</button><button type="button" disabled title="Tersedia setelah Backend selesai" className="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5 text-xs font-semibold text-slate-300">Edit</button><button type="button" disabled title="Tersedia setelah Backend selesai" className="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5 text-xs font-semibold text-slate-300">Hapus</button></div></td>
+                    <td className="px-5 py-3"><div className="flex justify-end gap-1.5"><Link to={`/admin/books/${encodeURIComponent(book.workKey || book.id)}`} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"><Icon name="eye" className="h-3.5 w-3.5" /> Detail</Link><button type="button" disabled title="Tersedia setelah Backend selesai" className="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5 text-xs font-semibold text-slate-300">Edit</button><button type="button" disabled title="Tersedia setelah Backend selesai" className="cursor-not-allowed rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5 text-xs font-semibold text-slate-300">Hapus</button></div></td>
                   </tr>
                 ))}
               </tbody>
@@ -241,8 +259,6 @@ export default function AdminBooksPage() {
           <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} totalItems={sortedBooks.length} itemsPerPage={ITEMS_PER_PAGE} />
         </div>
       )}
-
-      <AdminBookDetailModal book={selectedBook} onClose={() => setSelectedBook(null)} />
     </div>
   );
 }

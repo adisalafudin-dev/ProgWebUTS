@@ -15,7 +15,8 @@ const getFirstSentence = (book) => {
 };
 
 export const formatOpenLibraryBook = (book, index) => {
-  const subjects = uniqueText([...(book.subject || []), ...(book.subject_facet || [])]);
+  // Keep enough Open Library subjects for the dynamic category aggregation.
+  const subjects = uniqueText([...(book.subject || []), ...(book.subject_facet || [])], 12);
   const genres = getBookGenres(book);
   const title = book.title || "Judul tidak tersedia";
   const cover = book.cover_i
