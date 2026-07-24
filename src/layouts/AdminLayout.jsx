@@ -9,6 +9,7 @@ const getActivePage = (pathname) => {
   if (pathname.startsWith("/admin/categories")) return "categories";
   if (pathname.startsWith("/admin/users")) return "users";
   if (pathname.startsWith("/admin/reviews")) return "reviews";
+  if (pathname.startsWith("/admin/statistics")) return "statistics";
   return "dashboard";
 };
 
@@ -18,6 +19,7 @@ const pageTitles = {
   categories: "Kelola Kategori",
   users: "Kelola Pengguna",
   reviews: "Kelola Ulasan",
+  statistics: "Statistik Perpustakaan",
 };
 
 export default function AdminLayout() {

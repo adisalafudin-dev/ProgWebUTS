@@ -7,6 +7,7 @@ const adminLinks = [
   { to: "/admin/categories", page: "categories", label: "Kategori", icon: "tag" },
   { to: "/admin/users", page: "users", label: "Pengguna", icon: "users" },
   { to: "/admin/reviews", page: "reviews", label: "Ulasan", icon: "star" },
+  { to: "/admin/statistics", page: "statistics", label: "Statistik", icon: "collection" },
 ];
 
 export default function AdminSidebar({

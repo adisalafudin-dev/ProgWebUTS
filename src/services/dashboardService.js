@@ -171,6 +171,53 @@ export const getDashboardStats = async () => {
   };
 };
 
+const countValues = (books, getValues) => {
+  const counter = new Map();
+  books.forEach((book) => {
+    [...new Set(getValues(book).map((value) => String(value || "").trim()).filter(Boolean))]
+      .forEach((value) => counter.set(value, (counter.get(value) || 0) + 1));
+  });
+  return [...counter.entries()]
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label, "id"));
+};
+
+/** Statistik dari response Open Library yang sama dengan Dashboard Admin. */
+export const getLibraryStatistics = async () => {
+  const books = await fetchDefaultBooks();
+  const authors = countValues(books, (book) => book.authors?.length ? book.authors : [book.author]);
+  const publishers = countValues(books, (book) => book.publishers?.length ? book.publishers : [book.publisher]);
+  const subjects = countValues(books, (book) => book.subjects || []);
+  // Open Library tidak selalu mengirimkan semua metadata. Untuk visualisasi,
+  // masukkan nilai fallback agar chart tetap merepresentasikan seluruh hasil.
+  const languages = countValues(books, (book) =>
+    book.allLanguages?.length ? book.allLanguages : book.languages?.length ? book.languages : ["Tidak diketahui"],
+  );
+  const subjectDistribution = countValues(books, (book) =>
+    book.subjects?.length ? book.subjects : book.genres?.length ? book.genres : ["Tidak diketahui"],
+  );
+  const years = countValues(
+    books,
+    (book) => Number.isInteger(Number(book.year)) && Number(book.year) > 0
+      ? [String(book.year)]
+      : ["Tidak diketahui"],
+  );
+  const mostEditions = [...books]
+    .filter((book) => Number(book.editionCount) > 0)
+    .sort((a, b) => b.editionCount - a.editionCount || a.title.localeCompare(b.title, "id"))[0] || null;
+
+  return {
+    totalBooks: books.length,
+    totalAuthors: authors.length,
+    totalPublishers: publishers.length,
+    totalSubjects: subjects.length,
+    yearDistribution: years,
+    languageDistribution: languages,
+    subjectDistribution,
+    mostEditions,
+  };
+};
+
 // ── localStorage Search History ───────────────────────────────────────────────
 
 /**

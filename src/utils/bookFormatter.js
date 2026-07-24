@@ -17,6 +17,9 @@ const getFirstSentence = (book) => {
 export const formatOpenLibraryBook = (book, index) => {
   // Keep enough Open Library subjects for the dynamic category aggregation.
   const subjects = uniqueText([...(book.subject || []), ...(book.subject_facet || [])], 12);
+  const authors = uniqueText(book.author_name, 20);
+  const publishers = uniqueText(book.publisher, 20);
+  const languages = uniqueText(book.language, 20);
   const genres = getBookGenres(book);
   const title = book.title || "Judul tidak tersedia";
   const cover = book.cover_i
@@ -32,15 +35,19 @@ export const formatOpenLibraryBook = (book, index) => {
     key: book.key || "",
     workKey: book.key || "",
     title,
-    author: uniqueText(book.author_name, 5).join(", ") || "Penulis tidak diketahui",
+    author: authors.slice(0, 5).join(", ") || "Penulis tidak diketahui",
+    authors,
     year: book.first_publish_year || "-",
-    publisher: uniqueText(book.publisher, 2).join(", ") || null,
+    publisher: publishers.slice(0, 2).join(", ") || null,
+    publishers,
     isbn: book.isbn?.[0] || null,
     subjects,
     genre: genres[0] || "Umum",
     genres,
     tags: subjects.filter((subject) => !genres.includes(subject)).slice(0, 3),
-    languages: uniqueText(book.language, 4),
+    languages: languages.slice(0, 4),
+    allLanguages: languages,
+    editionCount: Number(book.edition_count) || 0,
     rating: Number(book.ratings_average) || 0,
     available: ["public", "borrowable"].includes(book.ebook_access),
     featured: false,
