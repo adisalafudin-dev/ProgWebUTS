@@ -337,18 +337,21 @@ function BookRow({ book, rank }) {
       )}
 
       {/* Cover */}
-      <img
-        src={book.cover}
-        alt={book.title}
-        className="h-[68px] w-12 flex-shrink-0 rounded-lg border border-slate-200 object-cover shadow-sm transition-transform duration-200 group-hover:scale-[1.03]"
-        loading="lazy"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = `https://placehold.co/48x68/e2e8f0/94a3b8?text=${encodeURIComponent(
-            (book.title || "?")[0]
-          )}`;
-        }}
-      />
+      <div className="flex h-[68px] w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100 text-center text-[9px] font-semibold text-slate-400 shadow-sm">
+        {book.cover ? (
+          <img
+            src={book.cover}
+            alt={book.title}
+            className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.03]"
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+        ) : (
+          "No cover"
+        )}
+      </div>
 
       {/* Info */}
       <div className="min-w-0 flex-1">

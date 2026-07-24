@@ -15,7 +15,6 @@
  */
 
 import { fetchOpenLibraryBooks } from "./openLibraryApi";
-import { categoryService } from "./categoryService";
 
 // ── Konstanta ─────────────────────────────────────────────────────────────────
 
@@ -35,6 +34,7 @@ const DEFAULT_QUERY = {};
 // Hindari multiple request ke Open Library dalam satu sesi dashboard.
 let _cachedBooks = null;
 let _cacheTime = 0;
+let _cachePromise = null;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 menit
 
 /**
@@ -47,11 +47,22 @@ const fetchDefaultBooks = async () => {
   if (_cachedBooks && now - _cacheTime < CACHE_TTL_MS) {
     return _cachedBooks;
   }
-  // Query kosong = default fetch (sama dengan App.jsx)
-  const books = await fetchOpenLibraryBooks(DEFAULT_QUERY);
-  _cachedBooks = books;
-  _cacheTime = now;
-  return books;
+
+  // The dashboard cards request data in parallel; share one identical request
+  // so every card is derived from the same user-catalogue dataset.
+  if (!_cachePromise) {
+    _cachePromise = fetchOpenLibraryBooks(DEFAULT_QUERY)
+      .then((books) => {
+        _cachedBooks = books;
+        _cacheTime = Date.now();
+        return books;
+      })
+      .finally(() => {
+        _cachePromise = null;
+      });
+  }
+
+  return _cachePromise;
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -74,14 +85,30 @@ const normalizeBook = (book) => ({
   rating: typeof book.rating === "number" ? book.rating : 0,
   pages: book.pages || "-",
   synopsis: book.synopsis || "",
-  available: book.available !== false,
+  available: book.available === true,
   featured: book.featured === true,
-  cover:
-    book.cover ||
-    `https://placehold.co/48x68/e2e8f0/94a3b8?text=${encodeURIComponent(
-      (book.title || "?")[0]
-    )}`,
+  cover: book.cover || "",
 });
+
+const getCategoriesFromBooks = (books) => {
+  const counts = new Map();
+
+  books.forEach((book) => {
+    const categories = book.subjects?.length ? book.subjects : [book.genre];
+    [...new Set(categories.filter(Boolean))].forEach((name) => {
+      counts.set(name, (counts.get(name) || 0) + 1);
+    });
+  });
+
+  return [...counts.entries()]
+    .map(([name, bookCount]) => ({
+      id: `subject-${name.toLowerCase().replace(/[^\w]+/g, "-")}`,
+      name,
+      bookCount,
+      slug: name.toLowerCase().replace(/[^\w]+/g, "-"),
+    }))
+    .sort((a, b) => b.bookCount - a.bookCount || a.name.localeCompare(b.name));
+};
 
 // ── Public API ─────────────────────────────────────────────────────────────────
 
@@ -121,17 +148,8 @@ export const getPopularBooks = async (limit = 8) => {
  * @returns {Promise<DashboardCategory[]>}
  */
 export const getPopularCategories = async (limit = 10) => {
-  const categories = await categoryService.getCategories();
-  return categories
-    .filter((c) => c.bookCount > 0)
-    .sort((a, b) => b.bookCount - a.bookCount)
-    .slice(0, limit)
-    .map((c) => ({
-      id: c.id || c.slug || c.name,
-      name: c.name,
-      bookCount: c.bookCount || 0,
-      slug: c.slug || c.name.toLowerCase().replace(/\s+/g, "-"),
-    }));
+  const books = await fetchDefaultBooks();
+  return getCategoriesFromBooks(books).slice(0, limit);
 };
 
 /**
@@ -139,10 +157,8 @@ export const getPopularCategories = async (limit = 10) => {
  * @returns {Promise<DashboardStats>}
  */
 export const getDashboardStats = async () => {
-  const [books, categories] = await Promise.all([
-    fetchDefaultBooks(),
-    categoryService.getCategories().catch(() => []),
-  ]);
+  const books = await fetchDefaultBooks();
+  const categories = getCategoriesFromBooks(books);
 
   const ratedBooks = books.filter(
     (b) => typeof b.rating === "number" && b.rating > 0
@@ -165,7 +181,7 @@ export const getDashboardStats = async () => {
     // Total hasil = jumlah buku yang berhasil di-fetch
     totalSearchResults: books.length,
     // Total ditampilkan = buku yang available (sama dengan filter USER)
-    totalDisplayed: books.filter((b) => b.available !== false).length,
+    totalDisplayed: books.filter((b) => b.available === true).length,
     topRating: parseFloat(topRating),
     latestYear,
   };
@@ -234,4 +250,5 @@ export const clearSearchHistory = () => {
 export const invalidateDashboardCache = () => {
   _cachedBooks = null;
   _cacheTime = 0;
+  _cachePromise = null;
 };

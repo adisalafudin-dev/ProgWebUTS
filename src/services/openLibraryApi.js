@@ -1,10 +1,15 @@
 import axios from "axios";
-import { FALLBACK_BOOKS } from "../constants/books";
 import { formatOpenLibraryBook } from "../utils/bookFormatter";
 
-const OPEN_LIBRARY_SEARCH_URL = import.meta.env.DEV
-  ? "/openlibrary/search.json"
-  : "https://openlibrary.org/search.json";
+// Keep Open Library isolated behind this service so it can be replaced by a
+// NestJS book service without changing page components.
+const openLibraryClient = axios.create({
+  baseURL: import.meta.env.DEV ? "/openlibrary" : "https://openlibrary.org",
+  timeout: 15000,
+  headers: { Accept: "application/json" },
+});
+
+const DEFAULT_QUERY = "general";
 
 const SORT_MAP = {
   "title-asc": "title",
@@ -14,99 +19,42 @@ const SORT_MAP = {
   "year-asc": "old",
 };
 
-const buildOpenLibrarySearchParams = (filters = {}) => {
-  const params = new URLSearchParams();
-  const qParts =
-    [filters.q, filters.author].filter(Boolean).join(" ") || "general";
+const buildSearchParams = ({ q = "", author = "", genre = "Semua", sort, limit = 30 } = {}) => {
+  const keyword = [q, author].filter(Boolean).join(" ").trim() || DEFAULT_QUERY;
+  const params = {
+    // Keep this query behaviour identical to the user catalogue.
+    q: `${keyword} language:eng`,
+    limit,
+    fields:
+      "key,title,author_name,first_publish_year,publisher,isbn,subject,subject_facet,language,cover_i,cover_edition_key,number_of_pages_median,edition_count,first_sentence,ratings_average,ebook_access",
+  };
 
-  const q = `${qParts} language:eng`;
-
-  params.set("q", q);
-
-  if (filters.genre && filters.genre !== "Semua") {
-    params.set("subject", filters.genre.toLowerCase());
-  }
-
-  if (SORT_MAP[filters.sort]) {
-    params.set("sort", SORT_MAP[filters.sort]);
-  }
-
-  params.set("limit", "30");
+  if (genre && genre !== "Semua") params.subject = genre;
+  if (SORT_MAP[sort]) params.sort = SORT_MAP[sort];
 
   return params;
 };
 
-const applyLocalFilters = (books, filters = {}) => {
-  let filteredBooks = books;
-
-  if (filters.yearMin > 1800) {
-    filteredBooks = filteredBooks.filter(
-      (book) => book.year === "-" || book.year >= filters.yearMin,
-    );
-  }
-
-  if (filters.minRating > 0) {
-    filteredBooks = filteredBooks.filter(
-      (book) => book.rating >= filters.minRating,
-    );
-  }
-
-  if (filters.available) {
-    filteredBooks = filteredBooks.filter((book) => book.available);
-  }
-
-  if (filters.featured) {
-    filteredBooks = filteredBooks.filter((book) => book.featured);
-  }
-
-  if (filters.sort === "title-asc") {
-    return [...filteredBooks].sort((a, b) => a.title.localeCompare(b.title));
-  }
-
-  if (filters.sort === "title-desc") {
-    return [...filteredBooks].sort((a, b) => b.title.localeCompare(a.title));
-  }
-
-  if (filters.sort === "rating-desc") {
-    return [...filteredBooks].sort((a, b) => b.rating - a.rating);
-  }
-
-  if (filters.sort === "year-desc") {
-    return [...filteredBooks].sort((a, b) => {
-      const yearA = Number(a.year) || 0;
-      const yearB = Number(b.year) || 0;
-      return yearB - yearA;
-    });
-  }
-
-  if (filters.sort === "year-asc") {
-    return [...filteredBooks].sort((a, b) => {
-      const yearA = Number(a.year) || Number.MAX_SAFE_INTEGER;
-      const yearB = Number(b.year) || Number.MAX_SAFE_INTEGER;
-      return yearA - yearB;
-    });
-  }
-
-  return filteredBooks;
+const applyLocalSort = (books, sort) => {
+  const result = [...books];
+  if (sort === "title-asc") return result.sort((a, b) => a.title.localeCompare(b.title));
+  if (sort === "title-desc") return result.sort((a, b) => b.title.localeCompare(a.title));
+  if (sort === "rating-desc") return result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  if (sort === "year-desc") return result.sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
+  if (sort === "year-asc") return result.sort((a, b) => (Number(a.year) || Number.MAX_SAFE_INTEGER) - (Number(b.year) || Number.MAX_SAFE_INTEGER));
+  return result;
 };
 
-export const fetchOpenLibraryBooks = async (rawFilters = {}) => {
-  const filters = rawFilters || {};
-  const params = buildOpenLibrarySearchParams(filters);
+export const fetchOpenLibraryBooks = async (filters = {}) => {
+  const response = await openLibraryClient.get("/search.json", {
+    params: buildSearchParams(filters),
+  });
 
-  try {
-    const response = await axios.get(
-      `${OPEN_LIBRARY_SEARCH_URL}?${params.toString()}`,
-    );
-    const books = response.data.docs.map(formatOpenLibraryBook);
-    return applyLocalFilters(books, filters);
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn(
-        "Open Library request failed, using fallback data.",
-        error?.message || error,
-      );
-    }
-    return applyLocalFilters(FALLBACK_BOOKS, filters);
-  }
+  return applyLocalSort((response.data?.docs || []).map(formatOpenLibraryBook), filters.sort);
 };
+
+export const openLibraryApi = {
+  fetchBooks: fetchOpenLibraryBooks,
+};
+
+export default openLibraryApi;
