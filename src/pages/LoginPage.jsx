@@ -4,6 +4,7 @@ import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
+import { ROLES } from "../constants/roles.js";
 
 export default function LoginPage({ redirectTo = "/" }) {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -40,7 +41,13 @@ export default function LoginPage({ redirectTo = "/" }) {
       const displayName =
         session?.user?.name || email.split("@")[0] || "Pembaca";
       showToast("Login berhasil", `Selamat datang, ${displayName}.`, "success");
-      navigate(nextRedirect, { replace: true });
+      // Redirect admin ke dashboard admin, user biasa ke nextRedirect
+      const role = session?.user?.role;
+      if (role === ROLES.ADMIN) {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate(nextRedirect, { replace: true });
+      }
     } catch (err) {
       setMessage(err.message || "Email atau password salah.");
     } finally {
@@ -82,6 +89,12 @@ export default function LoginPage({ redirectTo = "/" }) {
                 <Icon name="home" className="h-4 w-4" />
                 Ke Beranda
               </Link>
+              {user?.role === ROLES.ADMIN && (
+                <Link to="/admin/dashboard" className="btn-primary">
+                  <Icon name="settings" className="h-4 w-4" />
+                  Panel Admin
+                </Link>
+              )}
               <button type="button" className="btn-secondary" onClick={handleLogout}>
                 Keluar
               </button>

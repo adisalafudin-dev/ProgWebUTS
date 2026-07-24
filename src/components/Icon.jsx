@@ -41,6 +41,12 @@ const iconPaths = {
   settings: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-8a5 5 0 0 1 5 5m-5-5a5 5 0 0 0-5 5m5-5v2m0 10v2m5-5h2m-12 0H5",
   logOut: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9",
   grid: "M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z",
+  plus: "M12 5v14m-7-7h14",
+  trash: "M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+  chevronLeft: "M15 18l-6-6 6-6",
+  sort: "M3 6h18M6 12h12M9 18h6",
+  image: "M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16m-2-2l1.586-1.586a2 2 0 0 1 2.828 0L20 14m-6-6h.01M6 20h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z",
+  refresh: "M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4m-4 4a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4",
 };
 
 export default function Icon({

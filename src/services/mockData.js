@@ -6,7 +6,7 @@ const MOCK_USERS = [
     email: "admin@example.com",
     password: "admin123",
     name: "Admin User",
-    role: "admin",
+    role: "ADMIN",
     avatar: "https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff",
   },
   {
@@ -14,7 +14,7 @@ const MOCK_USERS = [
     email: "user@example.com",
     password: "user123",
     name: "Regular User",
-    role: "user",
+    role: "USER",
     avatar: "https://ui-avatars.com/api/?name=Regular+User&background=6366f1&color=fff",
   },
 ];
@@ -75,7 +75,7 @@ export const mockAuth = {
       email: payload.email,
       password: payload.password,
       name: payload.name || payload.email.split("@")[0],
-      role: "user",
+      role: "USER",
       avatar: `https://ui-avatars.com/api/?name=${payload.name || "User"}&background=6366f1&color=fff`,
     };
 
