@@ -18,6 +18,7 @@ import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
+import aksaraToast from "../utils/toast.js";
 
 // Lazy load pages for code splitting
 const ExplorePage = lazy(() => import("../pages/ExplorePage"));
@@ -95,6 +96,7 @@ export default function App() {
       setError(
         "API Open Library belum bisa diakses, menampilkan data contoh. Silakan coba lagi nanti.",
       );
+      aksaraToast.apiFetchError();
     } finally {
       setIsLoading(false);
     }

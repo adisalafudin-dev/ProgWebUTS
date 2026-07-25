@@ -9,6 +9,7 @@ import {
 import { favoriteApi } from "../services/favoriteApi.js";
 import { useAuth } from "./AuthContext.jsx";
 import { getBookId } from "../utils/bookHelpers.js";
+import aksaraToast from "../utils/toast.js";
 
 const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 
@@ -59,6 +60,7 @@ export function FavoriteProvider({ children }) {
             storageError.message ||
               "Gagal membaca data favorit dari penyimpanan lokal.",
           );
+          aksaraToast.favoriteStorageReadError();
         }
       } finally {
         setLoading(false);
@@ -74,6 +76,7 @@ export function FavoriteProvider({ children }) {
         storageError.message ||
           "Gagal membaca data favorit dari penyimpanan lokal.",
       );
+      aksaraToast.favoriteStorageReadError();
     } finally {
       setLoading(false);
     }
@@ -89,45 +92,37 @@ export function FavoriteProvider({ children }) {
 
   const favoriteCount = favoriteBooks.length;
 
-  const toggleFavorite = useCallback(
+  const addFavorite = useCallback(
     async (book) => {
       if (!book) return;
       const bookId = getBookId(book);
-
       const exists = favoriteBooks.some((item) => getBookId(item) === bookId);
+
+      if (exists) {
+        aksaraToast.favoriteAlreadyExists();
+        return;
+      }
 
       if (isAuthenticated) {
         try {
-          if (exists) {
-            // Remove from backend
-            await favoriteApi.removeFavoriteByBook(bookId);
-            setFavoriteBooks((prev) =>
-              prev.filter((item) => getBookId(item) !== bookId),
-            );
-          } else {
-            // Add to backend
-            const payload = {
-              bookId,
-              title: book.title,
-              author: book.author_name?.join(", ") || book.author || "",
-              coverUrl: book.cover_i
-                ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
-                : "",
-              ...book,
-              favoritedAt: Date.now(),
-            };
-            await favoriteApi.addFavorite(payload);
-            setFavoriteBooks((prev) => [
-              ...prev,
-              { ...book, favoritedAt: Date.now() },
-            ]);
-          }
+          const payload = {
+            bookId,
+            title: book.title,
+            author: book.author_name?.join(", ") || book.author || "",
+            coverUrl: book.cover_i
+              ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+              : "",
+            ...book,
+            favoritedAt: Date.now(),
+          };
+          await favoriteApi.addFavorite(payload);
+          setFavoriteBooks((prev) => [
+            ...prev,
+            { ...book, favoritedAt: Date.now() },
+          ]);
         } catch {
-          // Fallback ke localStorage jika API gagal
           setFavoriteBooks((prev) => {
-            const updated = exists
-              ? prev.filter((item) => getBookId(item) !== bookId)
-              : [...prev, { ...book, favoritedAt: Date.now() }];
+            const updated = [...prev, { ...book, favoritedAt: Date.now() }];
             try {
               localStorage.setItem(
                 FAVORITES_STORAGE_KEY,
@@ -140,11 +135,8 @@ export function FavoriteProvider({ children }) {
           });
         }
       } else {
-        // Guest: simpan di localStorage
         setFavoriteBooks((prev) => {
-          const updated = exists
-            ? prev.filter((item) => getBookId(item) !== bookId)
-            : [...prev, { ...book, favoritedAt: Date.now() }];
+          const updated = [...prev, { ...book, favoritedAt: Date.now() }];
           try {
             localStorage.setItem(
               FAVORITES_STORAGE_KEY,
@@ -156,8 +148,71 @@ export function FavoriteProvider({ children }) {
           return updated;
         });
       }
+      aksaraToast.favoriteAdded();
     },
     [favoriteBooks, isAuthenticated],
+  );
+
+  const removeFavorite = useCallback(
+    async (book) => {
+      if (!book) return;
+      const bookId = getBookId(book);
+      const exists = favoriteBooks.some((item) => getBookId(item) === bookId);
+
+      if (!exists) return;
+
+      if (isAuthenticated) {
+        try {
+          await favoriteApi.removeFavoriteByBook(bookId);
+          setFavoriteBooks((prev) =>
+            prev.filter((item) => getBookId(item) !== bookId),
+          );
+        } catch {
+          setFavoriteBooks((prev) => {
+            const updated = prev.filter((item) => getBookId(item) !== bookId);
+            try {
+              localStorage.setItem(
+                FAVORITES_STORAGE_KEY,
+                JSON.stringify(updated),
+              );
+            } catch {
+              setError("Gagal menyimpan data favorit ke penyimpanan lokal.");
+            }
+            return updated;
+          });
+        }
+      } else {
+        setFavoriteBooks((prev) => {
+          const updated = prev.filter((item) => getBookId(item) !== bookId);
+          try {
+            localStorage.setItem(
+              FAVORITES_STORAGE_KEY,
+              JSON.stringify(updated),
+            );
+          } catch {
+            setError("Gagal menyimpan data favorit ke penyimpanan lokal.");
+          }
+          return updated;
+        });
+      }
+      aksaraToast.favoriteRemoved();
+    },
+    [favoriteBooks, isAuthenticated],
+  );
+
+  const toggleFavorite = useCallback(
+    async (book) => {
+      if (!book) return;
+      const bookId = getBookId(book);
+      const exists = favoriteBooks.some((item) => getBookId(item) === bookId);
+
+      if (exists) {
+        await removeFavorite(book);
+      } else {
+        await addFavorite(book);
+      }
+    },
+    [favoriteBooks, addFavorite, removeFavorite],
   );
 
   const value = useMemo(
@@ -169,6 +224,8 @@ export function FavoriteProvider({ children }) {
       error,
       reloadFavorites: loadFavorites,
       toggleFavorite,
+      addFavorite,
+      removeFavorite,
     }),
     [
       favoriteBooks,
@@ -178,6 +235,8 @@ export function FavoriteProvider({ children }) {
       error,
       loadFavorites,
       toggleFavorite,
+      addFavorite,
+      removeFavorite,
     ],
   );
 

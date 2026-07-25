@@ -8,6 +8,8 @@ import {
 } from "react";
 import { notificationApi } from "../services/notificationApi.js";
 import { useAuth } from "./AuthContext.jsx";
+import { toast } from "sonner";
+import { showToast as sonnerShowToast } from "../utils/toast.js";
 
 const NotificationContext = createContext(null);
 
@@ -52,24 +54,16 @@ export function NotificationProvider({ children }) {
   }, [isAuthenticated]);
 
   const dismissToast = useCallback((id) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    toast.dismiss(id);
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const showToast = useCallback(
-    (title, message, type = "info", duration = 4000) => {
-      const id = ++toastIdCounter;
-      const toast = { id, title, message, type, duration };
-      setToasts((prev) => [...prev, toast]);
-
-      if (duration > 0) {
-        setTimeout(() => {
-          dismissToast(id);
-        }, duration);
-      }
-
-      return id;
+    (title, message, type = "info", duration) => {
+      const toastId = sonnerShowToast(title, message, type, duration);
+      return toastId;
     },
-    [dismissToast],
+    [],
   );
 
   const markAsRead = useCallback(

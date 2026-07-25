@@ -4,6 +4,7 @@ import Icon from "../components/Icon";
 import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
+import aksaraToast from "../utils/toast.js";
 
 export default function RegisterPage() {
   const { user, isAuthenticated, register } = useAuth();
@@ -39,7 +40,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register({ name, email, password });
-      showToast("Pendaftaran berhasil", `Selamat datang, ${name}.`, "success");
+      aksaraToast.loginSuccess();
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setMessage(err.message || "Pendaftaran gagal.");

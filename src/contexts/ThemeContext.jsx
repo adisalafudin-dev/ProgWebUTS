@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import aksaraToast from "../utils/toast.js";
 
 const THEME_STORAGE_KEY = "aksarahub-theme";
 
@@ -39,7 +40,15 @@ export function ThemeProvider({ children }) {
   }, [isDarkMode]);
 
   const toggleTheme = useCallback(() => {
-    setIsDarkMode((prev) => !prev);
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      if (next) {
+        aksaraToast.themeDarkMode();
+      } else {
+        aksaraToast.themeLightMode();
+      }
+      return next;
+    });
   }, []);
 
   const value = useMemo(

@@ -5,6 +5,7 @@ import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import { ROLES } from "../constants/roles.js";
+import aksaraToast from "../utils/toast.js";
 
 export default function LoginPage({ redirectTo = "/" }) {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -38,10 +39,7 @@ export default function LoginPage({ redirectTo = "/" }) {
     setLoading(true);
     try {
       const session = await login({ email, password });
-      const displayName =
-        session?.user?.name || email.split("@")[0] || "Pembaca";
-      showToast("Login berhasil", `Selamat datang, ${displayName}.`, "success");
-      // Redirect admin ke dashboard admin, user biasa ke nextRedirect
+      aksaraToast.loginSuccess();
       const role = session?.user?.role;
       if (role === ROLES.ADMIN) {
         navigate("/admin/dashboard", { replace: true });
@@ -49,7 +47,8 @@ export default function LoginPage({ redirectTo = "/" }) {
         navigate(nextRedirect, { replace: true });
       }
     } catch (err) {
-      setMessage(err.message || "Email atau password salah.");
+      setMessage("Email atau password tidak valid.");
+      aksaraToast.loginError();
     } finally {
       setLoading(false);
     }
@@ -57,7 +56,6 @@ export default function LoginPage({ redirectTo = "/" }) {
 
   const handleLogout = () => {
     logout();
-    showToast("Logout berhasil", "Sesi akun sudah keluar.", "info");
   };
 
   const fillDemo = () => {

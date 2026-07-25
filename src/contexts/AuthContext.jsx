@@ -14,6 +14,7 @@ import {
   saveAuthSession,
 } from "../services/authService.js";
 import authApi from "../services/authApi.js";
+import aksaraToast from "../utils/toast.js";
 
 const AUTH_SESSION_KEY = "aksarahub-auth";
 
@@ -124,6 +125,7 @@ export function AuthProvider({ children }) {
     }
     clearAuthSession();
     setAuthSession(null);
+    aksaraToast.logoutSuccess();
   }, []);
 
   const refresh = useCallback(async () => {

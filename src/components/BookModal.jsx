@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchOpenLibraryBookDetail } from "../services/openLibraryApi";
 import Icon from "./Icon";
+import aksaraToast from "../utils/toast.js";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -277,6 +278,7 @@ export default function BookModal({
         if (!controller.signal.aborted) {
           setFetchError(error?.message || "Gagal mengambil data.");
           setIsLoading(false);
+          aksaraToast.bookDetailError();
         }
       });
 
@@ -363,11 +365,6 @@ export default function BookModal({
 
   const handleToggleFavorite = () => {
     onToggleFavorite?.(book);
-    onToast?.(
-      isFavorite ? "Dihapus dari favorit" : "Disimpan ke favorit",
-      title,
-      "success",
-    );
   };
 
   return (
