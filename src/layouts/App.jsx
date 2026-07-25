@@ -148,6 +148,7 @@ export default function App() {
               <LibraryPage
                 books={dataStore}
                 isLoading={isLoading}
+                error={error}
                 fetchData={fetchData}
               />
             }
