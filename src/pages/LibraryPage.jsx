@@ -476,7 +476,7 @@ export default function LibraryPage({
               >
                 Open Library API
               </a>
-              . Data diperbarui secara real-time.
+              . Data diperbarui secara real&#8209;time.
             </p>
           </div>
         </div>
