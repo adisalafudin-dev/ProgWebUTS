@@ -14,47 +14,74 @@ const FAVORITES_STORAGE_KEY = "aksarahub-favorite-books";
 
 const FavoriteContext = createContext(null);
 
+const normalizeFavoriteBooks = (books = []) =>
+  books.map((book, index) => ({
+    ...book,
+    favoritedAt:
+      book.favoritedAt ||
+      Date.now() - (books.length - index - 1) * 1000,
+  }));
+
+const readFavoritesFromStorage = () => {
+  const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
+  if (!saved) return [];
+  const parsed = JSON.parse(saved);
+  if (!Array.isArray(parsed)) {
+    throw new Error("Format data favorit tidak valid.");
+  }
+  return normalizeFavoriteBooks(parsed);
+};
+
 export function FavoriteProvider({ children }) {
   const { isAuthenticated } = useAuth();
   const [favoriteBooks, setFavoriteBooks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Load favorites from localStorage for offline/guest, or from API when authenticated
-  useEffect(() => {
-    const loadFavorites = async () => {
-      if (isAuthenticated) {
-        setLoading(true);
+  const loadFavorites = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    if (isAuthenticated) {
+      try {
+        const response = await favoriteApi.getFavorites();
+        const data = response.data || response;
+        const books = Array.isArray(data)
+          ? data
+          : data?.favorites || data?.data || [];
+        setFavoriteBooks(normalizeFavoriteBooks(books));
+      } catch {
         try {
-          const response = await favoriteApi.getFavorites();
-          const data = response.data || response;
-          const books = Array.isArray(data)
-            ? data
-            : data?.favorites || data?.data || [];
-          setFavoriteBooks(books);
-        } catch {
-          // Fallback ke localStorage jika API gagal
-          try {
-            const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
-            setFavoriteBooks(saved ? JSON.parse(saved) : []);
-          } catch {
-            setFavoriteBooks([]);
-          }
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        // Guest: load dari localStorage
-        try {
-          const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
-          setFavoriteBooks(saved ? JSON.parse(saved) : []);
-        } catch {
+          setFavoriteBooks(readFavoritesFromStorage());
+        } catch (storageError) {
           setFavoriteBooks([]);
+          setError(
+            storageError.message ||
+              "Gagal membaca data favorit dari penyimpanan lokal.",
+          );
         }
+      } finally {
+        setLoading(false);
       }
-    };
+      return;
+    }
 
-    loadFavorites();
+    try {
+      setFavoriteBooks(readFavoritesFromStorage());
+    } catch (storageError) {
+      setFavoriteBooks([]);
+      setError(
+        storageError.message ||
+          "Gagal membaca data favorit dari penyimpanan lokal.",
+      );
+    } finally {
+      setLoading(false);
+    }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
 
   const favoriteIds = useMemo(() => {
     return new Set(favoriteBooks.map((book) => getBookId(book)));
@@ -87,23 +114,27 @@ export function FavoriteProvider({ children }) {
                 ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
                 : "",
               ...book,
+              favoritedAt: Date.now(),
             };
             await favoriteApi.addFavorite(payload);
-            setFavoriteBooks((prev) => [...prev, book]);
+            setFavoriteBooks((prev) => [
+              ...prev,
+              { ...book, favoritedAt: Date.now() },
+            ]);
           }
         } catch {
           // Fallback ke localStorage jika API gagal
           setFavoriteBooks((prev) => {
             const updated = exists
               ? prev.filter((item) => getBookId(item) !== bookId)
-              : [...prev, book];
+              : [...prev, { ...book, favoritedAt: Date.now() }];
             try {
               localStorage.setItem(
                 FAVORITES_STORAGE_KEY,
                 JSON.stringify(updated),
               );
             } catch {
-              // ignore
+              setError("Gagal menyimpan data favorit ke penyimpanan lokal.");
             }
             return updated;
           });
@@ -113,14 +144,14 @@ export function FavoriteProvider({ children }) {
         setFavoriteBooks((prev) => {
           const updated = exists
             ? prev.filter((item) => getBookId(item) !== bookId)
-            : [...prev, book];
+            : [...prev, { ...book, favoritedAt: Date.now() }];
           try {
             localStorage.setItem(
               FAVORITES_STORAGE_KEY,
               JSON.stringify(updated),
             );
           } catch {
-            // ignore
+            setError("Gagal menyimpan data favorit ke penyimpanan lokal.");
           }
           return updated;
         });
@@ -135,9 +166,19 @@ export function FavoriteProvider({ children }) {
       favoriteIds,
       favoriteCount,
       loading,
+      error,
+      reloadFavorites: loadFavorites,
       toggleFavorite,
     }),
-    [favoriteBooks, favoriteIds, favoriteCount, loading, toggleFavorite],
+    [
+      favoriteBooks,
+      favoriteIds,
+      favoriteCount,
+      loading,
+      error,
+      loadFavorites,
+      toggleFavorite,
+    ],
   );
 
   return (
