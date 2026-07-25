@@ -101,6 +101,12 @@ export const aksaraToast = {
   adminBookDeleted: () => toastSuccess("Buku berhasil dihapus."),
   adminSyncSuccess: () => toastSuccess("Sinkronisasi data berhasil."),
   adminSyncFailed: () => toastError("Sinkronisasi gagal."),
+
+  // Settings
+  settingsSaved: () => toastSuccess("Pengaturan berhasil disimpan."),
+  settingsReset: () => toastInfo("Pengaturan dikembalikan ke default."),
+  cacheCleared: () => toastSuccess("Cache lokal berhasil dihapus."),
+  cacheClearError: () => toastError("Gagal menghapus cache lokal."),
 };
 
 export default aksaraToast;

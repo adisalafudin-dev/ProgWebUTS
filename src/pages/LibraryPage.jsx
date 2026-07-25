@@ -12,7 +12,7 @@ import { formatRating, getBookId } from "../utils/bookHelpers.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 10;
 
 const TOPICS = [
   { value: "Semua", label: "Semua", icon: "collection" },
@@ -194,11 +194,10 @@ function PaginationBar({ currentPage, totalPages, totalItems, startIndex, endInd
           <button
             key={page}
             type="button"
-            className={`min-h-9 w-9 rounded-lg text-sm font-semibold transition-all ${
-              page === currentPage
+            className={`min-h-9 w-9 rounded-lg text-sm font-semibold transition-all ${page === currentPage
                 ? "bg-primary text-white shadow-md"
                 : "border border-borderSoft bg-white text-textSecondary hover:border-primary hover:text-primary"
-            }`}
+              }`}
             aria-current={page === currentPage ? "page" : undefined}
             onClick={() => goToPage(page)}
           >
@@ -361,9 +360,9 @@ export default function LibraryPage({
       const matchesYear = !yearRange
         ? true
         : (() => {
-            const y = Number(book.year);
-            return y >= yearRange[0] && y <= yearRange[1];
-          })();
+          const y = Number(book.year);
+          return y >= yearRange[0] && y <= yearRange[1];
+        })();
 
       const matchesLanguage =
         !languageFilter ||
@@ -801,11 +800,10 @@ export default function LibraryPage({
               <button
                 key={view.value}
                 type="button"
-                className={`inline-flex min-h-8 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${
-                  viewMode === view.value
+                className={`inline-flex min-h-8 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${viewMode === view.value
                     ? "bg-primary text-white shadow-sm"
                     : "text-textSecondary hover:bg-cream hover:text-accentHover"
-                }`}
+                  }`}
                 aria-pressed={viewMode === view.value}
                 aria-label={`Tampilan ${view.label}`}
                 onClick={() => setViewMode(view.value)}
@@ -887,9 +885,8 @@ export default function LibraryPage({
                       )}
                       {/* availability badge on cover */}
                       <span
-                        className={`absolute bottom-1 left-1 rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${
-                          book.available ? "bg-cream text-primary" : "bg-accentHover text-white"
-                        }`}
+                        className={`absolute bottom-1 left-1 rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${book.available ? "bg-cream text-primary" : "bg-accentHover text-white"
+                          }`}
                       >
                         {book.available ? "Tersedia" : "Dipinjam"}
                       </span>
@@ -944,11 +941,10 @@ export default function LibraryPage({
                     <div className="col-span-2 flex flex-wrap gap-2 sm:col-span-1 sm:flex-col sm:items-end">
                       <button
                         type="button"
-                        className={`inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all sm:text-sm ${
-                          isFav
+                        className={`inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all sm:text-sm ${isFav
                             ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
                             : "border-borderSoft bg-white text-secondary hover:border-red-400 hover:text-red-500"
-                        }`}
+                          }`}
                         aria-pressed={isFav}
                         aria-label={isFav ? `Hapus ${book.title} dari favorit` : `Simpan ${book.title} ke favorit`}
                         onClick={() => toggleFavorite(book)}
