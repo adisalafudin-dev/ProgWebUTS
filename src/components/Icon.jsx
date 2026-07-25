@@ -52,6 +52,7 @@ const iconPaths = {
   userX: "M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2m8-11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm3 1 4 4m0-4-4 4",
   shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z",
   ban: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm-6.5-3.5 13-13",
+  clockAlert: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 6v6l4 2",
 };
 
 export default function Icon({
@@ -59,7 +60,16 @@ export default function Icon({
   className = "w-5 h-5",
   strokeWidth = 1.8,
 }) {
-  const path = iconPaths[name] || iconPaths.bookOpen;
+  const normalizedKey = name
+    ? name.charAt(0).toLowerCase() + name.slice(1)
+    : "";
+  const lowerKey = name ? name.toLowerCase() : "";
+  const path =
+    iconPaths[name] ||
+    iconPaths[normalizedKey] ||
+    iconPaths[lowerKey] ||
+    iconPaths.bookOpen;
+
   return (
     <svg
       className={className}

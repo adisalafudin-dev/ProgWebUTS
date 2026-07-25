@@ -5,8 +5,8 @@ const adminLinks = [
   { to: "/admin/dashboard", page: "dashboard", label: "Dashboard", icon: "home" },
   { to: "/admin/books", page: "books", label: "Buku", icon: "bookOpen" },
   { to: "/admin/categories", page: "categories", label: "Kategori", icon: "tag" },
-  { to: "/admin/users", page: "users", label: "Pengguna", icon: "users" },
   { to: "/admin/statistics", page: "statistics", label: "Statistik", icon: "collection" },
+  { to: "/admin/users", page: "users", label: "Anggota", icon: "users" },
 ];
 
 export default function AdminSidebar({

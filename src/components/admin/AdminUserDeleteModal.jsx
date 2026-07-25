@@ -35,7 +35,7 @@ export default function AdminUserDeleteModal({
           </div>
           <div>
             <h3 className="font-playfair text-lg font-bold text-slate-900">
-              Hapus Pengguna
+              Hapus Anggota
             </h3>
             <p className="text-xs text-slate-500">
               Tindakan ini tidak dapat dibatalkan.
@@ -44,7 +44,7 @@ export default function AdminUserDeleteModal({
         </div>
 
         <div className="mt-4 rounded-xl bg-slate-50 p-4 border border-slate-100 text-xs text-slate-600 leading-relaxed">
-          Apakah Anda yakin ingin menghapus akun pengguna{" "}
+          Apakah Anda yakin ingin menghapus data anggota{" "}
           <strong className="text-slate-900">{user.name}</strong> (
           <span className="font-mono text-slate-700">{user.email}</span>)?
         </div>
@@ -63,7 +63,7 @@ export default function AdminUserDeleteModal({
             className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
           >
             <Icon name="trash" className="h-4 w-4" />
-            <span>Hapus Pengguna</span>
+            <span>Hapus Anggota</span>
           </button>
         </div>
       </div>

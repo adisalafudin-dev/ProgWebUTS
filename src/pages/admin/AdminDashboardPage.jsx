@@ -92,8 +92,8 @@ const quickActions = [
     iconBg: "bg-emerald-100 text-emerald-700",
   },
   {
-    label: "Kelola Pengguna",
-    description: "Atur hak akses & perizinan",
+    label: "Manajemen Anggota",
+    description: "Kelola data & status keanggotaan",
     href: "/admin/users",
     icon: UserPlus,
     iconBg: "bg-violet-100 text-violet-700",

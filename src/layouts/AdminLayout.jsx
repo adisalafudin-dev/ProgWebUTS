@@ -16,7 +16,7 @@ const pageTitles = {
   dashboard: "Dashboard",
   books: "Kelola Buku",
   categories: "Kelola Kategori",
-  users: "Kelola Pengguna",
+  users: "Manajemen Anggota",
   statistics: "Statistik Perpustakaan",
 };
 

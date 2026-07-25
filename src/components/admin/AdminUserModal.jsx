@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Icon from "../Icon";
-import { ROLES } from "../../constants/roles";
 
 export default function AdminUserModal({
   isOpen,
@@ -12,9 +11,10 @@ export default function AdminUserModal({
 
   const [formData, setFormData] = useState({
     name: "",
+    memberNumber: "",
     email: "",
-    role: ROLES.USER,
     status: "Aktif",
+    borrowStatus: "Tidak Meminjam",
   });
 
   const [errorMsg, setErrorMsg] = useState("");
@@ -24,16 +24,18 @@ export default function AdminUserModal({
       if (user) {
         setFormData({
           name: user.name || "",
+          memberNumber: user.memberNumber || "",
           email: user.email || "",
-          role: user.role || ROLES.USER,
           status: user.status || "Aktif",
+          borrowStatus: user.borrowStatus || "Tidak Meminjam",
         });
       } else {
         setFormData({
           name: "",
+          memberNumber: "",
           email: "",
-          role: ROLES.USER,
           status: "Aktif",
+          borrowStatus: "Tidak Meminjam",
         });
       }
       setErrorMsg("");
@@ -55,20 +57,21 @@ export default function AdminUserModal({
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      setErrorMsg("Nama pengguna wajib diisi.");
+      setErrorMsg("Nama anggota wajib diisi.");
       return;
     }
     if (!formData.email.trim()) {
-      setErrorMsg("Email pengguna wajib diisi.");
+      setErrorMsg("Email anggota wajib diisi.");
       return;
     }
 
     onSave({
       id: user?.id,
       name: formData.name.trim(),
+      memberNumber: formData.memberNumber.trim(),
       email: formData.email.trim(),
-      role: formData.role,
       status: formData.status,
+      borrowStatus: formData.borrowStatus,
     });
   };
 
@@ -87,16 +90,16 @@ export default function AdminUserModal({
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <div className="flex items-center gap-2.5">
             <div className="rounded-xl bg-amber-100 p-2 text-amber-800">
-              <Icon name={isEditing ? "pen" : "user"} className="h-5 w-5" />
+              <Icon name={isEditing ? "pen" : "users"} className="h-5 w-5" />
             </div>
             <div>
               <h3 className="font-playfair text-lg font-bold text-slate-900">
-                {isEditing ? "Edit Data Pengguna" : "Tambah Pengguna Baru"}
+                {isEditing ? "Edit Data Anggota" : "Tambah Anggota Baru"}
               </h3>
               <p className="text-xs text-slate-500">
                 {isEditing
-                  ? "Perbarui peranan dan status akses akun pengguna"
-                  : "Tambahkan akun pengguna baru ke dalam sistem"}
+                  ? "Perbarui data dan status keanggotaan perpustakaan"
+                  : "Tambahkan data anggota perpustakaan baru ke dalam sistem"}
               </p>
             </div>
           </div>
@@ -120,7 +123,7 @@ export default function AdminUserModal({
             </div>
           )}
 
-          {/* User Name */}
+          {/* Member Name */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
               Nama Lengkap <span className="text-red-500">*</span>
@@ -132,9 +135,25 @@ export default function AdminUserModal({
                 setFormData((prev) => ({ ...prev, name: e.target.value }));
                 if (errorMsg) setErrorMsg("");
               }}
-              placeholder="Contoh: Budi Santoso"
+              placeholder="Contoh: Ahmad Dahlan"
               className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
               autoFocus
+            />
+          </div>
+
+          {/* Member Number */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+              Nomor Anggota
+            </label>
+            <input
+              type="text"
+              value={formData.memberNumber}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, memberNumber: e.target.value }))
+              }
+              placeholder="Contoh: LIB-2026-001"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
             />
           </div>
 
@@ -150,32 +169,15 @@ export default function AdminUserModal({
                 setFormData((prev) => ({ ...prev, email: e.target.value }));
                 if (errorMsg) setErrorMsg("");
               }}
-              placeholder="user@example.com"
+              placeholder="anggota@example.com"
               className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
             />
           </div>
 
-          {/* Role */}
+          {/* Member Status */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Role Akses
-            </label>
-            <select
-              value={formData.role}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, role: e.target.value }))
-              }
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
-            >
-              <option value={ROLES.USER}>USER (Pengguna Biasa)</option>
-              <option value={ROLES.ADMIN}>ADMIN (Administrator)</option>
-            </select>
-          </div>
-
-          {/* Status */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Status Akun
+              Status Anggota
             </label>
             <select
               value={formData.status}
@@ -185,7 +187,25 @@ export default function AdminUserModal({
               className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
             >
               <option value="Aktif">Aktif</option>
-              <option value="Suspended">Suspended (Nonaktif)</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+
+          {/* Borrow Status */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+              Status Peminjaman
+            </label>
+            <select
+              value={formData.borrowStatus}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, borrowStatus: e.target.value }))
+              }
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+            >
+              <option value="Tidak Meminjam">Tidak Meminjam</option>
+              <option value="Sedang Meminjam">Sedang Meminjam</option>
+              <option value="Terlambat">Terlambat</option>
             </select>
           </div>
 
@@ -203,7 +223,7 @@ export default function AdminUserModal({
               className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
             >
               <Icon name={isEditing ? "check" : "plus"} className="h-4 w-4" />
-              <span>{isEditing ? "Simpan Perubahan" : "Tambah Pengguna"}</span>
+              <span>{isEditing ? "Simpan Perubahan" : "Tambah Anggota"}</span>
             </button>
           </div>
         </form>

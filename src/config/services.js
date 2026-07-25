@@ -4,6 +4,7 @@ export const SERVICE_KEYS = {
   REVIEW: "review",
   FAVORITE: "favorite",
   USER: "user",
+  MEMBER: "member",
   CATEGORY: "category",
   NOTIFICATION: "notification",
 };
@@ -39,6 +40,12 @@ export const services = {
     name: "User Service",
     baseURL:
       import.meta.env.VITE_USER_SERVICE_URL || "http://localhost:4005/api",
+    timeout: Number(import.meta.env.VITE_API_TIMEOUT) || DEFAULT_TIMEOUT,
+  },
+  [SERVICE_KEYS.MEMBER]: {
+    name: "Member Service",
+    baseURL:
+      import.meta.env.VITE_MEMBER_SERVICE_URL || "http://localhost:4005/api",
     timeout: Number(import.meta.env.VITE_API_TIMEOUT) || DEFAULT_TIMEOUT,
   },
   [SERVICE_KEYS.CATEGORY]: {
