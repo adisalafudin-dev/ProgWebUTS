@@ -530,3 +530,224 @@ html.dark .skeleton-shimmer {
   );
   background-size: 200% 100%;
 }
+
+/* ─── Profile Page Components ──────────────────────────────────── */
+
+/* Accent icon (golden) */
+.profile-accent-icon {
+  color: #b8892d;
+}
+
+/* Info row icon */
+.profile-info-icon {
+  color: #b8892d;
+}
+
+/* Role badge – shared */
+.profile-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Role badge – regular user */
+.profile-role-badge--user {
+  background: rgba(24, 51, 47, 0.10);
+  color: #18332f;
+  border: 1px solid rgba(24, 51, 47, 0.22);
+}
+
+/* Role badge – admin */
+.profile-role-badge--admin {
+  background: rgba(122, 46, 46, 0.12);
+  color: #7a2e2e;
+  border: 1px solid rgba(122, 46, 46, 0.26);
+}
+
+/* Status badge – shared */
+.profile-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Status badge – active */
+.profile-status-badge--active {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.24);
+}
+
+/* Status badge – inactive */
+.profile-status-badge--inactive {
+  background: rgba(220, 38, 38, 0.10);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.22);
+}
+
+/* Stat card */
+.profile-stat-card {
+  background: rgba(246, 241, 232, 0.7);
+  border: 1px solid rgba(216, 207, 192, 0.6);
+}
+
+/* Stat card – icon wrapper */
+.profile-stat-icon-wrap {
+  background: rgba(184, 137, 45, 0.12);
+}
+
+/* Stat card – label text */
+.profile-stat-label {
+  color: #6f6a61;
+}
+
+/* Coming Soon button */
+.profile-coming-soon-btn {
+  border-color: #d8cfc0;
+  color: #6f6a61;
+  background: transparent;
+}
+
+/* Coming Soon badge chip */
+.profile-coming-soon-badge {
+  background: rgba(184, 137, 45, 0.15);
+  color: #b8892d;
+}
+
+/* ─── Dark mode overrides for Profile Page ─────────────────────── */
+
+html.dark .profile-accent-icon,
+html.dark .profile-info-icon {
+  color: #e7c06b !important;
+}
+
+html.dark .profile-role-badge--user {
+  background: rgba(231, 192, 107, 0.14) !important;
+  color: #e7c06b !important;
+  border-color: rgba(231, 192, 107, 0.30) !important;
+}
+
+html.dark .profile-role-badge--admin {
+  background: rgba(239, 139, 139, 0.14) !important;
+  color: #f7a0a0 !important;
+  border-color: rgba(239, 139, 139, 0.30) !important;
+}
+
+html.dark .profile-status-badge--active {
+  background: rgba(74, 222, 128, 0.14) !important;
+  color: #4ade80 !important;
+  border-color: rgba(74, 222, 128, 0.28) !important;
+}
+
+html.dark .profile-status-badge--inactive {
+  background: rgba(248, 113, 113, 0.14) !important;
+  color: #f87171 !important;
+  border-color: rgba(248, 113, 113, 0.28) !important;
+}
+
+html.dark .profile-stat-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+html.dark .profile-stat-icon-wrap {
+  background: rgba(231, 192, 107, 0.16) !important;
+}
+
+html.dark .profile-stat-label {
+  color: #c8bdaa !important;
+}
+
+html.dark .profile-coming-soon-btn {
+  border-color: #33423c !important;
+  color: #c8bdaa !important;
+}
+
+html.dark .profile-coming-soon-badge {
+  background: rgba(231, 192, 107, 0.18) !important;
+  color: #e7c06b !important;
+}
+
+/* ─── Dark Mode — Navbar Shell ───────────────────────────────────── */
+
+html.dark .navbar-shell {
+  background-color: #111a18 !important;
+  border-color: #33423c !important;
+}
+
+/* Search input inside navbar */
+html.dark .navbar-search-input {
+  background-color: #1a2724 !important;
+  border-color: #33423c !important;
+  color: #f5efe4 !important;
+}
+
+html.dark .navbar-search-input::placeholder {
+  color: #9c9385 !important;
+}
+
+/* Ctrl+K kbd badge */
+html.dark .navbar-kbd {
+  background-color: #1a2724 !important;
+  border-color: #33423c !important;
+  color: #9c9385 !important;
+}
+
+/* Round icon buttons: dark mode toggle, bell, mobile search */
+html.dark .navbar-icon-btn {
+  background-color: #1a2724 !important;
+  border-color: #33423c !important;
+  color: #c8bdaa !important;
+}
+
+html.dark .navbar-icon-btn:hover {
+  border-color: #b8892d !important;
+  color: #e7c06b !important;
+}
+
+/* User avatar button */
+html.dark .navbar-user-btn {
+  background-color: #1a2724 !important;
+  border-color: #33423c !important;
+  color: #f5efe4 !important;
+}
+
+html.dark .navbar-user-btn:hover {
+  border-color: #b8892d !important;
+}
+
+/* Dropdown panels (user menu, autocomplete, mobile search modal) */
+html.dark .navbar-dropdown {
+  background-color: #17211f !important;
+  border-color: #33423c !important;
+}
+
+/* Dropdown header label row */
+html.dark .navbar-dropdown-header {
+  background-color: #111a18 !important;
+  color: #9c9385 !important;
+}
+
+/* Dropdown suggestion item hover */
+html.dark .navbar-suggestion-item:hover {
+  background-color: #1a2724 !important;
+}
+
+/* Menu link items (Profil, Pengaturan, Tentang, Keluar) */
+html.dark .navbar-menu-item:hover {
+  background-color: #1a2724 !important;
+}
+
+/* Breadcrumb strip */
+html.dark .navbar-breadcrumb {
+  background-color: #0f1715 !important;
+  border-color: #33423c !important;
+}

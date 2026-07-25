@@ -173,7 +173,7 @@ export default function Header({
   return (
     <header
       ref={headerRef}
-      className={`sticky top-0 z-30 transition-all duration-300 ${
+      className={`sticky top-0 z-30 transition-all duration-300 navbar-shell ${
         isScrolled
           ? "border-b border-borderSoft bg-white/95 shadow-md backdrop-blur-md"
           : "border-b border-borderSoft bg-cream/90 backdrop-blur-sm"
@@ -243,7 +243,7 @@ export default function Header({
                   onFocus={() => {
                     if (searchQuery.trim().length >= 2) setShowSuggestions(true);
                   }}
-                  className="w-full pl-10 pr-20 py-2 rounded-xl border border-borderSoft bg-white text-sm text-textMain placeholder-textSecondary shadow-xs transition-all focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  className="w-full pl-10 pr-20 py-2 rounded-xl border border-borderSoft bg-white text-sm text-textMain placeholder-textSecondary shadow-xs transition-all focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 navbar-search-input"
                 />
 
                 {/* Right controls inside search bar */}
@@ -259,7 +259,7 @@ export default function Header({
                     </button>
                   )}
                   <kbd
-                    className="hidden lg:inline-flex items-center rounded border border-borderSoft bg-cream px-1.5 py-0.5 text-[10px] font-sans font-medium text-textSecondary select-none pointer-events-none"
+                    className="hidden lg:inline-flex items-center rounded border border-borderSoft bg-cream px-1.5 py-0.5 text-[10px] font-sans font-medium text-textSecondary select-none pointer-events-none navbar-kbd"
                     title="Tekan Ctrl+K atau / untuk mencari"
                   >
                     Ctrl K
@@ -270,7 +270,7 @@ export default function Header({
 
             {/* ── DESKTOP AUTOCOMPLETE SUGGESTIONS DROPDOWN ──────────────── */}
             {showSuggestions && searchQuery.trim().length >= 2 && (
-              <div className="absolute left-0 right-0 top-full mt-2 z-50 overflow-hidden rounded-xl border border-borderSoft bg-white shadow-2xl">
+              <div className="absolute left-0 right-0 top-full mt-2 z-50 overflow-hidden rounded-xl border border-borderSoft bg-white shadow-2xl navbar-dropdown">
                 {isSearching ? (
                   <div className="flex items-center justify-center gap-2 p-4 text-xs font-crimson text-textSecondary">
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
@@ -278,7 +278,7 @@ export default function Header({
                   </div>
                 ) : suggestions.length > 0 ? (
                   <ul className="divide-y divide-borderSoft/50 text-sm">
-                    <li className="bg-cream/60 px-3 py-1.5 text-[11px] font-semibold text-textSecondary font-crimson">
+                    <li className="bg-cream/60 px-3 py-1.5 text-[11px] font-semibold text-textSecondary font-crimson navbar-dropdown-header">
                       Hasil Rekomendasi (Maksimal 5)
                     </li>
                     {suggestions.map((item) => (
@@ -286,7 +286,7 @@ export default function Header({
                         <button
                           type="button"
                           onClick={() => handleSelectSuggestion(item)}
-                          className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-cream/70"
+                          className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-cream/70 navbar-suggestion-item"
                         >
                           <div className="h-10 w-7 shrink-0 overflow-hidden rounded bg-cream border border-borderSoft flex items-center justify-center">
                             {item.cover ? (
@@ -329,7 +329,7 @@ export default function Header({
           {/* Mobile Search Trigger Icon */}
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft bg-white text-textSecondary shadow-xs transition-all hover:border-accent hover:text-accentHover sm:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft bg-white text-textSecondary shadow-xs transition-all hover:border-accent hover:text-accentHover sm:hidden navbar-icon-btn"
             aria-label="Search"
             onClick={() => {
               setIsMobileSearchOpen(true);
@@ -346,7 +346,7 @@ export default function Header({
               aria-label="Dark Mode"
               aria-pressed={isDarkMode}
               onClick={toggleTheme}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft bg-white text-textSecondary shadow-xs transition-all duration-200 hover:border-accent hover:text-accentHover"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft bg-white text-textSecondary shadow-xs transition-all duration-200 hover:border-accent hover:text-accentHover navbar-icon-btn"
             >
               <Icon
                 name={isDarkMode ? "sun" : "moon"}
@@ -367,7 +367,7 @@ export default function Header({
             <button
               type="button"
               aria-label="Notification"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft bg-white text-textSecondary shadow-xs transition-all duration-200 hover:border-accent hover:text-accentHover"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-borderSoft bg-white text-textSecondary shadow-xs transition-all duration-200 hover:border-accent hover:text-accentHover navbar-icon-btn"
             >
               <Icon name="bell" className="h-4 w-4" strokeWidth={2} />
             </button>
@@ -388,7 +388,7 @@ export default function Header({
                 aria-expanded={showAvatarDropdown}
                 aria-haspopup="true"
                 onClick={() => setShowAvatarDropdown((prev) => !prev)}
-                className="flex items-center gap-2 rounded-full border border-borderSoft bg-white py-1 pl-1 pr-2.5 shadow-xs transition-all duration-200 hover:border-accent"
+                className="flex items-center gap-2 rounded-full border border-borderSoft bg-white py-1 pl-1 pr-2.5 shadow-xs transition-all duration-200 hover:border-accent navbar-user-btn"
               >
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white shadow-xs">
                   {userInitial}
@@ -406,7 +406,7 @@ export default function Header({
 
               {/* Lazy Rendered User Menu Dropdown */}
               {showAvatarDropdown && (
-                <div className="absolute right-0 top-full mt-2 w-52 overflow-hidden rounded-xl border border-borderSoft bg-white shadow-2xl py-1.5 z-50">
+                <div className="absolute right-0 top-full mt-2 w-52 overflow-hidden rounded-xl border border-borderSoft bg-white shadow-2xl py-1.5 z-50 navbar-dropdown">
                   <div className="border-b border-borderSoft/60 px-4 py-2.5">
                     <p className="truncate text-xs font-semibold text-textMain">
                       {user?.name}
@@ -419,7 +419,7 @@ export default function Header({
                   <div className="py-1">
                     <Link
                       to="/profile"
-                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-textMain transition-colors hover:bg-cream"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-textMain transition-colors hover:bg-cream navbar-menu-item"
                       onClick={() => setShowAvatarDropdown(false)}
                     >
                       <Icon name="users" className="h-4 w-4 text-textSecondary" />
@@ -427,7 +427,7 @@ export default function Header({
                     </Link>
                     <Link
                       to="/settings"
-                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-textMain transition-colors hover:bg-cream"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-textMain transition-colors hover:bg-cream navbar-menu-item"
                       onClick={() => setShowAvatarDropdown(false)}
                     >
                       <Icon name="monitor" className="h-4 w-4 text-textSecondary" />
@@ -435,7 +435,7 @@ export default function Header({
                     </Link>
                     <Link
                       to="/about"
-                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-textMain transition-colors hover:bg-cream"
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-textMain transition-colors hover:bg-cream navbar-menu-item"
                       onClick={() => setShowAvatarDropdown(false)}
                     >
                       <Icon name="info" className="h-4 w-4 text-textSecondary" />
@@ -457,7 +457,7 @@ export default function Header({
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-2.5 px-4 py-2 text-xs font-semibold text-accentHover transition-colors hover:bg-cream"
+                      className="flex w-full items-center gap-2.5 px-4 py-2 text-xs font-semibold text-accentHover transition-colors hover:bg-cream navbar-menu-item"
                     >
                       <Icon name="logOut" className="h-4 w-4" />
                       Keluar
@@ -470,7 +470,7 @@ export default function Header({
             <Link
               to="/login"
               aria-label="User Menu"
-              className="flex items-center gap-2 rounded-full border border-borderSoft bg-white px-3.5 py-1.5 text-xs font-semibold text-textSecondary shadow-xs transition-all duration-200 hover:border-accent hover:text-accentHover"
+              className="flex items-center gap-2 rounded-full border border-borderSoft bg-white px-3.5 py-1.5 text-xs font-semibold text-textSecondary shadow-xs transition-all duration-200 hover:border-accent hover:text-accentHover navbar-user-btn"
             >
               <Icon name="users" className="h-3.5 w-3.5" />
               Masuk
@@ -480,14 +480,14 @@ export default function Header({
       </div>
 
       {/* ── BREADCRUMB STRIP BELOW NAVBAR ──────────────────────────────────── */}
-      <div className="border-t border-borderSoft/60 bg-cream/40 px-4 py-1 sm:px-6 lg:px-8">
+      <div className="border-t border-borderSoft/60 bg-cream/40 px-4 py-1 sm:px-6 lg:px-8 navbar-breadcrumb">
         <Breadcrumb />
       </div>
 
       {/* ── MOBILE SEARCH OVERLAY ─────────────────────────────────────────── */}
       {isMobileSearchOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs p-4 sm:hidden">
-          <div className="rounded-2xl border border-borderSoft bg-white shadow-2xl p-4">
+          <div className="rounded-2xl border border-borderSoft bg-white shadow-2xl p-4 navbar-dropdown">
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-borderSoft">
               <p className="text-xs font-semibold font-playfair text-textMain">
                 Pencarian Buku Global
@@ -525,7 +525,7 @@ export default function Header({
                   placeholder="Cari judul, penulis, ISBN..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-borderSoft bg-cream/50 text-sm text-textMain placeholder-textSecondary focus:outline-none focus:border-accent"
+                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-borderSoft bg-cream/50 text-sm text-textMain placeholder-textSecondary focus:outline-none focus:border-accent navbar-search-input"
                 />
                 {searchQuery && (
                   <button
@@ -542,7 +542,7 @@ export default function Header({
 
             {/* Mobile Suggestions List */}
             {searchQuery.trim().length >= 2 && (
-              <div className="mt-3 max-h-60 overflow-y-auto rounded-xl border border-borderSoft bg-white">
+              <div className="mt-3 max-h-60 overflow-y-auto rounded-xl border border-borderSoft bg-white navbar-dropdown">
                 {isSearching ? (
                   <div className="p-3 text-center text-xs font-crimson text-textSecondary">
                     Mencari rekomendasi...
