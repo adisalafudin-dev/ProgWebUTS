@@ -125,9 +125,53 @@ export const fetchOpenLibraryBooks = async (filters = {}) => {
   return applyLocalSort((response.data?.docs || []).map(formatOpenLibraryBook), filters.sort);
 };
 
+export const fetchOpenLibrarySuggestions = async (query, limit = 5) => {
+  const keyword = query?.trim();
+  if (!keyword || keyword.length < 2) return [];
+
+  try {
+    const response = await openLibraryClient.get("/search.json", {
+      params: {
+        q: `${keyword} language:eng`,
+        limit,
+        fields: "key,title,author_name,cover_i,cover_edition_key,isbn,first_publish_year",
+      },
+    });
+
+    const docs = response.data?.docs || [];
+    return docs.slice(0, limit).map((book) => {
+      const cover = book.cover_i
+        ? `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg`
+        : book.cover_edition_key
+          ? `https://covers.openlibrary.org/b/olid/${book.cover_edition_key}-S.jpg`
+          : "";
+
+      const authors = Array.isArray(book.author_name)
+        ? book.author_name.slice(0, 2).join(", ")
+        : "Penulis tidak diketahui";
+
+      return {
+        id: book.key ? book.key.replace(/^\/works\//, "") : book.title,
+        key: book.key || "",
+        workKey: book.key || "",
+        title: book.title || "Judul tidak tersedia",
+        author: authors || "Penulis tidak diketahui",
+        cover,
+        year: book.first_publish_year || "-",
+        isbn: book.isbn?.[0] || null,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching search suggestions:", error);
+    return [];
+  }
+};
+
 export const openLibraryApi = {
   fetchBooks: fetchOpenLibraryBooks,
   fetchBookDetail: fetchOpenLibraryBookDetail,
+  fetchSuggestions: fetchOpenLibrarySuggestions,
 };
 
 export default openLibraryApi;
+

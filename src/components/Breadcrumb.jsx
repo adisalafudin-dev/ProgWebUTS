@@ -1,21 +1,27 @@
 import { Link, useLocation } from "react-router-dom";
+import Icon from "./Icon";
 
 const labelMap = {
   "": "Jelajah",
-  books: "Katalog",
+  books: "Katalog Buku",
   favorites: "Favorit",
   about: "Tentang",
   login: "Masuk",
   register: "Daftar",
   profile: "Profil",
   settings: "Pengaturan",
+  admin: "Panel Admin",
+  dashboard: "Dashboard",
+  categories: "Kategori",
+  users: "Pengguna",
+  statistics: "Statistik",
 };
 
 function formatSegment(segment, index, segments) {
-  if (segment === "books" && segments.length === 2) {
-    return "Katalog";
+  if (segment === "books" && segments.length === 1) {
+    return "Katalog Buku";
   }
-  if (index === 1 && segments[0] === "books") {
+  if (segments[0] === "books" && index === 1) {
     return "Detail Buku";
   }
   return (
@@ -30,22 +36,28 @@ export default function Breadcrumb() {
 
   if (pathname === "/") {
     return (
-      <div className="rounded-2xl border border-borderSoft bg-white/90 p-3 text-sm text-textSecondary shadow-sm">
-        <span className="font-semibold text-textMain">Jelajah</span>
-      </div>
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-2 text-xs sm:text-sm text-textSecondary font-crimson py-1"
+      >
+        <span className="font-semibold text-textMain flex items-center gap-1.5">
+          <Icon name="compass" className="w-3.5 h-3.5 text-accent" />
+          Jelajah
+        </span>
+      </nav>
     );
   }
 
   return (
     <nav
       aria-label="Breadcrumb"
-      className="rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 text-sm text-textSecondary shadow-sm"
+      className="flex items-center text-xs sm:text-sm text-textSecondary font-crimson py-1"
     >
-      <ol className="flex flex-wrap items-center gap-2">
+      <ol className="flex flex-wrap items-center gap-1.5">
         <li>
           <Link
             to="/"
-            className="text-textSecondary hover:text-accentHover transition-colors"
+            className="text-textSecondary hover:text-accentHover transition-colors flex items-center gap-1"
           >
             Jelajah
           </Link>
@@ -56,9 +68,9 @@ export default function Breadcrumb() {
           const label = formatSegment(segment, index, segments);
 
           return (
-            <li key={path} className="flex items-center gap-2">
-              <span aria-hidden="true" className="text-textSecondary/75">
-                /
+            <li key={path} className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="text-textSecondary/60 text-xs">
+                &gt;
               </span>
               {isLast ? (
                 <span className="font-semibold text-textMain">{label}</span>
@@ -77,3 +89,4 @@ export default function Breadcrumb() {
     </nav>
   );
 }
+

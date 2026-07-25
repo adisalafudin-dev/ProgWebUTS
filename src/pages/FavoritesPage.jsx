@@ -6,7 +6,7 @@ import Icon from "../components/Icon";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import { useDebounce } from "../hooks/useDebounce";
-import { getBookId } from "../utils/bookHelpers.js";
+import { formatRating, getBookId } from "../utils/bookHelpers.js";
 
 const FAVORITES_UI_STATE_KEY = "aksarahub-favorites-ui-state";
 
@@ -247,7 +247,9 @@ const FavoriteBookCard = memo(function FavoriteBookCard({
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
           <div
             className="flex items-center gap-1"
-            aria-label={rating ? `Rating ${rating}` : "Rating belum tersedia"}
+            aria-label={
+              rating ? `Rating ${formatRating(rating)}` : "Rating belum tersedia"
+            }
           >
             {[1, 2, 3, 4, 5].map((star) => (
               <svg
@@ -263,7 +265,7 @@ const FavoriteBookCard = memo(function FavoriteBookCard({
               </svg>
             ))}
             <span className="ml-0.5 font-crimson text-xs text-textSecondary">
-              {rating || "-"}
+              {formatRating(rating)}
             </span>
           </div>
         </div>

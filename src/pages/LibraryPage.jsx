@@ -8,7 +8,7 @@ import { SORT_OPTIONS } from "../constants/books";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
 import { useDebounce } from "../hooks/useDebounce";
-import { getBookId } from "../utils/bookHelpers.js";
+import { formatRating, getBookId } from "../utils/bookHelpers.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -920,7 +920,7 @@ export default function LibraryPage({
                             <span className="text-borderSoft">·</span>
                             <span className="inline-flex items-center gap-1 font-semibold text-accentHover">
                               <Icon name="star" className="h-3 w-3 text-accent" />
-                              {Number(book.rating).toFixed(1)}
+                              {formatRating(book.rating)}
                             </span>
                           </>
                         )}
@@ -1022,7 +1022,7 @@ export default function LibraryPage({
                       {book.title}
                     </span>
                     <span className="text-xs text-accentHover font-semibold font-crimson whitespace-nowrap">
-                      ★ {Number(book.rating).toFixed(1)}
+                      ★ {formatRating(book.rating)}
                     </span>
                   </div>
                 ))}

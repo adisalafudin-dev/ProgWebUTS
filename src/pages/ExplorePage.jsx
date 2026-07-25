@@ -7,7 +7,7 @@ import Icon from "../components/Icon";
 import EmptyState from "../components/EmptyState";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
-import { getBookId } from "../utils/bookHelpers.js";
+import { formatRating, getBookId } from "../utils/bookHelpers.js";
 
 // Helper algorithms to compute ratings and recommendation scores
 const getNumericYear = (book) => {
@@ -377,7 +377,7 @@ export default function ExplorePage({
                   <div className="absolute -bottom-3 -right-3 rounded-xl bg-white px-3 py-1.5 shadow-lg">
                     <div className="flex items-center gap-1 text-sm font-bold text-textMain">
                       <Icon name="star" className="h-4 w-4 text-accent fill-accent" />
-                      <span>{heroBook.rating || "4.5"}</span>
+                      <span>{formatRating(heroBook.rating, "4.5")}</span>
                     </div>
                   </div>
                 </div>

@@ -1,3 +1,4 @@
+import { formatRating } from "../utils/bookHelpers.js";
 import Icon from "./Icon";
 
 export default function BookCard({
@@ -135,7 +136,9 @@ export default function BookCard({
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
           <div
             className="flex items-center gap-1"
-            aria-label={rating ? `Rating ${rating}` : "Rating belum tersedia"}
+            aria-label={
+              rating ? `Rating ${formatRating(rating)}` : "Rating belum tersedia"
+            }
           >
             {[1, 2, 3, 4, 5].map((star) => (
               <svg
@@ -151,7 +154,7 @@ export default function BookCard({
               </svg>
             ))}
             <span className="text-xs text-textSecondary ml-0.5 font-crimson">
-              {rating || "-"}
+              {formatRating(rating)}
             </span>
           </div>
           <span className="text-xs text-textSecondary font-crimson">
