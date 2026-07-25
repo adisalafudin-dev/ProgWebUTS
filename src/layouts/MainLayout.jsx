@@ -6,14 +6,14 @@ import ToastContainer from "../components/ToastContainer";
 import Sidebar from "../components/Sidebar";
 
 const getActivePage = (pathname) => {
-  if (pathname === "/dashboard") return "dashboard";
+  if (pathname === "/") return "jelajah";
   if (pathname.startsWith("/books")) return "katalog";
   if (pathname === "/favorites") return "favorit";
   if (pathname === "/about") return "tentang";
   if (pathname === "/login" || pathname === "/register") return "login";
   if (pathname === "/profile") return "profile";
   if (pathname === "/settings") return "settings";
-  return "home";
+  return "jelajah";
 };
 
 export default function MainLayout() {

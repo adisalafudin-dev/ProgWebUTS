@@ -15,7 +15,7 @@ export default function NotFoundPage() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link to="/" className="btn-primary">
-            Kembali ke Beranda
+            Kembali ke Jelajah
           </Link>
           <Link to="/books" className="btn-secondary text-primary">
             Lihat Katalog Buku

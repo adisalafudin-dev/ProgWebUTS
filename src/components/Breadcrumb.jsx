@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 
 const labelMap = {
-  "": "Beranda",
+  "": "Jelajah",
   books: "Katalog",
   favorites: "Favorit",
   about: "Tentang",
@@ -31,7 +31,7 @@ export default function Breadcrumb() {
   if (pathname === "/") {
     return (
       <div className="rounded-2xl border border-borderSoft bg-white/90 p-3 text-sm text-textSecondary shadow-sm">
-        <span className="font-semibold text-textMain">Beranda</span>
+        <span className="font-semibold text-textMain">Jelajah</span>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export default function Breadcrumb() {
             to="/"
             className="text-textSecondary hover:text-accentHover transition-colors"
           >
-            Beranda
+            Jelajah
           </Link>
         </li>
         {segments.map((segment, index) => {

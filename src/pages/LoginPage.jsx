@@ -86,8 +86,8 @@ export default function LoginPage({ redirectTo = "/" }) {
             <p className="mt-1 text-sm text-textSecondary">{user.email}</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link to="/" className="btn-primary">
-                <Icon name="home" className="h-4 w-4" />
-                Ke Beranda
+                <Icon name="compass" className="h-4 w-4" />
+                Ke Jelajah
               </Link>
               {user?.role === ROLES.ADMIN && (
                 <Link to="/admin/dashboard" className="btn-primary">

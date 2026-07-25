@@ -29,9 +29,9 @@ export default function AboutPage() {
 
   const workflow = [
     {
-      icon: "home",
+      icon: "compass",
       title: "Lihat rekomendasi",
-      text: "Beranda menampilkan buku unggulan dan koleksi yang sedang tersedia.",
+      text: "Jelajah menampilkan buku unggulan dan koleksi yang sedang tersedia.",
     },
     {
       icon: "filter",

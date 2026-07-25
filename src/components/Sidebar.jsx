@@ -6,9 +6,8 @@ import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 import { ROLES } from "../constants/roles.js";
 
 const sidebarLinks = [
-  { to: "/", page: "home", label: "Beranda", icon: "home" },
-  { to: "/dashboard", page: "dashboard", label: "Jelajah", icon: "compass" },
-  { to: "/books", page: "katalog", label: "Katalog Buku", icon: "cloud" },
+  { to: "/", page: "jelajah", label: "Jelajah", icon: "compass" },
+  { to: "/books", page: "katalog", label: "Katalog Buku", icon: "bookOpen" },
   { to: "/favorites", page: "favorit", label: "Favorit", icon: "heart" },
   { to: "/about", page: "tentang", label: "Tentang", icon: "info" },
 ];
@@ -18,7 +17,7 @@ const bottomLinks = [
   { to: "/settings", page: "settings", label: "Pengaturan", icon: "monitor" },
 ];
 
-export default function Sidebar({ activePage = "home", onClose }) {
+export default function Sidebar({ activePage = "jelajah", onClose }) {
   const { user, isAuthenticated, logout } = useAuth();
   const { favoriteCount } = useFavorites();
 

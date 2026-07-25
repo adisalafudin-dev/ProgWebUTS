@@ -7,9 +7,8 @@ import aksaraHubLogo from "../assets/AksaraHub Logo.png";
 export default function Footer({ activePage = "home" }) {
   const { showToast } = useNotification();
   const navItems = [
-    { label: "Beranda", to: "/", page: "home", icon: "home" },
-    { label: "Jelajah", to: "/dashboard", page: "dashboard", icon: "compass" },
-    { label: "Katalog Buku", to: "/books", page: "katalog", icon: "cloud" },
+    { label: "Jelajah", to: "/", page: "jelajah", icon: "compass" },
+    { label: "Katalog Buku", to: "/books", page: "katalog", icon: "bookOpen" },
     { label: "Favorit", to: "/favorites", page: "favorit", icon: "heart" },
     { label: "Tentang", to: "/about", page: "tentang", icon: "info" },
   ];

@@ -20,8 +20,7 @@ import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { useScrollRestoration } from "../hooks/useScrollRestoration";
 
 // Lazy load pages for code splitting
-const HomePage = lazy(() => import("../pages/HomePage"));
-const DashboardPage = lazy(() => import("../pages/DashboardPage"));
+const ExplorePage = lazy(() => import("../pages/ExplorePage"));
 const LibraryPage = lazy(() => import("../pages/LibraryPage"));
 const FavoritesPage = lazy(() => import("../pages/FavoritesPage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
@@ -132,7 +131,7 @@ export default function App() {
           <Route
             index
             element={
-              <HomePage
+              <ExplorePage
                 books={dataStore}
                 featuredSourceBooks={
                   recommendationStore.length > 0 ? recommendationStore : dataStore
@@ -156,19 +155,6 @@ export default function App() {
           <Route
             path="books/:id"
             element={<BookDetailPage dataStore={dataStore} />}
-          />
-          <Route
-            path="dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage
-                  books={dataStore}
-                  recentReviews={[]}
-                  notifications={[]}
-                  onMarkNotificationRead={(id) => {}}
-                />
-              </ProtectedRoute>
-            }
           />
           <Route
             path="favorites"
