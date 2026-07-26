@@ -1,208 +1,482 @@
+import { memo, useCallback, useState } from "react";
 import Icon from "../components/Icon";
+import { GENRES } from "../constants/books";
+
+const OPEN_LIBRARY_URL = "https://openlibrary.org/";
+
+const STATS = [
+  { icon: "collection", value: "Ribuan", label: "Judul buku tersedia" },
+  { icon: "tag", value: String(GENRES.length - 1), label: "Kategori genre" },
+  { icon: "globe", value: "Online", label: "Katalog terkini" },
+  { icon: "monitor", value: "Responsif", label: "Semua perangkat" },
+];
+
+const FEATURES = [
+  {
+    icon: "search",
+    title: "Pencarian Buku",
+    desc: "Temukan buku berdasarkan judul, penulis, atau kata kunci dengan cepat.",
+  },
+  {
+    icon: "collection",
+    title: "Katalog Buku",
+    desc: "Jelajahi koleksi buku digital yang terorganisir dan mudah dinavigasi.",
+  },
+  {
+    icon: "eye",
+    title: "Detail Buku",
+    desc: "Lihat informasi lengkap seperti sinopsis, penulis, tahun terbit, dan rating.",
+  },
+  {
+    icon: "bookmark",
+    title: "Favorit",
+    desc: "Simpan buku pilihan ke daftar favorit agar mudah diakses kembali.",
+  },
+  {
+    icon: "filter",
+    title: "Filter Buku",
+    desc: "Saring koleksi menurut genre, tahun, rating, dan ketersediaan.",
+  },
+  {
+    icon: "star",
+    title: "Rating Open Library",
+    desc: "Lihat penilaian komunitas pembaca dari Open Library pada setiap buku.",
+  },
+  {
+    icon: "monitor",
+    title: "Responsive Design",
+    desc: "Akses nyaman dari desktop, tablet, maupun ponsel tanpa kehilangan fitur.",
+  },
+];
+
+const TECH_STACK = [
+  { icon: "monitor", label: "Frontend", value: "React + Vite" },
+  { icon: "database", label: "Backend", value: "NestJS (Coming Soon)" },
+  { icon: "cloud", label: "API", value: "Open Library API" },
+  { icon: "database", label: "Database", value: "Coming Soon" },
+  { icon: "pen", label: "Styling", value: "Tailwind CSS" },
+];
+
+const ARCHITECTURE_STEPS = [
+  { icon: "user", label: "Pengguna", status: "active" },
+  { icon: "monitor", label: "Frontend AksaraHub", status: "active" },
+  { icon: "cloud", label: "Open Library API", status: "active" },
+  { icon: "database", label: "Backend (Coming Soon)", status: "soon" },
+  { icon: "database", label: "Database (Coming Soon)", status: "soon" },
+];
+
+const ROADMAP = [
+  { label: "Pencarian Buku", done: true },
+  { label: "Detail Buku", done: true },
+  { label: "Favorit", done: true },
+  { label: "Filter", done: true },
+  { label: "Dashboard", done: false },
+  { label: "Peminjaman", done: false },
+  { label: "Pengembalian", done: false },
+  { label: "Notifikasi", done: false },
+];
+
+const FAQ_ITEMS = [
+  {
+    question: "Dari mana data buku berasal?",
+    answer:
+      "Metadata buku diambil langsung dari Open Library, platform katalog buku terbuka yang menyediakan informasi judul, penulis, sampul, dan rating.",
+  },
+  {
+    question: "Apakah buku dapat dipinjam?",
+    answer:
+      "Saat ini AksaraHub berfokus pada pencarian dan penelusuran koleksi. Fitur peminjaman dan pengembalian akan tersedia setelah integrasi backend selesai.",
+  },
+  {
+    question: "Apakah aplikasi mendukung perangkat mobile?",
+    answer:
+      "Ya. Antarmuka AksaraHub dirancang responsif sehingga dapat digunakan dengan nyaman di ponsel, tablet, dan komputer.",
+  },
+  {
+    question: "Bagaimana cara menyimpan buku favorit?",
+    answer:
+      "Klik ikon bookmark pada kartu buku atau halaman detail untuk menambahkannya ke daftar Favorit. Buku tersimpan dapat diakses kapan saja melalui menu Favorit.",
+  },
+];
+
+const WORKFLOW = [
+  {
+    icon: "compass",
+    title: "Jelajahi rekomendasi",
+    text: "Mulai dari halaman Jelajah untuk melihat buku unggulan dan koleksi terbaru.",
+  },
+  {
+    icon: "search",
+    title: "Cari buku",
+    text: "Gunakan kolom pencarian untuk menemukan judul atau penulis yang Anda inginkan.",
+  },
+  {
+    icon: "filter",
+    title: "Saring hasil",
+    text: "Persempit daftar buku dengan filter genre, tahun, rating, dan ketersediaan.",
+  },
+  {
+    icon: "bookmark",
+    title: "Simpan favorit",
+    text: "Tandai buku menarik ke daftar Favorit agar mudah ditemukan kembali.",
+  },
+];
+
+const SectionHeader = memo(function SectionHeader({ label, title, id }) {
+  return (
+    <div className="mb-6">
+      <p className="section-label mb-2">{label}</p>
+      <h2 id={id} className="font-semibold text-2xl text-textMain">
+        {title}
+      </h2>
+    </div>
+  );
+});
+
+const ContentCard = memo(function ContentCard({ children, className = "" }) {
+  return (
+    <div
+      className={`bg-white border border-borderSoft rounded-lg p-6 shadow-book ${className}`}
+    >
+      {children}
+    </div>
+  );
+});
+
+const CardIcon = memo(function CardIcon({ name }) {
+  return (
+    <span className="w-9 h-9 rounded-lg bg-cream text-accentHover flex items-center justify-center flex-shrink-0">
+      <Icon name={name} className="w-4 h-4" />
+    </span>
+  );
+});
+
+const FaqItem = memo(function FaqItem({ question, answer, isOpen, onToggle }) {
+  const panelId = `faq-panel-${question.slice(0, 12).replace(/\s/g, "-")}`;
+
+  return (
+    <div className="border border-borderSoft rounded-lg overflow-hidden bg-white shadow-book">
+      <button
+        type="button"
+        className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left font-semibold text-textMain hover:bg-cream/50 transition-colors duration-200"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        aria-label={`${isOpen ? "Tutup" : "Buka"} pertanyaan: ${question}`}
+        onClick={onToggle}
+      >
+        <span>{question}</span>
+        <Icon
+          name="chevronDown"
+          className={`w-4 h-4 text-accentHover flex-shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div
+        id={panelId}
+        role="region"
+        aria-labelledby={panelId}
+        hidden={!isOpen}
+        className={`px-6 pb-4 text-sm text-textSecondary leading-relaxed ${isOpen ? "block" : "hidden"}`}
+      >
+        {answer}
+      </div>
+    </div>
+  );
+});
 
 export default function AboutPage() {
-  const features = [
-    {
-      icon: "search",
-      title: "Pencarian Canggih",
-      desc: "Filter buku berdasarkan judul, penulis, genre, rating, dan tahun terbit menggunakan berbagai input type.",
-    },
-    {
-      icon: "cloud",
-      title: "Integrasi API",
-      desc: "Data real-time dari Gutendex API (Project Gutenberg) dengan ribuan judul buku klasik.",
-    },
-    {
-      icon: "monitor",
-      title: "React Hooks",
-      desc: "Akan diimplementasikan: useState, useEffect, dan Conditional Rendering di fase berikutnya.",
-    },
-    {
-      icon: "globe",
-      title: "Responsif",
-      desc: "Tampilan optimal di semua perangkat — dari mobile hingga desktop menggunakan Tailwind CSS.",
-    },
-  ];
+  const visibleGenres = GENRES.filter((genre) => genre !== "Semua");
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
-  const phases = [
-    {
-      no: "01",
-      label: "Selesai",
-      title: "Semantic HTML",
-      desc: "header, main, footer, nav, section, article, aside, figure, form + input types",
-      done: true,
-    },
-    {
-      no: "02",
-      label: "Selesai",
-      title: "Tailwind CSS",
-      desc: "Grid, Flexbox, hover, transition, shadow, responsive breakpoints",
-      done: true,
-    },
-    {
-      no: "03",
-      label: "Selanjutnya",
-      title: "React Hooks",
-      desc: "useState, useEffect, Conditional Rendering",
-      done: false,
-    },
-    {
-      no: "04",
-      label: "Selanjutnya",
-      title: "Data & Axios",
-      desc: "Fetch dari Gutendex API, loading indicator, error handling",
-      done: false,
-    },
-  ];
-
-  const techStack = [
-    { name: "React 18", color: "bg-blue-100 text-blue-800" },
-    { name: "Vite", color: "bg-violet-100 text-violet-800" },
-    { name: "Tailwind CSS", color: "bg-cyan-100 text-cyan-800" },
-    { name: "Semantic HTML5", color: "bg-orange-100 text-orange-800" },
-    { name: "Google Fonts", color: "bg-rose-100 text-rose-800" },
-  ];
+  const handleFaqToggle = useCallback((index) => {
+    setOpenFaqIndex((prev) => (prev === index ? -1 : index));
+  }, []);
 
   return (
     <section
       id="tentang"
-      aria-labelledby="about-heading"
-      className="max-w-4xl mx-auto px-4 sm:px-6 py-16"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 scroll-mt-24"
     >
-      <header className="text-center mb-14">
-        <p className="section-label mb-3">Tentang Aplikasi</p>
-        <h1
-          id="about-heading"
-          className="font-playfair font-extrabold text-4xl text-ink mb-4"
-        >
-          Folio Book Library
-        </h1>
-        <div
-          className="w-12 h-0.5 bg-amber-500 mx-auto my-4"
-          aria-hidden="true"
-        />
-        <p className="font-crimson text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-          Aplikasi perpustakaan digital yang dibangun bertahap sesuai komponen
-          penilaian — dimulai dari Semantic HTML dan Tailwind CSS.
-        </p>
-      </header>
+      <div className="flex flex-col gap-16 lg:gap-20">
+        {/* Hero */}
+        <header className="max-w-3xl">
+          <p className="section-label mb-2">Tentang AksaraHub</p>
+          <h1 className="font-extrabold text-4xl lg:text-5xl text-textMain mb-4 leading-tight">
+            Sistem Informasi Perpustakaan Digital untuk menemukan, mengenal, dan
+            mengelola koleksi buku.
+          </h1>
+          <p className="text-lg text-secondary leading-relaxed">
+            AksaraHub hadir sebagai perpustakaan digital yang memudahkan Anda
+            mencari buku, mempelajari detail koleksi, dan menyimpan judul favorit
+            dalam satu platform yang rapi dan mudah digunakan. Kami menghadirkan
+            pengalaman membaca modern bagi pembaca, mahasiswa, dan pengelola
+            perpustakaan.
+          </p>
+        </header>
 
-      <section aria-labelledby="phase-heading" className="mb-14">
-        <p className="section-label mb-1">Roadmap</p>
-        <h2
-          id="phase-heading"
-          className="font-playfair font-bold text-2xl text-ink mb-6"
-        >
-          Fase Pembangunan
-        </h2>
-
-        <ol className="relative border-l-2 border-parchment-200 ml-4 space-y-6">
-          {phases.map((phase) => (
-            <li key={phase.no} className="ml-8">
-              <span
-                className={`absolute -left-4 w-8 h-8 rounded-full flex items-center
-                             justify-center text-xs font-bold font-playfair
-                             ring-4 ring-parchment-50
-                  ${
-                    phase.done
-                      ? "bg-amber-500 text-white"
-                      : "bg-slate-100 text-slate-400"
-                  }`}
-                aria-hidden="true"
+        {/* Stats */}
+        <section aria-label="Ringkasan layanan AksaraHub">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+            {STATS.map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center gap-3 rounded-lg border border-borderSoft bg-white p-5 lg:p-6 shadow-book"
               >
-                {phase.no}
-              </span>
-
-              <article
-                className={`p-4 rounded-lg border
-                ${
-                  phase.done
-                    ? "bg-white border-amber-200 shadow-book"
-                    : "bg-parchment-50 border-dashed border-slate-200"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className={`text-[10px] font-semibold font-crimson tracking-wide
-                                px-2 py-0.5 rounded-full
-                      ${
-                        phase.done
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                  >
-                    {phase.label}
-                  </span>
-                  <h3 className="font-playfair font-semibold text-base text-ink">
-                    {phase.title}
-                  </h3>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cream text-accentHover">
+                  <Icon name={item.icon} className="w-4 h-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xl lg:text-2xl font-extrabold text-textMain leading-none">
+                    {item.value}
+                  </p>
+                  <p className="mt-1 text-xs lg:text-sm text-textSecondary">
+                    {item.label}
+                  </p>
                 </div>
-                <p className="font-crimson text-sm text-slate-500 leading-relaxed">
-                  {phase.desc}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Visi & Misi */}
+        <section aria-labelledby="visi-misi-heading">
+          <SectionHeader
+            label="Identitas"
+            title="Visi dan Misi"
+            id="visi-misi-heading"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+            <ContentCard className="h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <CardIcon name="eye" />
+                <h3 className="font-semibold text-xl text-textMain">Visi</h3>
+              </div>
+              <p className="text-secondary leading-relaxed">
+                Menjadi platform perpustakaan digital yang andal, mudah diakses,
+                dan mendukung literasi masyarakat melalui teknologi informasi
+                yang transparan.
+              </p>
+            </ContentCard>
+            <ContentCard className="h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <CardIcon name="compass" />
+                <h3 className="font-semibold text-xl text-textMain">Misi</h3>
+              </div>
+              <p className="text-secondary leading-relaxed">
+                Menyediakan layanan pencarian dan penelusuran buku yang efisien,
+                menghadirkan informasi koleksi yang akurat, serta mempersiapkan
+                ekosistem peminjaman digital yang terintegrasi.
+              </p>
+            </ContentCard>
+          </div>
+        </section>
+
+        {/* Fitur Utama */}
+        <section aria-labelledby="fitur-heading">
+          <SectionHeader label="Layanan" title="Fitur Utama" id="fitur-heading" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+            {FEATURES.map((item) => (
+              <article
+                key={item.title}
+                className="flex h-full flex-col rounded-lg border border-borderSoft bg-white p-6 shadow-book transition-colors duration-200 hover:border-accent"
+              >
+                <CardIcon name={item.icon} />
+                <h3 className="mt-4 mb-2 font-semibold text-lg text-textMain">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-textSecondary leading-relaxed">
+                  {item.desc}
                 </p>
               </article>
-            </li>
-          ))}
-        </ol>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      <section aria-labelledby="features-heading" className="mb-14">
-        <p className="section-label mb-1">Fitur</p>
-        <h2
-          id="features-heading"
-          className="font-playfair font-bold text-2xl text-ink mb-6"
+        {/* Teknologi & Arsitektur */}
+        <section
+          aria-labelledby="teknologi-heading"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6 items-stretch"
         >
-          Apa yang Ada di Aplikasi Ini
-        </h2>
+          <ContentCard className="flex h-full flex-col">
+            <SectionHeader
+              label="Infrastruktur"
+              title="Teknologi"
+              id="teknologi-heading"
+            />
+            <div className="flex flex-1 flex-col gap-3">
+              {TECH_STACK.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between gap-4 rounded-lg border border-borderSoft bg-cream/40 px-4 py-3"
+                >
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-textMain">
+                    <Icon name={item.icon} className="w-4 h-4 text-accentHover" />
+                    {item.label}
+                  </span>
+                  <span className="text-sm text-textSecondary text-right">
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </ContentCard>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {features.map((f) => (
-            <article
-              key={f.title}
-              className="bg-white border border-slate-200 rounded-lg p-6 shadow-book
-                         hover:shadow-book-hover hover:-translate-y-1
-                         transition-all duration-300"
+          <ContentCard className="flex h-full flex-col">
+            <SectionHeader label="Alur Data" title="Arsitektur Sistem" />
+            <div
+              className="flex flex-1 flex-col justify-center gap-1.5"
+              role="img"
+              aria-label="Alur sistem: Pengguna ke Frontend, Open Library API, Backend, dan Database"
             >
-              <span
-                className="w-10 h-10 rounded-lg bg-amber-100 text-amber-600
-                               flex items-center justify-center mb-4"
-              >
-                <Icon name={f.icon} className="w-5 h-5" />
-              </span>
-              <h3 className="font-playfair font-semibold text-lg text-ink mb-2">
-                {f.title}
-              </h3>
-              <p className="font-crimson text-slate-500 leading-relaxed text-sm">
-                {f.desc}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
+              {ARCHITECTURE_STEPS.map((step, index) => (
+                <div key={step.label} className="flex flex-col items-stretch">
+                  <div
+                    className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${
+                      step.status === "soon"
+                        ? "border-dashed border-borderSoft bg-cream/30 text-textSecondary"
+                        : "border-borderSoft bg-cream/60 text-textMain"
+                    }`}
+                  >
+                    <Icon
+                      name={step.icon}
+                      className="w-4 h-4 text-accentHover flex-shrink-0"
+                    />
+                    <span className="text-sm font-semibold">{step.label}</span>
+                    {step.status === "soon" && (
+                      <span className="ml-auto text-xs font-semibold uppercase tracking-wide text-accentHover">
+                        Soon
+                      </span>
+                    )}
+                  </div>
+                  {index < ARCHITECTURE_STEPS.length - 1 && (
+                    <div className="flex justify-center py-1" aria-hidden="true">
+                      <Icon name="chevronDown" className="w-4 h-4 text-accentHover" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ContentCard>
+        </section>
 
-      <section
-        aria-labelledby="tech-heading"
-        className="bg-parchment-100 border border-parchment-200 rounded-lg p-8 mb-10"
-      >
-        <p className="section-label mb-1">Teknologi</p>
-        <h2
-          id="tech-heading"
-          className="font-playfair font-bold text-xl text-ink mb-5"
-        >
-          Tech Stack
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {techStack.map((tech) => (
-            <span
-              key={tech.name}
-              className={`font-crimson font-semibold text-sm
-                          px-3 py-1.5 rounded-full ${tech.color}`}
+        {/* Roadmap & Panduan */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
+          <ContentCard className="h-full">
+            <SectionHeader label="Perkembangan" title="Roadmap" />
+            <ul className="space-y-3" aria-label="Daftar fitur roadmap AksaraHub">
+              {ROADMAP.map((item) => (
+                <li key={item.label} className="flex items-center gap-3">
+                  <span
+                    className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      item.done
+                        ? "bg-cream text-accentHover"
+                        : "border-2 border-borderSoft text-textSecondary"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {item.done ? (
+                      <Icon name="check" className="w-3.5 h-3.5" />
+                    ) : (
+                      <span className="w-2 h-2 rounded-sm bg-borderSoft" />
+                    )}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold ${
+                      item.done ? "text-textMain" : "text-textSecondary"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                  <span
+                    className={`ml-auto shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      item.done
+                        ? "bg-cream text-accentHover"
+                        : "border border-dashed border-borderSoft text-textSecondary"
+                    }`}
+                  >
+                    {item.done ? "Selesai" : "Rencana"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </ContentCard>
+
+          <ContentCard className="h-full">
+            <SectionHeader label="Panduan" title="Cara Menggunakan AksaraHub" />
+            <div className="space-y-5">
+              {WORKFLOW.map((step, index) => (
+                <div key={step.title} className="flex gap-3">
+                  <CardIcon name={step.icon} />
+                  <div className="min-w-0 pt-0.5">
+                    <p className="font-semibold text-textMain">
+                      {index + 1}. {step.title}
+                    </p>
+                    <p className="mt-1 text-sm text-secondary leading-relaxed">
+                      {step.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ContentCard>
+        </section>
+
+        {/* FAQ */}
+        <section aria-labelledby="faq-heading">
+          <SectionHeader label="Bantuan" title="Pertanyaan Umum" id="faq-heading" />
+          <div className="space-y-3">
+            {FAQ_ITEMS.map((item, index) => (
+              <FaqItem
+                key={item.question}
+                question={item.question}
+                answer={item.answer}
+                isOpen={openFaqIndex === index}
+                onToggle={() => handleFaqToggle(index)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Sumber Data & Kategori */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
+          <ContentCard className="flex h-full flex-col">
+            <SectionHeader label="Referensi" title="Sumber Data" />
+            <p className="mb-6 flex-1 text-secondary leading-relaxed">
+              AksaraHub menggunakan Open Library sebagai sumber metadata buku,
+              termasuk judul, penulis, sampul, subjek, dan rating. Open Library
+              adalah proyek terbuka yang memungkinkan siapa saja menelusuri
+              koleksi buku dari seluruh dunia.
+            </p>
+            <a
+              href={OPEN_LIBRARY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary self-start"
+              aria-label="Kunjungi situs Open Library di tab baru"
             >
-              {tech.name}
-            </span>
-          ))}
-        </div>
-      </section>
+              <Icon name="globe" className="w-4 h-4" />
+              Kunjungi Open Library
+            </a>
+          </ContentCard>
+
+          <ContentCard className="h-full">
+            <SectionHeader label="Koleksi" title="Kategori Buku" />
+            <p className="mb-6 text-secondary leading-relaxed">
+              Genre disesuaikan dengan kategori umum di Open Library agar filter
+              lebih intuitif dan membantu Anda menemukan buku sesuai minat baca.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {visibleGenres.map((genre) => (
+                <span
+                  key={genre}
+                  className="rounded-full border border-borderSoft bg-cream px-3 py-1.5 text-sm font-semibold text-accentHover"
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
+          </ContentCard>
+        </section>
+      </div>
     </section>
   );
 }
