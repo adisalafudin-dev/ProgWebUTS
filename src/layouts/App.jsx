@@ -12,7 +12,8 @@ import AdminLayout from "./AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute.jsx";
 import { ROLES } from "../constants/roles.js";
 import { FALLBACK_BOOKS } from "../constants/books";
-import { fetchOpenLibraryBooks } from "../services/openLibraryApi";
+import { bookApi } from "../services/bookApi.js";
+import { formatBackendBook } from "../utils/bookFormatter.js";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useFavorites } from "../contexts/FavoriteContext.jsx";
 import { useNotification } from "../contexts/NotificationContext.jsx";
@@ -31,12 +32,20 @@ const ProfilePage = lazy(() => import("../pages/ProfilePage"));
 const SettingsPage = lazy(() => import("../pages/SettingsPage"));
 const BookDetailPage = lazy(() => import("../pages/BookDetailPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
-const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
+const AdminDashboardPage = lazy(
+  () => import("../pages/admin/AdminDashboardPage"),
+);
 const AdminBooksPage = lazy(() => import("../pages/admin/AdminBooksPage"));
-const AdminBookDetailPage = lazy(() => import("../pages/admin/AdminBookDetailPage"));
-const AdminCategoriesPage = lazy(() => import("../pages/admin/AdminCategoriesPage"));
+const AdminBookDetailPage = lazy(
+  () => import("../pages/admin/AdminBookDetailPage"),
+);
+const AdminCategoriesPage = lazy(
+  () => import("../pages/admin/AdminCategoriesPage"),
+);
 const AdminUsersPage = lazy(() => import("../pages/admin/AdminUsersPage"));
-const AdminStatisticsPage = lazy(() => import("../pages/admin/AdminStatisticsPage"));
+const AdminStatisticsPage = lazy(
+  () => import("../pages/admin/AdminStatisticsPage"),
+);
 
 export default function App() {
   const location = useLocation();
@@ -45,7 +54,7 @@ export default function App() {
   const { favoriteBooks, favoriteIds, favoriteCount, toggleFavorite } =
     useFavorites();
   const { showToast } = useNotification();
-  
+
   // Custom scroll restoration
   useScrollRestoration();
 
@@ -71,7 +80,16 @@ export default function App() {
     setIsLoading(true);
     setError(null);
     try {
-      const books = await fetchOpenLibraryBooks(filters);
+      const search =
+        [filters.q, filters.author].filter(Boolean).join(" ") || undefined;
+
+      const response = await bookApi.getBooks({
+        search,
+        limit: filters.limit || 100, // sementara ambil banyak sekaligus, belum ada UI pagination
+      });
+
+      const rawBooks = response?.data ?? [];
+      const books = rawBooks.map((book) => formatBackendBook(book));
 
       setDataStore(books);
       if (isDefaultFetch) {
@@ -94,7 +112,7 @@ export default function App() {
         return nextBooks;
       });
       setError(
-        "API Open Library belum bisa diakses, menampilkan data contoh. Silakan coba lagi nanti.",
+        "Data buku dari server belum bisa diakses, menampilkan data contoh. Silakan coba lagi nanti.",
       );
       aksaraToast.apiFetchError();
     } finally {
@@ -136,7 +154,9 @@ export default function App() {
               <ExplorePage
                 books={dataStore}
                 featuredSourceBooks={
-                  recommendationStore.length > 0 ? recommendationStore : dataStore
+                  recommendationStore.length > 0
+                    ? recommendationStore
+                    : dataStore
                 }
                 error={error}
                 fetchData={fetchData}
@@ -196,7 +216,7 @@ export default function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="books" element={<AdminBooksPage />} />
-          <Route path="books/:workId" element={<AdminBookDetailPage />} />
+          <Route path="books/:id" element={<AdminBookDetailPage />} />{" "}
           <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route

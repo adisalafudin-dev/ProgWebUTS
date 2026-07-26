@@ -1,22 +1,30 @@
 import { getBookGenres } from "./genreMapper";
 
 const uniqueText = (values, limit = 3) =>
-  [...new Set((Array.isArray(values) ? values : [values]).map((value) => value?.trim()).filter(Boolean))].slice(
-    0,
-    limit,
-  );
+  [
+    ...new Set(
+      (Array.isArray(values) ? values : [values])
+        .map((value) => value?.trim())
+        .filter(Boolean),
+    ),
+  ].slice(0, limit);
 
 const getFirstSentence = (book) => {
   const sentence = Array.isArray(book.first_sentence)
     ? book.first_sentence[0]
     : book.first_sentence;
 
-  return typeof sentence === "string" ? sentence.replace(/\s+/g, " ").trim() : "";
+  return typeof sentence === "string"
+    ? sentence.replace(/\s+/g, " ").trim()
+    : "";
 };
 
 export const formatOpenLibraryBook = (book, index) => {
   // Keep enough Open Library subjects for the dynamic category aggregation.
-  const subjects = uniqueText([...(book.subject || []), ...(book.subject_facet || [])], 12);
+  const subjects = uniqueText(
+    [...(book.subject || []), ...(book.subject_facet || [])],
+    12,
+  );
   const authors = uniqueText(book.author_name, 20);
   const publishers = uniqueText(book.publisher, 20);
   const languages = uniqueText(book.language, 20);
@@ -31,7 +39,10 @@ export const formatOpenLibraryBook = (book, index) => {
   return {
     // This shape is deliberately independent from the Open Library response,
     // so a NestJS response can use the same contract later.
-    id: book.key || book.cover_edition_key || `${title}-${book.first_publish_year || index}`,
+    id:
+      book.key ||
+      book.cover_edition_key ||
+      `${title}-${book.first_publish_year || index}`,
     key: book.key || "",
     workKey: book.key || "",
     title,
@@ -54,5 +65,36 @@ export const formatOpenLibraryBook = (book, index) => {
     cover,
     pages: book.number_of_pages_median || book.edition_count || null,
     synopsis: getFirstSentence(book),
+  };
+};
+
+export const formatBackendBook = (book) => {
+  const category = book.category?.name || null;
+
+  return {
+    id: book.id,
+    key: book.id,
+    workKey: book.id,
+    title: book.title || "Judul tidak tersedia",
+    author: book.author || "Penulis tidak diketahui",
+    authors: book.author ? [book.author] : [],
+    year: book.publishedYear || "-",
+    publisher: book.publisher || null,
+    publishers: book.publisher ? [book.publisher] : [],
+    isbn: book.isbn || null,
+    subjects: category ? [category] : [],
+    genre: category || "Umum",
+    genres: category ? [category] : [],
+    tags: [],
+    languages: [],
+    allLanguages: [],
+    editionCount: 0,
+    rating: 0, // masih 0 — belum diagregasi dari modul review
+    available: (book.stock ?? 0) > 0,
+    featured: false,
+    cover: book.cover || "",
+    pages: book.pages || null,
+    synopsis: book.synopsis || "",
+    stock: book.stock ?? 0,
   };
 };
